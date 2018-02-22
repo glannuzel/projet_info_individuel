@@ -16,7 +16,7 @@ export class NomProjet extends React.Component{
   //}
   render(){
     return(
-      <TouchableHighlight underlayColor='#D7D7D7' onPress={() => this.props.navigation.navigate('Taches', {titre: `${this.props.nom}`})} >
+      <TouchableHighlight underlayColor='#D7D7D7' onPress={() => this.props.navigation.navigate('Details', {titre: `${this.props.nom}`})} >
         <View style={styles.backgroundProjet} >
           <Text style={styles.nomProjet}>{this.props.nom}</Text>
         </View>

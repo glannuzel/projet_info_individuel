@@ -5,7 +5,6 @@ import { ActivityIndicator, ListView, TouchableHighlight } from 'react-native';
 import { StackNavigator} from 'react-navigation';
 import BottomNavigation, { Tab } from 'react-native-material-bottom-navigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { BarreNavigation } from '../components/BarreNavigation';
 
 export class Kpi extends Component {
     static navigationOptions = ({ navigation }) => ({
