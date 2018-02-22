@@ -7,6 +7,7 @@ import { Header } from './components/Header';
 import { HomeScreen } from './Screens/HomeScreen';
 import BarreNavigation from './Screens/BarreNavigation';
 import { DescTacheScreen } from './Screens/DescTacheScreen';
+//import DateTimePickerTester from './components/DateTimePicker';
 /*
 import { DetailsScreen } from './Screens/DetailsScreen';
 import { DescTacheScreen } from './Screens/DescTacheScreen';
