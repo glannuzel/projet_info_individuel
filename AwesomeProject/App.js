@@ -4,9 +4,12 @@ import { Alert, AppRegistry, Button, Image, TextInput} from 'react-native';
 import { ActivityIndicator, ListView, TouchableHighlight } from 'react-native';
 import { StackNavigator} from 'react-navigation';
 import { Header } from './components/Header';
-import { HomeScreen } from './Screens/HomeScreen'
-import { DetailsScreen } from './Screens/DetailsScreen'
+import { HomeScreen } from './Screens/HomeScreen';
+import { DetailsScreen } from './Screens/DetailsScreen';
 import { DescTacheScreen } from './Screens/DescTacheScreen';
+import { Taches } from './Screens/Taches';
+import { Suivi } from './Screens/Suivi';
+import { Kpi } from './Screens/Kpi';
 
 const styles = require('./style/Style');
 
@@ -63,6 +66,15 @@ const RootStack = StackNavigator({
   },
   Details: {
     screen: DescTacheScreen,
+  },
+  Taches: {
+    screen: Taches,
+  },
+  Suivi: {
+    screen: Suivi,
+  },
+  KPI: {
+    screen: Kpi
   },
 },
   {

@@ -29,7 +29,13 @@ export class AjoutTache extends React.Component{
             underlineColorAndroid='#C3C3C3' 
             placeholder="Titre de la tâche" 
             onChangeText={(text) => this.setState({text})} />
-            <Picker>
+        </View>
+      );
+  }
+}
+
+/*
+<Picker>
                 <Picker.Item label="Java" value="java" />
                 <Picker.Item label="JavaScript" value="js" />
             </Picker>
@@ -37,7 +43,4 @@ export class AjoutTache extends React.Component{
               title='Click Here'
               checked={this.state.checked}
             />
-        </View>
-      );
-  }
-}
+            */
