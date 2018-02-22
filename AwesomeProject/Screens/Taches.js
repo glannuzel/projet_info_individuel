@@ -5,6 +5,7 @@ import { ActivityIndicator, ListView, TouchableHighlight } from 'react-native';
 import { StackNavigator} from 'react-navigation';
 import BottomNavigation, { Tab } from 'react-native-material-bottom-navigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { Tache } from '../components/Tache';
 
 
 //const BarreNavigation = require('../components/BarreNavigation');
@@ -20,7 +21,7 @@ export class Taches extends Component {
         const { navigate } = this.props.navigation;
       return (
         <View style={{
-            flex: 1, flexDirection: 'column', justifyContent: 'space-between'}}>
+            flex: 1, flexDirection: 'column'}}>
             <View style={{marginTop: 12}}>
                 <TouchableHighlight underlayColor='#D7D7D7' onPress={() => this.props.navigation.navigate('AjoutTache', {titre: `Ajouter une tâche`})} >
                     <View style={{flexDirection: 'row'}}>
@@ -29,14 +30,10 @@ export class Taches extends Component {
                     </View>
                 </TouchableHighlight>
             </View>
+            <Tache nom="Création base de données" description="Nécessité de comprendre comment fonctionne Firebase. Conception sur papier en attendant"/>
+            <Tache nom="Rédaction rapport" description="Parties : Difficultés rencontrées, principales avancées, prise en main logiciel"/>
             
         </View>
       );
     }
 }
-
-/*
-<View style={{height:50}}>
-    <BarreNavigation/>
-</View>
-*/
