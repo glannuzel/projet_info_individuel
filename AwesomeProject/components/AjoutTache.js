@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Text, View } from 'react-native';
 import { Alert, AppRegistry, Button, Image, TextInput, Picker, CheckBox } from 'react-native';
-import { ActivityIndicator, ListView, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, ListView, ScrollView, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import { StackNavigator} from 'react-navigation';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -15,7 +15,8 @@ export class AjoutTache extends React.Component{
   }
   state = {
     isDateTimePickerVisible: false,
-    dateFin: 'dd/mm/yyyy'
+    dateFin: 'dd/mm/yyyy',
+    box: "check-box-outline-blank"
   };
  
   _updateText = (date) => this.setState({dateFin: `${date}`});
@@ -30,9 +31,22 @@ export class AjoutTache extends React.Component{
     this._hideDateTimePicker();
   };
 
+  _onSubmitEdit = () => {
+    alert("VLAIDE");
+  };
+
+  _checkBoxClick = () => {
+    if (this.state.box=="check-box-outline-blank")
+    {
+      this.setState({box: "check-box"});
+    }
+    else { this.setState({box: "check-box-outline-blank"});}
+  }
+
   render(){
       return (
-        <View style={{margin: 40}} >
+        <ScrollView>
+        <KeyboardAvoidingView style={{margin: 40}} behavior="padding" >
 
             <Text style={styles.sousTitreTexte}>Titre de la tâche</Text>
             <TextInput style={{ height: 40, margin: 10 }} 
@@ -42,13 +56,24 @@ export class AjoutTache extends React.Component{
             onChangeText={(text) => this.setState({text})} />
 
             <Text style={styles.sousTitreTexte}>Description</Text>
-            <TextInput style={{ height: 40, margin: 10 }} 
-            underlineColorAndroid='#C3C3C3' 
-            placeholder="Description"
-            selectionColor='#46466E'
-            onChangeText={(text) => this.setState({text})} />
+            <View style={{ borderColor: '#C3C3C3', backgroundColor: 'white', borderWidth: 1, borderRadius: 5, marginTop: 5, marginBottom: 10, padding: 5}}>
+              <AutoExpandingTextInput style={{ height: 40, margin: 10, padding: 5 }} 
+              underlineColorAndroid='transparent'
+              placeholder="Description ..."
+              selectionColor='#46466E'
+              maxLength={500}
+              />
+              <View style={{flexDirection: 'row'}}>
+                <View style={{flex: 5}}/>
+                <View style={{flex: 1}}>
+                  <TouchableOpacity onPress={this._onSubmitEdit}>
+                    <Icon size={24} color="#46466E" name="done" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
 
-            <View style={{backgroundColor: '#BDBDD7', borderRadius: 3, padding: 8}}>
+            <View style={{backgroundColor: '#BDBDD7', borderRadius: 3, padding: 8 }}>
               <View>
                 <Text style={styles.sousTitreTexte}>Date de fin de tâche </Text>
               </View>
@@ -68,12 +93,52 @@ export class AjoutTache extends React.Component{
                 </View>
               </View>
             </View>
+            
+            <View style={{marginTop: 15}}>
+              <Text style={styles.sousTitreTexte}>CheckList</Text>
+              <TouchableOpacity onPress={this._checkBoxClick}>
+                <Icon size={24} name={this.state.box} color="grey"/>
+              </TouchableOpacity>
+            </View>
 
-        </View>
+            <View style={{marginTop: 15}}>
+              <Button title="Enregistrer" onPress={()=>alert("hola ca va")} color="#46466E"/>
+            </View>
+
+        </KeyboardAvoidingView>
+        </ScrollView>
       );
   }
 }
 
+class AutoExpandingTextInput extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+        text: '',
+        height: 0
+    };
+  }
+
+  render() {
+    return (
+      <TextInput
+        {...this.props}
+        multiline={true}
+        onChangeText={(text) => {
+            this.setState({ text })
+        }}
+        onContentSizeChange={(event) => {
+          if (this.state.height <= 120)
+            {this.setState({ height: event.nativeEvent.contentSize.height });}
+        }}
+        style={[styles.default, {height: Math.max(35, this.state.height)}]}
+        value={this.state.text}
+      />
+    );
+  }
+}
 /*
 <Picker>
                 <Picker.Item label="Java" value="java" />
@@ -83,4 +148,13 @@ export class AjoutTache extends React.Component{
               title='Click Here'
               checked={this.state.checked}
             />
+            */
+
+/*
+<Picker>
+              <Picker.Item label="blablabla"/>
+              <Picker.Item label="nfieojf"/>
+            </Picker>
+
+            <CheckBox label="Click here"/>
             */
