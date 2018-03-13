@@ -99,6 +99,9 @@ export class AjoutTache extends React.Component{
               <TouchableOpacity onPress={this._checkBoxClick}>
                 <Icon size={24} name={this.state.box} color="grey"/>
               </TouchableOpacity>
+              <TouchableOpacity onPress={this._checkBoxClick}>
+                <Icon size={24} name={this.state.box} color="grey"/>
+              </TouchableOpacity>
             </View>
 
             <View style={{marginTop: 15}}>
