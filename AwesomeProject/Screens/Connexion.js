@@ -24,7 +24,10 @@ export class Connexion extends React.Component {
     state={
         login:false
       }
-    signIn=async()=>{
+      static navigationOptions = {
+        header:null
+    };
+    signUp=async()=>{
         if(adresseMail&&mdp){
             try {
             await firebase.auth()
@@ -46,6 +49,7 @@ export class Connexion extends React.Component {
         await firebase.auth()
             .signInWithEmailAndPassword(adresseMail, mdp);
             this.setState({login:true})
+            this.props.navigation.navigate('Home');
         console.log("Logged In!");
 
         // Navigate to the Home page
@@ -85,32 +89,64 @@ export class Connexion extends React.Component {
     }
     render(){
     return (
-        <View style={styles.container}>
-        <TextInput
-            style={{width:'50%',height:'5%'}}
-            placeholder='email'
-            onChangeText={
-            (text)=>{
-                adresseMail=text
-            }
-            }
-            />
-        <TextInput
-            style={{width:'50%',height:'5%'}}
-            placeholder='mdp'
-            onChangeText={
-            (text)=>{
-                mdp=text
-            }
-            }
-            />
-        <Button title='Sign in' onPress={()=>this.signIn()}/>
-        <Button title='Sign up' onPress={()=>this.login()}/>
-        <Button title='mes infos' disabled={!this.state.login} onPress={()=>this.infos()}/>
-        <Button title='Display Data' disabled={!this.state.login} onPress={()=>this.displayData()}/>
-        <Button title='coucou' onPress={()=>this.coucou()}/>
+        <View style={{flex: 1, backgroundColor: '#46466E'}}>
+
+            <View style={{flex:1, justifyContent: 'center', alignItems: 'center'}}>
+                <Text style={{color: 'white', fontSize: 24}}>CONNEXION</Text>
+            </View>
+
+            <View style={{flex: 2, margin: 15}}>
+                <View style={{alignItems: 'center'}}>
+                    <Text style={{color: 'white'}}>Adresse mail</Text>
+                    <TextInput
+                        style={{width:'75%', backgroundColor: '#8787A3', margin: 10, padding: 5, borderRadius: 5, color: 'white'}}
+                        selectionColor='#46466E'
+                        placeholder='Votre adresse e-mail'
+                        keyboardType={'email-address'}
+                        autoCorrect={false}
+                        underlineColorAndroid='transparent'
+                        onChangeText={
+                        (text)=>{
+                            adresseMail=text
+                        }
+                        }
+                        />
+
+                    <Text style={{color: 'white'}}>Mot de passe</Text>
+                    <TextInput
+                        style={{width:'75%', backgroundColor: '#8787A3', margin: 10, padding: 5, borderRadius: 5, color: 'white'}}
+                        selectionColor='#46466E'
+                        placeholder='Votre mot de passe'
+                        secureTextEntry={true}
+                        underlineColorAndroid='transparent'
+                        onChangeText={
+                        (text)=>{
+                            mdp=text
+                        }
+                        }
+                        />
+                </View>
+                
+                <View style={{flexDirection: 'row'}}>
+                    <View style={{flex: 2}}/>
+                    <View style={{flex: 2}}>
+                        <Button title='Sign in' color='#BDBDD7' onPress={()=>this.login()}/>
+                    </View>
+                    <View style={{flex: 1}}/>
+                    <View style={{flex: 2}}>
+                        <Button title='Sign up' color='#DD105E' onPress={()=>this.signUp()}/>
+                    </View>
+                    <View style={{flex: 2}}/>
+                </View>
+            </View>
         </View>
 
     )
     }
 }
+
+/*
+<Button title='mes infos' disabled={!this.state.login} onPress={()=>this.infos()}/>
+                    <Button title='Display Data' disabled={!this.state.login} onPress={()=>this.displayData()}/>
+                    <Button title='coucou' onPress={()=>this.coucou()}/>
+*/

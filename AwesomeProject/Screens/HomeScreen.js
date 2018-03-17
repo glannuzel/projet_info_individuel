@@ -17,6 +17,8 @@ export class HomeScreen extends React.Component {
         backgroundColor:'#46466E',
       },
     });
+  
+  
   render() {
     return (
       <View>

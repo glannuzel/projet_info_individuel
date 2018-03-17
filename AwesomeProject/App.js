@@ -22,7 +22,7 @@ const RootStack = StackNavigator({
     screen: DescTacheScreen,
   }
 }, {
-    initialRouteName: 'Home',
+    initialRouteName: 'Connexion',
   }
 );
 
