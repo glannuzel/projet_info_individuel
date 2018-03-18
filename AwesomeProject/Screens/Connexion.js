@@ -52,31 +52,7 @@ export class Connexion extends React.Component {
     }
 
     }
-    infos=async()=>{
-    if(this.state.login){
-        let user = firebase.auth().currentUser;
-        id = user.uid;
-        let obj={
-        name:'quentin',
-        mdp:'coucou'
-        }
-        firebase.database().ref(id).push(obj)
-    }
-    }
-    displayData=async()=>{
-    firebase.database().ref(id).on('child_added',
-    (data)=>{
-        user.push(data.key)
-        console.log(user)
-        });
-        firebase.database().ref(id).on('value',
-        (data)=>{
-        myUser=data.val()
-        console.log(data.val())
-        }
-        )
-        alert('ok')
-    }
+
     coucou(){
     console.log("coucou"+myUser[user[0]].name);
     }
