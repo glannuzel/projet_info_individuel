@@ -5,9 +5,11 @@ import { ActivityIndicator, ListView, ScrollView, TouchableOpacity, KeyboardAvoi
 import { StackNavigator} from 'react-navigation';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import * as firebase from 'firebase';
 //import { CheckBox } from 'react-native-elements';
 
 const styles = require('../style/Style');
+require('../ConnexionBD.js');
 
 export class AjoutTache extends React.Component{
   constructor(props){
@@ -15,10 +17,31 @@ export class AjoutTache extends React.Component{
   }
   state = {
     isDateTimePickerVisible: false,
+    titre: "",
+    description: "",
     dateFin: 'dd/mm/yyyy',
     box: "check-box-outline-blank"
   };
- 
+
+  infos=async()=>{
+    //if(this.state.login){
+        let user = firebase.auth().currentUser;
+        id = user.uid;
+        let obj={
+        titre: `${this.state.titre}`,
+        description: `${this.state.description}`,
+        dateFin: `${this.state.dateFin}`
+        }
+        firebase.database().ref(id).push(obj);
+        Alert.alert(`${this.state.titre}`);
+        console.log("ajout");
+   // }
+  }
+
+  _updateTitre = (text) => this.setState({titre: `${text}`});
+
+  _updateDescription = (text) => this.setState({description: `${text}`});
+
   _updateText = (date) => this.setState({dateFin: `${date}`});
 
   _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
@@ -53,7 +76,7 @@ export class AjoutTache extends React.Component{
             underlineColorAndroid='#C3C3C3' 
             placeholder="Titre de la tâche" 
             selectionColor='#46466E'
-            onChangeText={(text) => this.setState({text})} />
+            onChangeText={(text) => this._updateTitre(text)} />
 
             <Text style={styles.sousTitreTexte}>Description</Text>
             <View style={{ borderColor: '#C3C3C3', backgroundColor: 'white', borderWidth: 1, borderRadius: 5, marginTop: 5, marginBottom: 10, padding: 5}}>
@@ -61,6 +84,7 @@ export class AjoutTache extends React.Component{
               underlineColorAndroid='transparent'
               placeholder="Description ..."
               selectionColor='#46466E'
+              onChangeText={(text) => this._updateDescription(text)}
               maxLength={500}
               />
               <View style={{flexDirection: 'row'}}>
@@ -105,7 +129,7 @@ export class AjoutTache extends React.Component{
             </View>
 
             <View style={{marginTop: 15}}>
-              <Button title="Enregistrer" onPress={()=>alert("hola ca va")} color="#46466E"/>
+              <Button title="Enregistrer" onPress={()=>this.infos()} color="#46466E"/>
             </View>
 
         </KeyboardAvoidingView>
@@ -129,15 +153,11 @@ class AutoExpandingTextInput extends React.Component {
       <TextInput
         {...this.props}
         multiline={true}
-        onChangeText={(text) => {
-            this.setState({ text })
-        }}
         onContentSizeChange={(event) => {
           if (this.state.height <= 120)
             {this.setState({ height: event.nativeEvent.contentSize.height });}
         }}
         style={[styles.default, {height: Math.max(35, this.state.height)}]}
-        value={this.state.text}
       />
     );
   }

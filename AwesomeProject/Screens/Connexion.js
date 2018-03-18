@@ -5,13 +5,6 @@ import { ActivityIndicator, ListView, TouchableHighlight } from 'react-native';
 import { StackNavigator} from 'react-navigation';
 import * as firebase from 'firebase';
 
-const styles = StyleSheet.create({
-    container:{
-      flex:1,
-      alignItems:'center',
-      justifyContent:'center'
-    }
-  })
 
 require('../ConnexionBD.js');
 const adresseMail="glannuzel@ensc.fr";
