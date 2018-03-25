@@ -30,7 +30,7 @@ export class Tache extends Component {
                             <Icon size={20} color="white" name="event" />
                         </View>
                         <View style={{flex: 4}}>
-                            <Text style={{color: 'white'}}>Fin : 26/03/2018</Text>
+                            <Text style={{color: 'white'}}>Fin : {this.props.dateFin}</Text>
                         </View>
                     </View>
                 </View>

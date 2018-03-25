@@ -25,15 +25,17 @@ export class AjoutTache extends React.Component{
 
   infos=async()=>{
     //if(this.state.login){
+        //let user = firebase.auth().currentUser;
+        //id = user.uid;
         let user = firebase.auth().currentUser;
-        id = user.uid;
+        id = this.props.id;
         let obj={
         titre: `${this.state.titre}`,
         description: `${this.state.description}`,
         dateFin: `${this.state.dateFin}`
         }
-        firebase.database().ref(id).push(obj);
-        Alert.alert(`${this.state.titre}`);
+        firebase.database().ref(user.uid).child(id).push(obj);
+        
         console.log("ajout");
    // }
   }

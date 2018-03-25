@@ -29,6 +29,12 @@ const styles = StyleSheet.create({
       borderBottomColor: '#8787A3',
       borderBottomWidth: 1
     },
+    backgroundProjetAdd:{
+      padding : 25,
+      backgroundColor: "#DCDCDC",
+      borderBottomColor: '#8787A3',
+      borderBottomWidth: 1
+    },
     nomProjet:{
       color: '#46466E'
     }

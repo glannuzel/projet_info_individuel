@@ -6,7 +6,7 @@ import { StackNavigator} from 'react-navigation';
 
 const styles = require('../style/Style');
 
-export class NomProjet extends React.Component{
+export class AjoutProjet extends React.Component{
   constructor(props){
     super(props);
   }
@@ -14,14 +14,18 @@ export class NomProjet extends React.Component{
     //this.props.navigation.navigate('Details', {titre: 'WHATEVER'})
     //this.props.navigation.navigate('Details');
   //}
-  
   render(){
     return(
-      <TouchableHighlight underlayColor='#D7D7D7' onPress={() => this.props.navigation.navigate('Details', {titre: `${this.props.nom}`, id: `${this.props.numero}`})}>
-        <View style={styles.backgroundProjet} >
-          <Text style={styles.nomProjet}>{this.props.numero}</Text>
+        <View style={styles.backgroundProjetAdd} >
+            <View style={{flexDirection: 'row'}}>
+                <View style={{flex: 4}}>
+                    <TextInput style={styles.nomProjet} placeholder="Ajouter un projet..." selectionColor='#46466E'/>
+                </View>
+                <View style={{flex: 1}}>
+                    <Button title="Ajouter" onPress={()=>alert('kikou')} color="#DD105E" />
+                </View>
+            </View>
         </View>
-      </TouchableHighlight>
     )
   }
 }

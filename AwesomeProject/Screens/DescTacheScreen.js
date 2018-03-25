@@ -11,16 +11,21 @@ const styles = require('../style/Style');
 export class DescTacheScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
         title: `${navigation.state.params.titre}`,
+        id: `${navigation.state.params.id}`,
         headerTintColor : 'white',
         headerTitleStyle : {textAlign: 'center',alignSelf:'center', color:'white'},
         headerStyle: { backgroundColor:'#46466E'},
         });
+
     render() {
         const { navigate } = this.props.navigation;
         return (
             <View>
-                <AjoutTache/>
+                <AjoutTache id={this.props.navigation.state.params.id}/>
             </View>
         );
     }
 }
+
+//
+//<Button title="ID please" onPress={()=>alert(`${this.props.navigation.state.params.id}`)}/>
