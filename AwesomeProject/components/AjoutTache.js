@@ -19,7 +19,7 @@ export class AjoutTache extends React.Component{
     isDateTimePickerVisible: false,
     titre: "",
     description: "",
-    dateFin: 'dd/mm/yyyy',
+    dateFin: new Date().getTime(),
     box: "check-box-outline-blank"
   };
 
@@ -32,11 +32,12 @@ export class AjoutTache extends React.Component{
         let obj={
         titre: `${this.state.titre}`,
         description: `${this.state.description}`,
-        dateFin: `${this.state.dateFin}`
+        dateFin: this.state.dateFin
         }
         firebase.database().ref(user.uid).child(id).push(obj);
-        
+        this.props.ouvert();
         console.log("ajout");
+        this.props.rechargerBD();
    // }
   }
 
@@ -44,14 +45,14 @@ export class AjoutTache extends React.Component{
 
   _updateDescription = (text) => this.setState({description: `${text}`});
 
-  _updateText = (date) => this.setState({dateFin: `${date}`});
+  _updateText = (date) => this.setState({dateFin: date.getTime()});
 
   _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
  
   _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
  
   _handleDatePicked = (date) => {
-    alert(`A date has been picked: ${date}`);
+    alert(`A date has been picked: ${date.getTime()}`);
     this._updateText(date);
     this._hideDateTimePicker();
   };

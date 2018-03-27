@@ -19,7 +19,7 @@ export class NomProjet extends React.Component{
     return(
       <TouchableHighlight underlayColor='#D7D7D7' onPress={() => this.props.navigation.navigate('Details', {titre: `${this.props.nom}`, id: `${this.props.numero}`})}>
         <View style={styles.backgroundProjet} >
-          <Text style={styles.nomProjet}>{this.props.numero}</Text>
+          <Text style={styles.nomProjet}>{this.props.nom}</Text>
         </View>
       </TouchableHighlight>
     )

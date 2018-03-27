@@ -24,8 +24,8 @@ export class Tache extends Component {
                 <Text style={styles.sousTitreTexte}>{this.props.nom}</Text>
                 <Text style={{color: '#8787A3'}}>{this.props.description}</Text>
                 <View style={{flexDirection: 'row', marginTop: 10}}>
-                    <View style={{flex: 1}}></View>
-                    <View style={{flex: 1, flexDirection: 'row', backgroundColor: '#46466E', borderRadius: 3}}>
+                    <View style={{flex: 2}}></View>
+                    <View style={{flex: 3, flexDirection: 'row', backgroundColor: '#46466E', borderRadius: 3}}>
                         <View style={{flex: 1}}>
                             <Icon size={20} color="white" name="event" />
                         </View>

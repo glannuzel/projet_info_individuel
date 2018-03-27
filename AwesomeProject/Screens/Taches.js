@@ -14,6 +14,7 @@ import { AjoutTache } from '../components/AjoutTache';
 require('../ConnexionBD.js');
 const myKey=new Array(0);
 const myUser=[];
+const semaine = new Array("Dim.", "Lun.","Mar.", "Mer.","Jeu.", "Ven.", "Sam.");
 
 export class Taches extends Component {
     static navigationOptions = ({ navigation }) => ({
@@ -34,6 +35,8 @@ export class Taches extends Component {
       }
 
     componentWillMount=async()=>{
+        myUser=[];
+        myKey=[];
     try{
         let user = firebase.auth().currentUser;
         id = this.props.navigation.state.params.id;
@@ -57,14 +60,17 @@ export class Taches extends Component {
         console.log(error.ToString())
         }
     }
-
     listeTaches(){
         const liste = [];
-      for (let iter = 0; iter < myKey.length-1; iter++){
-        liste.push(
-        <Tache nom={myUser[myKey[iter]].titre} description={myUser[myKey[iter]].description} dateFin={myUser[myKey[iter]].dateFin} />
-        );
-      }
+        if (this.state.dataCharged){
+        for (let iter = 0; iter < myKey.length-1; iter++){
+            dateFinTache = new Date(myUser[myKey[iter]].dateFin);
+            dateFinBienEcrite = semaine[dateFinTache.getDay()] + " " + dateFinTache.getDate()+ "/" + (dateFinTache.getMonth()+1) + "/" + dateFinTache.getFullYear();
+            liste.push(
+            <Tache nom={myUser[myKey[iter]].titre} description={myUser[myKey[iter]].description} dateFin={dateFinBienEcrite} />
+            );
+        }
+    }
       return liste;
     }
 
@@ -76,9 +82,9 @@ export class Taches extends Component {
             <View style={{
                 flex: 1, flexDirection: 'column'}}>
                 <Modal animationType="slide" transparent={false} visible={this.state.modalVisible}>
-                    <AjoutTache id={this.props.navigation.state.params.id}/>
+                    <AjoutTache id={this.props.navigation.state.params.id} ouvert={()=>this.setModalVisible(false)} rechargerBD={()=>this.componentWillMount()}/>
                     <View style={{marginTop: 15}}>
-                        <Button title="Revenir aux tâches" onPress={()=>this.setModalVisible(false)} color="#46466E"/>
+                        <Button title="Revenir aux tâches" onPress={()=>this.setModalVisible(false)} color="#DD105E"/>
                     </View>
                 </Modal>
                 <View style={{marginTop: 12}}>
