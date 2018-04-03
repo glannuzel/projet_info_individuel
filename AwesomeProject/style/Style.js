@@ -26,12 +26,13 @@ const styles = StyleSheet.create({
     },
     backgroundProjet:{
       padding : 25,
+      paddingRight : 10,
       borderBottomColor: '#8787A3',
       borderBottomWidth: 1
     },
     backgroundProjetAdd:{
       padding : 25,
-      backgroundColor: "#DCDCDC",
+      backgroundColor: "#F5F5F5",
       borderBottomColor: '#8787A3',
       borderBottomWidth: 1
     },

@@ -72,7 +72,7 @@ export class AjoutTache extends React.Component{
   render(){
       return (
         <ScrollView>
-        <KeyboardAvoidingView style={{margin: 40}} behavior="padding" >
+        <KeyboardAvoidingView style={{margin: 15}} behavior="padding" >
 
             <Text style={styles.sousTitreTexte}>Titre de la tâche</Text>
             <TextInput style={{ height: 40, margin: 10 }} 

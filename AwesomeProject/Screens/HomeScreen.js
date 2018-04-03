@@ -120,7 +120,7 @@ export class HomeScreen extends React.Component {
                         maxLength={30}/>
                     </View>
                     <View style={{flex: 1}}>
-                        <Button title="Ajouter" onPress={()=>this.ajouterProjet()} color="#DD105E" />
+                        <Button title="Ajouter" onPress={()=>this.ajouterProjet()} color="#EF7E56" />
                     </View>
                 </View>
               </View>

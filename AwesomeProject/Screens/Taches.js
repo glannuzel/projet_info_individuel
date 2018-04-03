@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Text, View } from 'react-native';
-import { Alert, AppRegistry, Button, Image, TextInput, Modal} from 'react-native';
+import { Alert, AppRegistry, Image, TextInput, Modal} from 'react-native';
+import { Button } from 'react-native-elements';
 import { ActivityIndicator, ScrollView, ListView, TouchableHighlight } from 'react-native';
 import { StackNavigator} from 'react-navigation';
 import BottomNavigation, { Tab } from 'react-native-material-bottom-navigation';
@@ -60,6 +61,7 @@ export class Taches extends Component {
         console.log(error.ToString())
         }
     }
+
     listeTaches(){
         const liste = [];
         if (this.state.dataCharged){
@@ -79,21 +81,23 @@ export class Taches extends Component {
       return (
         <ScrollView>
             {this.state.dataCharged&&
-            <View style={{
-                flex: 1, flexDirection: 'column'}}>
+            <View style={{flex: 1, flexDirection: 'column', margin: 0}}>
                 <Modal animationType="slide" transparent={false} visible={this.state.modalVisible}>
-                    <AjoutTache id={this.props.navigation.state.params.id} ouvert={()=>this.setModalVisible(false)} rechargerBD={()=>this.componentWillMount()}/>
-                    <View style={{marginTop: 15}}>
-                        <Button title="Revenir aux tâches" onPress={()=>this.setModalVisible(false)} color="#DD105E"/>
+                    <View style={{flexDirection: 'row', alignContent: 'center', margin: 0}}>
+                        <View style={{flex: 3}}/>
+                        <View style={{flex: 1, alignContent: 'center'}}>
+                            <Button icon={{name: 'close', color: "#46466E", size: 30}} backgroundColor="white" onPress={()=>this.setModalVisible(false)}/>
+                        </View>
+                    </View>
+                    <View>
+                        <AjoutTache id={this.props.navigation.state.params.id} ouvert={()=>this.setModalVisible(false)} rechargerBD={()=>this.componentWillMount()}/>
+                    </View>
+                    <View>
+                        <Button title="REVENIR AUX TACHES" onPress={()=>this.setModalVisible(false)} backgroundColor="#EF7E56" borderRadius={2}/>
                     </View>
                 </Modal>
-                <View style={{marginTop: 12}}>
-                    <TouchableHighlight underlayColor='#D7D7D7' onPress={() => this.setModalVisible(true)} >
-                        <View style={{flexDirection: 'row'}}>
-                            <Text style={{flex: 2, textAlign: 'right', textAlignVertical: 'center', padding: 10, color: '#46466E'}}>Ajouter une tâche ... </Text>
-                            <View style={{flex: 1, paddingTop: 10}}><Icon size={20} color="#EF7E56" name="add-circle"/></View>
-                        </View>
-                    </TouchableHighlight>
+                <View style={{marginTop: 12, marginLeft: 20, marginRight: 20}}>
+                    <Button raised title='AJOUTER UNE TACHE' iconRight={{name: 'add-circle'}} backgroundColor="#EF7E56" onPress={()=>this.setModalVisible(true)}/>
                 </View>
                 {this.listeTaches()}
             </View> ||
