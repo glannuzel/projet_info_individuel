@@ -12,6 +12,7 @@ import * as firebase from 'firebase';
 //import { Chart } from 'react-google-charts';
 //import { ReactGantt } from 'gantt-for-react';
 
+
 require('../ConnexionBD.js');
 const myKey=new Array(0);
 const myUser=[];
@@ -151,7 +152,7 @@ export class Suivi extends Component {
         for (let iter = 0; iter < myKey.length-1; iter++){
             dateFinTache = new Date(myUser[myKey[iter]].dateFin);
             liste.push(
-              <Jauge tauxChargement={0.2} dateFin={dateFinTache} nomTache={myUser[myKey[iter]].titre}/>
+              <Jauge tauxChargement={0.2} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
             );
           }
         }

@@ -38,7 +38,16 @@ const styles = StyleSheet.create({
     },
     nomProjet:{
       color: '#46466E'
-    }
+    },
+    flipcard:{
+      height: '100%',
+      padding: 10,
+      borderRadius:5,
+      borderColor: '#BDBDD7',
+    },
+    backflipcard:{
+      borderRadius:5,
+    },
   });
 
   module.exports = styles;
