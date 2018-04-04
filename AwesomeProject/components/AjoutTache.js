@@ -19,6 +19,7 @@ export class AjoutTache extends React.Component{
     isDateTimePickerVisible: false,
     titre: "",
     description: "",
+    dateDebut: new Date().getTime(),
     dateFin: new Date().getTime(),
     box: "check-box-outline-blank"
   };
@@ -32,7 +33,10 @@ export class AjoutTache extends React.Component{
         let obj={
         titre: `${this.state.titre}`,
         description: `${this.state.description}`,
-        dateFin: this.state.dateFin
+        dateDebut: this.state.dateDebut,
+        dateFin: this.state.dateFin,
+        avancement: 0,
+        fin: false
         }
         firebase.database().ref(user.uid).child(id).push(obj);
         this.props.ouvert();
@@ -45,7 +49,9 @@ export class AjoutTache extends React.Component{
 
   _updateDescription = (text) => this.setState({description: `${text}`});
 
-  _updateText = (date) => this.setState({dateFin: date.getTime()});
+  _updateDateFin = (date) => this.setState({dateFin: date.getTime()});
+
+  _updateDateDebut = (date) => this.setState({dateDebut: date.getTime()});
 
   _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
  
@@ -53,7 +59,13 @@ export class AjoutTache extends React.Component{
  
   _handleDatePicked = (date) => {
     alert(`A date has been picked: ${date.getTime()}`);
-    this._updateText(date);
+    this._updateDateFin(date);
+    this._hideDateTimePicker();
+  };
+
+  _handleDateBeginPicked = (date) => {
+    alert(`A date has been picked: ${date.getTime()}`);
+    this._updateDateDebut(date);
     this._hideDateTimePicker();
   };
 
@@ -100,17 +112,38 @@ export class AjoutTache extends React.Component{
               </View>
             </View>
 
-            <View style={{backgroundColor: '#BDBDD7', borderRadius: 3, padding: 8 }}>
+            <View style={{marginTop: 10, marginBottom: 10, backgroundColor: '#BDBDD7', borderRadius: 3, padding: 8 }}>
               <View>
-                <Text style={styles.sousTitreTexte}>Date de fin de tâche </Text>
+                <Text style={styles.sousTitreTexte}>Date de début de tâche </Text>
               </View>
               <View style={{flexDirection: 'row'}}>
                 <View style={{flex: 5}}>
-                  <Text style={{color: '#8787A3', textAlign: 'right', paddingRight: 15}}>{this.state.dateFin}</Text>
+                  <Text style={{color: '#8787A3', textAlign: 'right', paddingRight: 15}}>{this.state.dateDebut}</Text>
                 </View>
                 <View style={{flex: 1}}>
                 <TouchableOpacity underlayColor='#D7D7D7' onPress={this._showDateTimePicker}>
                     <Icon size={30} color="#46466E" name="event" />
+                </TouchableOpacity>
+                <DateTimePicker
+                  isVisible={this.state.isDateTimePickerVisible}
+                  onConfirm={this._handleDateBeginPicked}
+                  onCancel={this._hideDateTimePicker}
+                />
+                </View>
+              </View>
+            </View>
+
+            <View style={{backgroundColor: '#46466E', borderRadius: 3, padding: 8 }}>
+              <View>
+                <Text style={styles.sousTitreTexteBlanc}>Date de fin de tâche </Text>
+              </View>
+              <View style={{flexDirection: 'row'}}>
+                <View style={{flex: 5}}>
+                  <Text style={{color: 'white', textAlign: 'right', paddingRight: 15}}>{this.state.dateFin}</Text>
+                </View>
+                <View style={{flex: 1}}>
+                <TouchableOpacity underlayColor='#D7D7D7' onPress={this._showDateTimePicker}>
+                    <Icon size={30} color="white" name="event" />
                 </TouchableOpacity>
                 <DateTimePicker
                   isVisible={this.state.isDateTimePickerVisible}

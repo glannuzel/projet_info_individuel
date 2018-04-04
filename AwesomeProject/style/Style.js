@@ -24,6 +24,11 @@ const styles = StyleSheet.create({
       textAlign: 'center',
       fontSize: 18
     },
+    sousTitreTexteBlanc:{
+      color: 'white',
+      textAlign: 'center',
+      fontSize: 18
+    },
     backgroundProjet:{
       padding : 25,
       paddingRight : 10,

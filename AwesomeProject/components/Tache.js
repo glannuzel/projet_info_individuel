@@ -7,8 +7,12 @@ import BottomNavigation, { Tab } from 'react-native-material-bottom-navigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import FlipCard from 'react-native-flip-card';
 import Slider from 'react-native-slider';
+import * as firebase from 'firebase';
+
+require('../ConnexionBD.js');
 
 const styles = require('../style/Style');
+const maCle=[];
 
 export class Tache extends Component {
     constructor(props){
@@ -38,6 +42,19 @@ export class Tache extends Component {
             this.setState({finie: true})
         }
     }
+
+    mettreAJour=async()=>{
+        let user = firebase.auth().currentUser;
+        projet = this.props.numeroProjet;
+        id = this.props.numeroTache;
+        console.log('in the loop ajout');
+        console.log(projet);
+        console.log(id);
+        firebase.database().ref(user.uid).child(projet).child(id).child('avancement').set(20/100);
+        this.props.ouvert();
+        this.props.rechargerBD();
+    }
+
 
     avancementTache(value){
         this.setState({avancee: value})
@@ -120,7 +137,9 @@ export class Tache extends Component {
                             <Icon size={24} name={this.state.box} color="white"/>
                         </TouchableOpacity>
                     </View>
-                    <View style={{flex: 1}}/>
+                    <View style={{flex: 1}}>
+                        <Button title="OK" onPress={()=>this.mettreAJour()}/>
+                    </View>
                 </View>
                 </View>
             </View>

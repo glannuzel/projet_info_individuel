@@ -69,7 +69,7 @@ export class Taches extends Component {
             dateFinTache = new Date(myUser[myKey[iter]].dateFin);
             dateFinBienEcrite = semaine[dateFinTache.getDay()] + " " + dateFinTache.getDate()+ "/" + (dateFinTache.getMonth()+1) + "/" + dateFinTache.getFullYear();
             liste.push(
-            <Tache nom={myUser[myKey[iter]].titre} description={myUser[myKey[iter]].description} dateFin={dateFinBienEcrite} />
+            <Tache numeroProjet={this.props.navigation.state.params.id} numeroTache={myKey[iter]} nom={myUser[myKey[iter]].titre} description={myUser[myKey[iter]].description} dateFin={dateFinBienEcrite} rechargerBD={()=>this.componentWillMount()}/>
             );
         }
     }

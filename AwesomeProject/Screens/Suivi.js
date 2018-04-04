@@ -151,8 +151,9 @@ export class Suivi extends Component {
         if (this.state.dataCharged){
         for (let iter = 0; iter < myKey.length-1; iter++){
             dateFinTache = new Date(myUser[myKey[iter]].dateFin);
+            dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
             liste.push(
-              <Jauge tauxChargement={0.2} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
+              <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
             );
           }
         }
