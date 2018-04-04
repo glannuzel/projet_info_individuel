@@ -41,12 +41,12 @@ export class Taches extends Component {
     try{
         let user = firebase.auth().currentUser;
         id = this.props.navigation.state.params.id;
-        console.log(id);
+        //console.log(id);
         firebase.database().ref(user.uid).child(id).on('child_added',
         (data)=>{
             myKey.push(data.key)
             //console.log(myKey)
-            console.log(myKey.length);
+            //console.log(myKey.length);
             });
             
         firebase.database().ref(user.uid).child(id).on('value',
@@ -69,7 +69,7 @@ export class Taches extends Component {
             dateFinTache = new Date(myUser[myKey[iter]].dateFin);
             dateFinBienEcrite = semaine[dateFinTache.getDay()] + " " + dateFinTache.getDate()+ "/" + (dateFinTache.getMonth()+1) + "/" + dateFinTache.getFullYear();
             liste.push(
-            <Tache numeroProjet={this.props.navigation.state.params.id} numeroTache={myKey[iter]} nom={myUser[myKey[iter]].titre} description={myUser[myKey[iter]].description} dateFin={dateFinBienEcrite} rechargerBD={()=>this.componentWillMount()}/>
+            <Tache numeroProjet={this.props.navigation.state.params.id} numeroTache={myKey[iter]} nom={myUser[myKey[iter]].titre} description={myUser[myKey[iter]].description} dateFin={dateFinBienEcrite} tauxAvancement={myUser[myKey[iter]].avancement} rechargerBD={()=>this.componentWillMount()}/>
             );
         }
     }

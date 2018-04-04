@@ -16,6 +16,7 @@ export class Jauge extends React.Component{
       super(props);
     }
 
+    /*
     couleurJauge(){
         let couleur;
         if(this.props.dateFin > Date.now())
@@ -32,7 +33,7 @@ export class Jauge extends React.Component{
         }
         return couleur;
     }
-
+*/
     couleurJaugeDuree(){
         let couleur;
         if(this.avancementDuree() === 1)
@@ -52,12 +53,14 @@ export class Jauge extends React.Component{
 
     couleurTexte(){
         let couleur;
-        if(this.props.dateFin > Date.now())
+        let fin = Math.ceil(this.props.dateFin / (1000*3600*24));
+        let ajd = Math.ceil(Date.now() / (1000*3600*24));
+        if(fin > ajd)
         {
             couleur= "#46466E";
         }
         else{
-            if(this.props.dateFin === Date.now()){
+            if(fin === ajd){
                 couleur="#EF7E56";
             }
             else{
@@ -69,11 +72,24 @@ export class Jauge extends React.Component{
 
     dureeTache(){
         let duree;
-        console.log(this.props.dateDebut);
+        //console.log(this.props.dateDebut);
         let timeDiff = Math.abs(this.props.dateFin - this.props.dateDebut);
-        console.log(timeDiff);
+        //console.log(timeDiff);
         duree = Math.ceil(timeDiff / (1000*3600*24));
-        console.log(duree);
+        //console.log(duree);
+        return duree;
+    }
+
+    dureeRestante(){
+        let duree;
+        let fin = Math.ceil(this.props.dateFin / (1000*3600*24));
+        let ajd = Math.ceil(Date.now() / (1000*3600*24));
+        if(fin > ajd){
+            duree = Math.abs(fin - ajd);
+        }
+        else{
+            duree = 0;
+        }
         return duree;
     }
 
@@ -94,21 +110,21 @@ export class Jauge extends React.Component{
 
     Retard(){
         let indication;
-        if(this.props.dateFin > Date.now())
+        let ajd = Math.ceil(Date.now()/(1000*3600*24));
+        let dateFinTache = Math.ceil(this.props.dateFin / (1000*3600*24));
+        if(dateFinTache > ajd)
         {
-            let timeDiff = Math.abs(this.props.dateFin - Date.now());
-            let diffDays = Math.ceil(timeDiff / (1000*3600*24));
-            indication = "Echéance dans : " + diffDays + " jour(s)";
+            let timeDiff = Math.abs(dateFinTache - ajd);
+            indication = "Echéance dans : " + timeDiff + " jour(s)";
         }
-        if(this.props.dateFin === Date.now())
+        if(dateFinTache === ajd)
         {
             indication = "Echéance aujourd'hui !";
         }
-        if(this.props.dateFin < Date.now())
+        if(dateFinTache < ajd)
         {
-            let timeDiff = Math.abs(this.props.dateFin - Date.now());
-            let diffDays = Math.ceil(timeDiff / (1000*3600*24));
-            indication = "Retard de : " + diffDays + " jour(s)";
+            let timeDiff = Math.abs(dateFinTache - ajd);
+            indication = "Retard de : " + timeDiff + " jour(s)";
         }
         return indication;
     }
@@ -116,6 +132,7 @@ export class Jauge extends React.Component{
     render(){
       return(
         <View style={{flex: 1, paddingTop: 10, paddingHorizontal: 20, justifyContent: "space-around"}}>
+
             <FlipCard style={styles.flipcard}
             friction={10}
             perspective={1000}
@@ -131,7 +148,7 @@ export class Jauge extends React.Component{
                             progress={this.props.tauxChargement}
                             height={null}
                             borderColor="#BDBDD7"
-                            barColor={this.couleurJauge()}
+                            barColor={this.couleurJaugeDuree()}
                             borderRadius={20}
                             borderWidth={0}
                             animate={false}>
@@ -153,7 +170,7 @@ export class Jauge extends React.Component{
                             animate={false}>
                             <View style={{flexDirection: "row",justifyContent: "center", alignItems: "center"}}>
                                 <Text style={{ fontSize: 15, backgroundColor: "transparent", color: "#FFF"}}>
-                                Durée tâche : {this.dureeTache()} jour(s)
+                                {this.dureeRestante()} jour(s) restant(s) sur {this.dureeTache()} jour(s)
                                 </Text>
                             </View>
                         </AnimatedBar>

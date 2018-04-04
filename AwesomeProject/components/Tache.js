@@ -22,7 +22,7 @@ export class Tache extends Component {
     state={
         finie: false,
         box: "check-box-outline-blank",
-        avancee: 0,
+        avancee: this.props.tauxAvancement*100,
     }
     
     _checkBoxClick = () => {
@@ -47,11 +47,10 @@ export class Tache extends Component {
         let user = firebase.auth().currentUser;
         projet = this.props.numeroProjet;
         id = this.props.numeroTache;
-        console.log('in the loop ajout');
-        console.log(projet);
-        console.log(id);
-        firebase.database().ref(user.uid).child(projet).child(id).child('avancement').set(20/100);
-        this.props.ouvert();
+        //console.log(projet);
+        //console.log(id);
+        firebase.database().ref(user.uid).child(projet).child(id).child('avancement').set(this.state.avancee/100);
+        this.marquerCommeFinie();
         this.props.rechargerBD();
     }
 
@@ -129,16 +128,16 @@ export class Tache extends Component {
                     </View>
                 </View>
                 <View style={{backgroundColor: '#46466E', padding: 5, flexDirection: 'row'}}>
-                    <View style={{flex: 3}}>
+                    <View style={{flex: 3, paddingTop: 5}}>
                         <Text style={{color: 'white', textAlign: 'center'}}>Marquer comme terminée :</Text>         
                     </View>    
-                    <View style={{flex: 1}}> 
+                    <View style={{flex: 1, paddingTop: 5}}> 
                         <TouchableOpacity onPress={this._checkBoxClick}>
                             <Icon size={24} name={this.state.box} color="white"/>
                         </TouchableOpacity>
                     </View>
                     <View style={{flex: 1}}>
-                        <Button title="OK" onPress={()=>this.mettreAJour()}/>
+                        <Button title="OK!" color="#EF7E56" onPress={()=>this.mettreAJour()}/>
                     </View>
                 </View>
                 </View>

@@ -15,8 +15,10 @@ export class AjoutTache extends React.Component{
   constructor(props){
     super(props);
   }
+
   state = {
-    isDateTimePickerVisible: false,
+    isDateTimePickerVisible1: false,
+    isDateTimePickerVisible2: false,
     titre: "",
     description: "",
     dateDebut: new Date().getTime(),
@@ -24,7 +26,7 @@ export class AjoutTache extends React.Component{
     box: "check-box-outline-blank"
   };
 
-  infos=async()=>{
+  enregistrer=async()=>{
     //if(this.state.login){
         //let user = firebase.auth().currentUser;
         //id = user.uid;
@@ -39,8 +41,8 @@ export class AjoutTache extends React.Component{
         fin: false
         }
         firebase.database().ref(user.uid).child(id).push(obj);
-        this.props.ouvert();
         console.log("ajout");
+        this.props.ouvert();
         this.props.rechargerBD();
    // }
   }
@@ -51,22 +53,28 @@ export class AjoutTache extends React.Component{
 
   _updateDateFin = (date) => this.setState({dateFin: date.getTime()});
 
-  _updateDateDebut = (date) => this.setState({dateDebut: date.getTime()});
+  _updateDateDebut = (date) => {
+    this.setState({dateDebut: date.getTime()});
+    if(this.state.dateDebut > this.state.dateFin){
+      this.setState({dateFin : this.state.dateDebut});
+    }}
 
-  _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
+  _showDateTimePicker1 = () => this.setState({ isDateTimePickerVisible1: true });
+  _showDateTimePicker2 = () => this.setState({ isDateTimePickerVisible2: true });
  
-  _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
+  _hideDateTimePicker1 = () => this.setState({ isDateTimePickerVisible1: false });
+  _hideDateTimePicker2 = () => this.setState({ isDateTimePickerVisible2: false });
  
-  _handleDatePicked = (date) => {
-    alert(`A date has been picked: ${date.getTime()}`);
-    this._updateDateFin(date);
-    this._hideDateTimePicker();
-  };
-
-  _handleDateBeginPicked = (date) => {
+  _handleDatePicked1 = (date) => {
     alert(`A date has been picked: ${date.getTime()}`);
     this._updateDateDebut(date);
-    this._hideDateTimePicker();
+    this._hideDateTimePicker1();
+  };
+
+  _handleDatePicked2 = (date) => {
+    alert(`A date has been picked: ${date.getTime()}`);
+    this._updateDateFin(date);
+    this._hideDateTimePicker2();
   };
 
   _onSubmitEdit = () => {
@@ -121,13 +129,13 @@ export class AjoutTache extends React.Component{
                   <Text style={{color: '#8787A3', textAlign: 'right', paddingRight: 15}}>{this.state.dateDebut}</Text>
                 </View>
                 <View style={{flex: 1}}>
-                <TouchableOpacity underlayColor='#D7D7D7' onPress={this._showDateTimePicker}>
+                <TouchableOpacity underlayColor='#D7D7D7' onPress={this._showDateTimePicker1}>
                     <Icon size={30} color="#46466E" name="event" />
                 </TouchableOpacity>
                 <DateTimePicker
-                  isVisible={this.state.isDateTimePickerVisible}
-                  onConfirm={this._handleDateBeginPicked}
-                  onCancel={this._hideDateTimePicker}
+                  isVisible={this.state.isDateTimePickerVisible1}
+                  onConfirm={this._handleDatePicked1}
+                  onCancel={this._hideDateTimePicker1}
                 />
                 </View>
               </View>
@@ -142,30 +150,20 @@ export class AjoutTache extends React.Component{
                   <Text style={{color: 'white', textAlign: 'right', paddingRight: 15}}>{this.state.dateFin}</Text>
                 </View>
                 <View style={{flex: 1}}>
-                <TouchableOpacity underlayColor='#D7D7D7' onPress={this._showDateTimePicker}>
+                <TouchableOpacity underlayColor='#D7D7D7' onPress={this._showDateTimePicker2}>
                     <Icon size={30} color="white" name="event" />
                 </TouchableOpacity>
                 <DateTimePicker
-                  isVisible={this.state.isDateTimePickerVisible}
-                  onConfirm={this._handleDatePicked}
-                  onCancel={this._hideDateTimePicker}
+                  isVisible={this.state.isDateTimePickerVisible2}
+                  onConfirm={this._handleDatePicked2}
+                  onCancel={this._hideDateTimePicker2}
                 />
                 </View>
               </View>
             </View>
             
             <View style={{marginTop: 15}}>
-              <Text style={styles.sousTitreTexte}>CheckList</Text>
-              <TouchableOpacity onPress={this._checkBoxClick}>
-                <Icon size={24} name={this.state.box} color="grey"/>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={this._checkBoxClick}>
-                <Icon size={24} name={this.state.box} color="grey"/>
-              </TouchableOpacity>
-            </View>
-
-            <View style={{marginTop: 15}}>
-              <Button title="Enregistrer" onPress={()=>this.infos()} color="#46466E"/>
+              <Button title="Enregistrer" onPress={()=>this.enregistrer()} color="#46466E"/>
             </View>
 
         </KeyboardAvoidingView>
@@ -217,3 +215,15 @@ class AutoExpandingTextInput extends React.Component {
 
             <CheckBox label="Click here"/>
             */
+
+/*
+<View style={{marginTop: 15}}>
+  <Text style={styles.sousTitreTexte}>CheckList</Text>
+  <TouchableOpacity onPress={this._checkBoxClick}>
+    <Icon size={24} name={this.state.box} color="grey"/>
+  </TouchableOpacity>
+  <TouchableOpacity onPress={this._checkBoxClick}>
+    <Icon size={24} name={this.state.box} color="grey"/>
+  </TouchableOpacity>
+</View>
+*/

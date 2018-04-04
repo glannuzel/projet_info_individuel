@@ -125,12 +125,12 @@ export class Suivi extends Component {
       try{
           let user = firebase.auth().currentUser;
           id = this.props.navigation.state.params.id;
-          console.log(id);
+          //console.log(id);
           firebase.database().ref(user.uid).child(id).on('child_added',
           (data)=>{
               myKey.push(data.key)
               //console.log(myKey)
-              console.log(myKey.length);
+              //console.log(myKey.length);
               });
               
           firebase.database().ref(user.uid).child(id).on('value',
@@ -146,7 +146,32 @@ export class Suivi extends Component {
           }
       }
 
+    rechargerBD=async()=>{
+      myUser=[];
+      myKey=[];
+      try{
+          let user = firebase.auth().currentUser;
+          id = this.props.navigation.state.params.id;
+          firebase.database().ref(user.uid).child(id).on('child_added',
+          (data)=>{
+              myKey.push(data.key)
+              });
+              
+          firebase.database().ref(user.uid).child(id).on('value',
+          (data)=>{
+              myUser=data.val()
+              this.setState({dataCharged:true});
+              }
+          ); 
+          }
+      catch(error){
+      console.log(error.ToString())
+      }
+    }
+
     jaugeTache(){
+      //this.setState({dataCharged: false});
+      //this.rechargerBD();
       const liste = [];
         if (this.state.dataCharged){
         for (let iter = 0; iter < myKey.length-1; iter++){
@@ -163,7 +188,13 @@ export class Suivi extends Component {
     render(){
         return (
             <ScrollView>
-              {this.jaugeTache()}
+              {this.state.dataCharged&&
+              this.jaugeTache() ||
+              <View style={{marginTop:'30%',justifyContent:'center',alignItems:'center'}}>
+                <ActivityIndicator size="large" color="#DD105E"/>
+                <Text>Chargement en cours...</Text>
+              </View>
+              }
             </ScrollView>
           );
         }
