@@ -16,6 +16,7 @@ import * as firebase from 'firebase';
 require('../ConnexionBD.js');
 const myKey=new Array(0);
 const myUser=[];
+const essai=[];
 
 /*
 const GanttComponent = React.createClass({
@@ -126,20 +127,22 @@ export class Suivi extends Component {
           let user = firebase.auth().currentUser;
           id = this.props.navigation.state.params.id;
           //console.log(id);
-          firebase.database().ref(user.uid).child(id).on('child_added',
+          firebase.database().ref(user.uid).child(id).orderByChild('dateFin').on('child_added',
           (data)=>{
               myKey.push(data.key)
               //console.log(myKey)
               //console.log(myKey.length);
               });
               
-          firebase.database().ref(user.uid).child(id).on('value',
+          firebase.database().ref(user.uid).child(id).orderByChild('dateFin').on('value',
           (data)=>{
               myUser=data.val()
               //console.log(data.val())
               this.setState({dataCharged:true});
               }
           ); 
+          //essai=firebase.database().ref(user.uid).child(id).;
+          //console.log(essai);
           }
           catch(error){
           console.log(error.ToString())
@@ -174,7 +177,7 @@ export class Suivi extends Component {
       //this.rechargerBD();
       const liste = [];
         if (this.state.dataCharged){
-        for (let iter = 0; iter < myKey.length-1; iter++){
+        for (let iter = 1; iter < myKey.length; iter++){
             dateFinTache = new Date(myUser[myKey[iter]].dateFin);
             dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
             liste.push(

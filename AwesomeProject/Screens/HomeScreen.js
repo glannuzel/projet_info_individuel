@@ -21,7 +21,7 @@ export class HomeScreen extends React.Component {
 
   state={
     dataCharged: false,
-    isOpened: true,
+    //isOpened: true,
     nomProjet: ''
   }
 
@@ -32,10 +32,25 @@ export class HomeScreen extends React.Component {
         backgroundColor:'#46466E',
       },
     headerLeft: null,
-    headerRight: <TouchableOpacity onPress={this.closeMenu}><Icon size={24} color="white" name="more-vert" /></TouchableOpacity>
+    headerRight: <TouchableOpacity onPress={()=>{
+      Alert.alert(
+        'Déconnexion',
+        'Etes-vous sûr de vouloir vous déconnecter ?',
+        [
+          {text: 'Se déconnecter', onPress: ()=>{firebase.auth().signOut();
+            navigation.navigate('Connexion');}},
+          {text: 'Annuler', onPress: ()=>console.log('annuler déco'), style: 'cancel'}
+        ],
+        {cancelable: false}
+      )
+      }}>
+      <Icon size={24} color="white" name="exit-to-app" />
+      </TouchableOpacity>
     });
     
     componentWillMount=async()=>{
+      myKey=[];
+      myUser=[];
       try{
         let user = firebase.auth().currentUser;
         id = user.uid;
@@ -105,7 +120,6 @@ export class HomeScreen extends React.Component {
   
   render() {
     return (
-      <MenuProvider>
         <ScrollView>
           <View> 
             {this.state.dataCharged&&
@@ -119,12 +133,28 @@ export class HomeScreen extends React.Component {
                         onChangeText={(text) => this._updateNomProjet(text)}
                         maxLength={30}/>
                     </View>
-                    <View style={{flex: 1}}>
+                    <View style={{flex: 1, padding: 5}}>
                         <Button title="Ajouter" onPress={()=>this.ajouterProjet()} color="#EF7E56" />
                     </View>
                 </View>
               </View>
-                <Menu opened={this.state.isOpened}
+                
+            </View>||
+            <View style={{marginTop:'30%',justifyContent:'center',alignItems:'center'}}>
+              <ActivityIndicator size="large" color="#DD105E"/>
+              <Text>Chargement en cours...</Text>
+            </View>
+            }
+          </View>
+        </ScrollView>
+      
+    );
+  }
+}
+
+/*
+<MenuProvider>
+<Menu opened={this.state.isOpened}
                   onBackdropPress={() => this.closeMenu()}
                   onSelect={value => alert(`Selected number: ${value}`)}>
                     <MenuTrigger children={this.headerRight} onPress={this.openMenu}/>
@@ -138,16 +168,5 @@ export class HomeScreen extends React.Component {
                         </MenuOption>
                       </MenuOptions>
                 </Menu>
-              
-            </View>||
-            <View style={{marginTop:'30%',justifyContent:'center',alignItems:'center'}}>
-              <ActivityIndicator size="large" color="#DD105E"/>
-              <Text>Chargement en cours...</Text>
-            </View>
-            }
-          </View>
-        </ScrollView>
-      </MenuProvider>
-    );
-  }
-}
+</MenuProvider>
+*/

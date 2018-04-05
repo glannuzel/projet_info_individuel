@@ -21,7 +21,7 @@ export class AjoutProjet extends React.Component{
                 <View style={{flex: 4}}>
                     <TextInput style={styles.nomProjet} placeholder="Ajouter un projet..." selectionColor='#46466E'/>
                 </View>
-                <View style={{flex: 1}}>
+                <View style={{flex: 1, margin: 10}}>
                     <Button title="Ajouter" onPress={()=>alert('kikou')} color="#DD105E" />
                 </View>
             </View>

@@ -30,19 +30,24 @@ const styles = StyleSheet.create({
       fontSize: 18
     },
     backgroundProjet:{
-      padding : 25,
+      padding : 10,
       paddingRight : 10,
       borderBottomColor: '#8787A3',
       borderBottomWidth: 1
     },
     backgroundProjetAdd:{
-      padding : 25,
+      padding : 10,
       backgroundColor: "#F5F5F5",
       borderBottomColor: '#8787A3',
       borderBottomWidth: 1
     },
     nomProjet:{
-      color: '#46466E'
+      color: '#46466E',
+      margin: 10
+    },
+    suppProjet:{
+      color: '#46466E',
+      marginTop: 10
     },
     flipcard:{
       height: '100%',

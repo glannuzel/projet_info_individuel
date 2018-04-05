@@ -34,15 +34,25 @@ export class NomProjet extends React.Component{
               <View style={{flex: 6}}>
                 <Text style={styles.nomProjet}>{this.props.nom}</Text>
               </View>
-              <View style={{flex: 1}}>
-                <TouchableOpacity onPress={()=>alert("supprimer")}>
-                  <Icon name="delete" size={25} color="#DD105E"/>
-                </TouchableOpacity>
+              <View style={{flex: 5}}>
+                <Button raised style={{margin: 0, padding: 2}} icon={{name: 'delete', color : 'white'}} title='Supprimer' backgroundColor='#DD105E' 
+                  onPress={()=>{Alert.alert(
+                    "Supprimer le projet",
+                    `Souhaitez-vous vraiment supprimer le projet "${this.props.nom}" ?`,
+                    [
+                      {text: 'Supprimer le projet', onPress: () => console.log('suppression')},
+                      {text: 'Annuler', style: 'cancel', onPress: ()=>{this._onLongPress(true)}}
+                    ],
+                    {cancelable: false}
+                    )}}/>
+                
               </View>
               <View style={{flex: 1}}>
-                <TouchableOpacity onPress={()=>this._onLongPress(true)}>
-                  <Icon name='cancel' size={25} color="#A9A9A9"/>
-                </TouchableOpacity>
+                <View style={styles.suppProjet}>
+                  <TouchableOpacity onPress={()=>this._onLongPress(true)}>
+                    <Icon name='cancel' size={25} color="#A9A9A9"/>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           </View>
