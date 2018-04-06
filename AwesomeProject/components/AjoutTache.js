@@ -10,6 +10,7 @@ import * as firebase from 'firebase';
 
 const styles = require('../style/Style');
 require('../ConnexionBD.js');
+const semaine = new Array("Dim.", "Lun.","Mar.", "Mer.","Jeu.", "Ven.", "Sam.");
 
 export class AjoutTache extends React.Component{
   constructor(props){
@@ -21,6 +22,7 @@ export class AjoutTache extends React.Component{
     isDateTimePickerVisible2: false,
     titre: "",
     description: "",
+    ressource: "",
     dateDebut: new Date().getTime(),
     dateFin: new Date().getTime(),
     box: "check-box-outline-blank"
@@ -89,18 +91,33 @@ export class AjoutTache extends React.Component{
     else { this.setState({box: "check-box-outline-blank"});}
   }
 
+  _ecrireDate = (date) =>{
+    date = new Date(date);
+    dateBienEcrite = semaine[date.getDay()] + " " + date.getDate()+ "/" + (date.getMonth()+1) + "/" + date.getFullYear();
+    return dateBienEcrite
+  }
+
+  _listeRessources(){
+    const ressourcesAssociees = [];
+    for (i = 0; i < this.props.ressources.length; i++) {
+      ressourcesAssociees.push(
+        <Picker.Item label={`${this.props.ressources[i]}`} value={this.props.ressources[i]} key={i} />
+      );
+    }
+    return ressourcesAssociees;
+  }
+
   render(){
       return (
-        <ScrollView>
-        <KeyboardAvoidingView style={{margin: 15}} behavior="padding" >
-
+        <ScrollView style={{marginLeft: 15, marginRight: 15}}>
             <Text style={styles.sousTitreTexte}>Titre de la tâche</Text>
-            <TextInput style={{ height: 40, margin: 10 }} 
-            underlineColorAndroid='#C3C3C3' 
-            placeholder="Titre de la tâche" 
-            selectionColor='#46466E'
-            onChangeText={(text) => this._updateTitre(text)} />
-
+            <View style={{borderColor: '#C3C3C3', backgroundColor: 'white', borderWidth: 1, borderRadius: 5, marginTop: 10, marginBottom: 10, padding: 5}}>
+              <TextInput
+                underlineColorAndroid='transparent' 
+                placeholder="Titre de la tâche" 
+                selectionColor='#46466E'
+                onChangeText={(text) => this._updateTitre(text)} />
+            </View>
             <Text style={styles.sousTitreTexte}>Description</Text>
             <View style={{ borderColor: '#C3C3C3', backgroundColor: 'white', borderWidth: 1, borderRadius: 5, marginTop: 5, marginBottom: 10, padding: 5}}>
               <AutoExpandingTextInput style={{ height: 40, margin: 10, padding: 5 }} 
@@ -120,53 +137,80 @@ export class AjoutTache extends React.Component{
               </View>
             </View>
 
-            <View style={{marginTop: 10, marginBottom: 10, backgroundColor: '#BDBDD7', borderRadius: 3, padding: 8 }}>
-              <View>
-                <Text style={styles.sousTitreTexte}>Date de début de tâche </Text>
-              </View>
-              <View style={{flexDirection: 'row'}}>
-                <View style={{flex: 5}}>
-                  <Text style={{color: '#8787A3', textAlign: 'right', paddingRight: 15}}>{this.state.dateDebut}</Text>
+            <View style={{marginBottom: 10}}>
+              <View style={{marginTop: 10, backgroundColor: '#BDBDD7', borderRadius: 3, padding: 8 }}>
+                <View style={{flexDirection: 'row'}}>
+                  <View style={{flex: 6}}>
+                    <View style={{flexDirection: 'column'}}>
+                      <View style={{flex: 1}}>
+                        <Text style={{color: '#46466E', textAlign: 'right', fontSize: 18, paddingRight: 15}}>Date de début de tâche </Text>
+                      </View>
+                      <View style={{flex: 1}}>
+                        <Text style={{color: '#8787A3', textAlign: 'right', paddingRight: 20}}>{this._ecrireDate(this.state.dateDebut)}</Text>
+                      </View>
+                    </View>
+                  </View>
+                  <View style={{flex: 1, padding: 10}}>
+                    <TouchableOpacity underlayColor='#D7D7D7' onPress={this._showDateTimePicker1}>
+                        <Icon size={30} color="#46466E" name="event" />
+                    </TouchableOpacity>
+                    <DateTimePicker
+                      isVisible={this.state.isDateTimePickerVisible1}
+                      onConfirm={this._handleDatePicked1}
+                      onCancel={this._hideDateTimePicker1}
+                    />
+                  </View>
                 </View>
-                <View style={{flex: 1}}>
-                <TouchableOpacity underlayColor='#D7D7D7' onPress={this._showDateTimePicker1}>
-                    <Icon size={30} color="#46466E" name="event" />
-                </TouchableOpacity>
-                <DateTimePicker
-                  isVisible={this.state.isDateTimePickerVisible1}
-                  onConfirm={this._handleDatePicked1}
-                  onCancel={this._hideDateTimePicker1}
-                />
+              </View>
+
+              <View style={{marginTop: 10, backgroundColor: '#46466E', borderRadius: 3, padding: 8 }}>
+                <View style={{flexDirection: 'row'}}>
+                  <View style={{flex: 6}}>
+                    <View style={{flexDirection: 'column'}}>
+                      <View style={{flex: 1}}>
+                        <Text style={{color: 'white', textAlign: 'right', fontSize: 18, paddingRight: 15}}>Date de fin de tâche </Text>
+                      </View>
+                      <View style={{flex: 1}}>
+                        <Text style={{color: 'white', textAlign: 'right', paddingRight: 20}}>{this._ecrireDate(this.state.dateFin)}</Text>
+                      </View>
+                    </View>
+                  </View>
+                  <View style={{flex: 1, padding: 10}}>
+                    <TouchableOpacity underlayColor='#D7D7D7' onPress={this._showDateTimePicker2}>
+                        <Icon size={30} color="white" name="event" />
+                    </TouchableOpacity>
+                    <DateTimePicker
+                      isVisible={this.state.isDateTimePickerVisible2}
+                      onConfirm={this._handleDatePicked2}
+                      onCancel={this._hideDateTimePicker2}
+                    />
+                  </View>
                 </View>
               </View>
             </View>
 
-            <View style={{backgroundColor: '#46466E', borderRadius: 3, padding: 8 }}>
-              <View>
-                <Text style={styles.sousTitreTexteBlanc}>Date de fin de tâche </Text>
-              </View>
-              <View style={{flexDirection: 'row'}}>
-                <View style={{flex: 5}}>
-                  <Text style={{color: 'white', textAlign: 'right', paddingRight: 15}}>{this.state.dateFin}</Text>
-                </View>
-                <View style={{flex: 1}}>
-                <TouchableOpacity underlayColor='#D7D7D7' onPress={this._showDateTimePicker2}>
-                    <Icon size={30} color="white" name="event" />
-                </TouchableOpacity>
-                <DateTimePicker
-                  isVisible={this.state.isDateTimePickerVisible2}
-                  onConfirm={this._handleDatePicked2}
-                  onCancel={this._hideDateTimePicker2}
-                />
-                </View>
+            <View>
+              <Text style={styles.sousTitreTexte}>Affecter à la tâche : </Text>
+              <View style={{borderColor: '#C3C3C3', backgroundColor: 'white', borderWidth: 1, borderRadius: 5, marginTop: 10, marginBottom: 10}}>
+                <Picker
+                      selectedValue={this.state.km}
+                      onValueChange={value => {
+                        this.setState({ ressource: value });
+                      }}>
+                      {this._listeRessources()}
+                </Picker>
               </View>
             </View>
             
-            <View style={{marginTop: 15}}>
-              <Button title="Enregistrer" onPress={()=>this.enregistrer()} color="#46466E"/>
+          <View style={{flexDirection: 'row', justifyContent: "space-between"}}>
+            <View style={{flex: 1, margin: 15}}>
+              <Button title="Enregistrer" onPress={()=>this.enregistrer()} color="#EF7E56"/>
             </View>
+            <View style={{flex: 1, margin: 15}}>
+              <Button title="Annuler" onPress={()=>this.props.ouvert()} color="#DD105E"/>
+            </View>
+          </View>
 
-        </KeyboardAvoidingView>
         </ScrollView>
       );
   }

@@ -64,7 +64,10 @@ export class Tache extends Component {
         <TouchableHighlight underlayColor='#D7D7D7' onPress={()=>this.marquerCommeFinie()}>
             {!this.state.finie&&
             <View style={{
-                margin: 10,
+                marginRight: 10,
+                marginLeft: 10,
+                marginTop: 5,
+                marginBottom: 5,
                 padding: 5,
                 backgroundColor: '#EFEFEF',
                 borderRadius: 3,
@@ -86,9 +89,10 @@ export class Tache extends Component {
             </View> ||
             <View>
                 <View style={{
-                    marginTop: 10,
                     marginRight: 10,
                     marginLeft: 10,
+                    marginTop: 5,
+                    marginBottom: 5,
                     backgroundColor: '#EFEFEF',
                     borderRadius: 3,
                     borderWidth: 1,

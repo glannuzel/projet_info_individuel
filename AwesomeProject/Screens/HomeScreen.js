@@ -32,7 +32,7 @@ export class HomeScreen extends React.Component {
         backgroundColor:'#46466E',
       },
     headerLeft: null,
-    headerRight: <TouchableOpacity onPress={()=>{
+    headerRight: <View style={{paddingRight: 10}}><TouchableOpacity onPress={()=>{
       Alert.alert(
         'Déconnexion',
         'Etes-vous sûr de vouloir vous déconnecter ?',
@@ -44,8 +44,9 @@ export class HomeScreen extends React.Component {
         {cancelable: false}
       )
       }}>
-      <Icon size={24} color="white" name="exit-to-app" />
+      <Icon size={26} color="white" name="exit-to-app" />
       </TouchableOpacity>
+      </View>
     });
     
     componentWillMount=async()=>{
@@ -96,8 +97,9 @@ export class HomeScreen extends React.Component {
     listeProjet(){
       const liste = [];
       for (let iter = 0; iter < myKey.length; iter++){
+        console.log(myUser[myKey[iter]].ressources);
         liste.push(
-        <NomProjet nom={myUser[myKey[iter]].nomProjet} numero={myKey[iter]} navigation={this.props.navigation} />
+        <NomProjet nom={myUser[myKey[iter]].nomProjet} ressource={myUser[myKey[iter]].ressources} numero={myKey[iter]} navigation={this.props.navigation} />
         );
       }
       return liste;
@@ -109,8 +111,10 @@ export class HomeScreen extends React.Component {
       //if(this.state.login){
           let user = firebase.auth().currentUser;
           id = user.uid;
+          let ressources = [];
           let obj={
           nomProjet: `${this.state.nomProjet}`,
+          ressources: ["(moi)"]
           }
           firebase.database().ref(id).push(obj);
           //Alert.alert(`${this.state.nomProjet}`);
@@ -133,14 +137,14 @@ export class HomeScreen extends React.Component {
                         onChangeText={(text) => this._updateNomProjet(text)}
                         maxLength={30}/>
                     </View>
-                    <View style={{flex: 1, padding: 5}}>
+                    <View style={{flex: 1, justifyContent: 'center'}}>
                         <Button title="Ajouter" onPress={()=>this.ajouterProjet()} color="#EF7E56" />
                     </View>
                 </View>
               </View>
-                
             </View>||
-            <View style={{marginTop:'30%',justifyContent:'center',alignItems:'center'}}>
+
+            <View style={{marginTop:'30%', justifyContent:'center', alignItems:'center'}}>
               <ActivityIndicator size="large" color="#DD105E"/>
               <Text>Chargement en cours...</Text>
             </View>

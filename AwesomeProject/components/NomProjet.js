@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { Text, View, TouchableOpacity } from 'react-native';
-import { Alert, AppRegistry, Image, TextInput} from 'react-native';
+import { Alert, AppRegistry, Image, TextInput, Modal} from 'react-native';
 import { Button } from 'react-native-elements';
-import { ActivityIndicator, ListView, TouchableHighlight } from 'react-native';
+import { ActivityIndicator, ScrollView, ListView, TouchableHighlight } from 'react-native';
 import { StackNavigator} from 'react-navigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { ParamProjet } from './ParamProjet';
 
 const styles = require('../style/Style');
 
@@ -17,51 +18,78 @@ export class NomProjet extends React.Component{
     //this.props.navigation.navigate('Details');
   //}
   state={
-    effacer: true
+    effacer: true,
+    modalVisible: false
   }
 
   _onLongPress(etat){
+    console.log(this.props.ressource);
     this.setState({effacer: etat})
+  }
+
+  _setModalVisible=(etat)=>{
+    this.setState({modalVisible: etat});
   }
   
   render(){
     return(
       <View>
+
         {!this.state.effacer&&
+        <View>
+          <Modal animationType="slide" transparent={false} visible={this.state.modalVisible}>
+
+            <View style={{flexDirection: 'row', alignItems: 'center', margin: 0, backgroundColor: "#E0E0E0"}}>
+                <View style={{flex: 3}}/>
+                  <View style={{flex: 1, padding: 10, alignItems: 'flex-end', justifyContent: 'center'}}>
+                      <TouchableHighlight underlayColor="#D7D7D7" onPress={()=>this._setModalVisible(false)}>
+                          <Icon name='close' color="#46466E" size={30}/>
+                      </TouchableHighlight>
+                  </View>
+              </View>
+
+              <ScrollView style={{marginTop: 10}}>
+                  <ParamProjet
+                      id={this.props.numero} 
+                      ressources={this.props.ressource}
+                      ouvert={()=>this.setModalVisible(false)} 
+                      />
+              </ScrollView>
+
+          </Modal>
+
         <TouchableHighlight underlayColor='#D7D7D7' onPress={() => this.props.navigation.navigate('Details', {titre: `${this.props.nom}`, id: `${this.props.numero}`})} onLongPress={()=>this._onLongPress(true)}>
           <View style={styles.backgroundProjet} >
             <View style={{flexDirection: 'row'}}>
-              <View style={{flex: 6}}>
+              <View style={{flex: 6, justifyContent: 'center', alignItems: 'flex-start'}}>
                 <Text style={styles.nomProjet}>{this.props.nom}</Text>
               </View>
-              <View style={{flex: 5}}>
-                <Button raised style={{margin: 0, padding: 2}} icon={{name: 'delete', color : 'white'}} title='Supprimer' backgroundColor='#DD105E' 
-                  onPress={()=>{Alert.alert(
-                    "Supprimer le projet",
-                    `Souhaitez-vous vraiment supprimer le projet "${this.props.nom}" ?`,
-                    [
-                      {text: 'Supprimer le projet', onPress: () => console.log('suppression')},
-                      {text: 'Annuler', style: 'cancel', onPress: ()=>{this._onLongPress(true)}}
-                    ],
-                    {cancelable: false}
-                    )}}/>
-                
+              <View style={{flex: 5, alignItems: 'flex-end', justifyContent: 'center'}}>
+                <Button raised icon={{name: 'settings', color : 'white'}} title='Paramètres' backgroundColor='#46466E' borderRadius={3}
+                  onPress={()=>{this._setModalVisible(true)}}/>
               </View>
-              <View style={{flex: 1}}>
-                <View style={styles.suppProjet}>
+              <View style={{flex: 1, alignItems: 'flex-end', justifyContent: 'center'}}>
                   <TouchableOpacity onPress={()=>this._onLongPress(true)}>
                     <Icon name='cancel' size={25} color="#A9A9A9"/>
                   </TouchableOpacity>
-                </View>
               </View>
             </View>
           </View>
-        </TouchableHighlight>||
+        </TouchableHighlight>
+        </View>||
+
         <TouchableHighlight underlayColor='#D7D7D7' onPress={() => this.props.navigation.navigate('Details', {titre: `${this.props.nom}`, id: `${this.props.numero}`})} onLongPress={()=>this._onLongPress()}>
-        <View style={styles.backgroundProjet} >
-          <Text style={styles.nomProjet}>{this.props.nom}</Text>
-        </View>
-      </TouchableHighlight>
+          <View style={styles.backgroundProjet} >
+              <View style={{flexDirection: 'row'}}>
+                  <View style={{flex: 6, justifyContent: 'center', alignItems: 'flex-start'}}>
+                    <Text style={styles.nomProjet}>{this.props.nom}</Text>
+                  </View>
+                  <View style={{flex: 1, alignItems: 'flex-end', justifyContent: 'center'}}>
+                      <Icon name="chevron-right" size={25} color="#A9A9A9"/>
+                  </View>
+              </View>
+          </View>
+        </TouchableHighlight>
         }
       </View>
     )

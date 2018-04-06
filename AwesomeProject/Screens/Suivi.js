@@ -172,17 +172,58 @@ export class Suivi extends Component {
       }
     }
 
-    jaugeTache(){
+    jaugeTacheRetard(){
+      //this.setState({dataCharged: false});
+      //this.rechargerBD();
+      const liste = [];
+        if (this.state.dataCharged){
+        for (let iter = 2; iter < myKey.length; iter++){
+            dateFinTache = new Date(myUser[myKey[iter]].dateFin);
+            let ajd = Math.ceil(Date.now() / (1000*3600*24));
+            if (Math.ceil(dateFinTache / (1000*3600*24)) < ajd ){
+              dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
+              liste.push(
+                <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
+              );
+            }
+          }
+        }
+      return liste;
+    }
+
+    jaugeTacheUrgente(){
+      //this.setState({dataCharged: false});
+      //this.rechargerBD();
+      const liste = [];
+        if (this.state.dataCharged){
+        for (let iter = 2; iter < myKey.length; iter++){
+            dateFinTache = new Date(myUser[myKey[iter]].dateFin);
+            let ajd = Math.ceil(Date.now() / (1000*3600*24));
+            if ((Math.ceil(dateFinTache / (1000*3600*24)) <= ajd+3) && (Math.ceil(dateFinTache / (1000*3600*24))) >= ajd){
+              dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
+              liste.push(
+                <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
+              );
+            }
+          }
+        }
+      return liste;
+    }
+
+    jaugeTacheEnCours(){
       //this.setState({dataCharged: false});
       //this.rechargerBD();
       const liste = [];
         if (this.state.dataCharged){
         for (let iter = 1; iter < myKey.length; iter++){
             dateFinTache = new Date(myUser[myKey[iter]].dateFin);
-            dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
-            liste.push(
-              <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
-            );
+            let ajd = Math.ceil(Date.now() / (1000*3600*24));
+            if (Math.ceil(dateFinTache / (1000*3600*24)) > ajd+3){
+              dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
+              liste.push(
+                <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
+              );
+            }
           }
         }
       return liste;
@@ -192,7 +233,20 @@ export class Suivi extends Component {
         return (
             <ScrollView>
               {this.state.dataCharged&&
-              this.jaugeTache() ||
+              <View style={{marginBottom: 5}}>
+                <View style={{marginBottom: 5}}>
+                  <Text style={{margin: 10, fontSize: 20, color: "#46466E"}}>Tâches en retard</Text>
+                    {this.jaugeTacheRetard()}
+                </View>
+                <View style={{marginBottom: 5}}>
+                  <Text style={{margin: 10, fontSize: 20, color: "#46466E"}}>Tâches en urgentes</Text>
+                    {this.jaugeTacheUrgente()}
+                </View>
+                <View style={{marginBottom: 5}}>
+                  <Text style={{margin: 10, fontSize: 20, color: "#46466E"}}>Tâches en cours</Text>
+                    {this.jaugeTacheEnCours()}
+                </View>
+              </View> ||
               <View style={{marginTop:'30%',justifyContent:'center',alignItems:'center'}}>
                 <ActivityIndicator size="large" color="#DD105E"/>
                 <Text>Chargement en cours...</Text>

@@ -46,8 +46,7 @@ const styles = StyleSheet.create({
       margin: 10
     },
     suppProjet:{
-      color: '#46466E',
-      marginTop: 10
+      color: '#46466E'
     },
     flipcard:{
       height: '100%',

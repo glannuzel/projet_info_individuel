@@ -2,15 +2,17 @@ import React, { Component } from 'react';
 import { Text, View } from 'react-native';
 import { Alert, AppRegistry, Image, TextInput, Modal} from 'react-native';
 import { Button } from 'react-native-elements';
-import { ActivityIndicator, ScrollView, ListView, TouchableHighlight } from 'react-native';
+import { ActivityIndicator, ScrollView, ListView, TouchableOpacity, TouchableHighlight } from 'react-native';
 import { StackNavigator} from 'react-navigation';
 import BottomNavigation, { Tab } from 'react-native-material-bottom-navigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Tache } from '../components/Tache';
 import * as firebase from 'firebase';
 import { AjoutTache } from '../components/AjoutTache';
+import { MenuProvider, renderers } from 'react-native-popup-menu';
+import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 
-
+ 
 //const BarreNavigation = require('../components/BarreNavigation');
 require('../ConnexionBD.js');
 const myKey=new Array(0);
@@ -24,6 +26,20 @@ export class Taches extends Component {
         headerTintColor : 'white',
         headerTitleStyle : {textAlign: 'center',alignSelf:'center', color:'white'},
         headerStyle: { backgroundColor:'#46466E' },
+        headerRight: <View style={{paddingRight: 10}}><TouchableOpacity onPress={()=>{
+            Alert.alert(
+              'Déconnexion',
+              'Etes-vous sûr de vouloir vous déconnecter ?',
+              [
+                {text: 'Se déconnecter', onPress: ()=>{console.log('coucou')}},
+                {text: 'Annuler', onPress: ()=>console.log('annuler déco'), style: 'cancel'}
+              ],
+              {cancelable: false}
+            )
+            }}>
+            <Icon size={26} color="white" name="more-vert" />
+            </TouchableOpacity>
+            </View>
         });
 
     state={
@@ -65,7 +81,7 @@ export class Taches extends Component {
     listeTaches(){
         const liste = [];
         if (this.state.dataCharged){
-        for (let iter = 0; iter < myKey.length-1; iter++){
+        for (let iter = 0; iter < myKey.length-2; iter++){
             dateFinTache = new Date(myUser[myKey[iter]].dateFin);
             dateFinBienEcrite = semaine[dateFinTache.getDay()] + " " + dateFinTache.getDate()+ "/" + (dateFinTache.getMonth()+1) + "/" + dateFinTache.getFullYear();
             liste.push(
@@ -81,25 +97,30 @@ export class Taches extends Component {
       return (
         <ScrollView>
             {this.state.dataCharged&&
-            <View style={{flex: 1, flexDirection: 'column', margin: 0}}>
+            <View style={{flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
                 <Modal animationType="slide" transparent={false} visible={this.state.modalVisible}>
-                    <View style={{flexDirection: 'row', alignContent: 'center', margin: 0}}>
+                    <View style={{flexDirection: 'row', alignItems: 'center', margin: 0, backgroundColor: "#E0E0E0"}}>
                         <View style={{flex: 3}}/>
-                        <View style={{flex: 1, alignContent: 'center'}}>
-                            <Button icon={{name: 'close', color: "#46466E", size: 30}} backgroundColor="white" onPress={()=>this.setModalVisible(false)}/>
+                        <View style={{flex: 1, padding: 10, alignItems: 'flex-end', justifyContent: 'center'}}>
+                            <TouchableHighlight underlayColor="#D7D7D7" onPress={()=>this.setModalVisible(false)}>
+                                <Icon name='close' color="#46466E" size={30}/>
+                            </TouchableHighlight>
                         </View>
                     </View>
-                    <View>
-                        <AjoutTache id={this.props.navigation.state.params.id} ouvert={()=>this.setModalVisible(false)} rechargerBD={()=>this.componentWillMount()}/>
-                    </View>
-                    <View>
-                        <Button title="REVENIR AUX TACHES" onPress={()=>this.setModalVisible(false)} backgroundColor="#EF7E56" borderRadius={2}/>
-                    </View>
+                    <ScrollView style={{marginTop: 10}}>
+                        <AjoutTache 
+                            id={this.props.navigation.state.params.id} 
+                            ressources={myUser[myKey[myKey.length-1]]}
+                            ouvert={()=>this.setModalVisible(false)} 
+                            rechargerBD={()=>this.componentWillMount()}/>
+                    </ScrollView>
                 </Modal>
-                <View style={{marginTop: 12, marginLeft: 20, marginRight: 20}}>
+                <View style={{marginTop: 12}}>
                     <Button raised title='AJOUTER UNE TACHE' iconRight={{name: 'add-circle'}} backgroundColor="#EF7E56" onPress={()=>this.setModalVisible(true)}/>
                 </View>
-                {this.listeTaches()}
+                <View style={{width: '100%', marginTop: 10}}>
+                    {this.listeTaches()}
+                </View>
             </View> ||
             <View style={{marginTop:'30%',justifyContent:'center',alignItems:'center'}}>
             <ActivityIndicator size="large" color="#DD105E"/>
@@ -112,3 +133,27 @@ export class Taches extends Component {
 }
 
 //this.props.navigation.navigate('AjoutTache', {titre: "Ajouter une tâche", id: `${this.props.navigation.state.params.id}`})}
+
+
+/*
+<MenuProvider><View style={{paddingRight: 10}}><TouchableOpacity onPress={()=>{
+            if(this.state.menuOpened){this.setState({menuOpened: false});}
+            else{this.setState({menuOpened: true});}}}>
+            <Menu opened={this.state.menuOpened}
+            onBackdropPress={() => this.setState({menuOpened: false})}
+            onSelect={value => alert(`Selected number: ${value}`)}>
+              <MenuTrigger children={this.headerRight} onPress={this.openMenu}/>
+                <MenuOptions>
+                  <MenuOption value={1} text='coucou' onSelect={() => console.log('coucou')}/>
+                  <MenuOption value={2} onSelect={() => console.log('deco')}>
+                  <View style={{flexDirection: 'row'}}>
+                    <View style={{flex:1}}><Icon size={20} color="grey" name="exit-to-app"/></View>
+                    <View style={{flex:3}}><Text>Se déconnecter</Text></View>
+                  </View>
+                  </MenuOption>
+                </MenuOptions>
+          </Menu>
+            <Icon size={26} color="white" name="more-vert" />
+            </TouchableOpacity>
+            </View></MenuProvider>
+            */
