@@ -51,8 +51,9 @@ export class NomProjet extends React.Component{
               <ScrollView style={{marginTop: 10}}>
                   <ParamProjet
                       id={this.props.numero} 
+                      nomProjet={this.props.nom}
                       ressources={this.props.ressource}
-                      ouvert={()=>this.setModalVisible(false)} 
+                      ouvert={()=>this._setModalVisible(false)} 
                       />
               </ScrollView>
 

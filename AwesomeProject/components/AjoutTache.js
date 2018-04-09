@@ -22,7 +22,7 @@ export class AjoutTache extends React.Component{
     isDateTimePickerVisible2: false,
     titre: "",
     description: "",
-    ressource: "",
+    ressources: new Array(this.props.ressources[0]),
     dateDebut: new Date().getTime(),
     dateFin: new Date().getTime(),
     box: "check-box-outline-blank"
@@ -39,6 +39,7 @@ export class AjoutTache extends React.Component{
         description: `${this.state.description}`,
         dateDebut: this.state.dateDebut,
         dateFin: this.state.dateFin,
+        ressources: this.state.ressources,
         avancement: 0,
         fin: false
         }
@@ -193,9 +194,9 @@ export class AjoutTache extends React.Component{
               <Text style={styles.sousTitreTexte}>Affecter à la tâche : </Text>
               <View style={{borderColor: '#C3C3C3', backgroundColor: 'white', borderWidth: 1, borderRadius: 5, marginTop: 10, marginBottom: 10}}>
                 <Picker
-                      selectedValue={this.state.km}
+                      selectedValue={this.state.ressources[0]}
                       onValueChange={value => {
-                        this.setState({ ressource: value });
+                        this.state.ressources.splice(0,1,value);
                       }}>
                       {this._listeRessources()}
                 </Picker>

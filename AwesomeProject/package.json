@@ -41,6 +41,7 @@
     "react-native-progress-bar-classic": "^1.2.1",
     "react-native-prompt": "^1.0.0",
     "react-native-prompt-android": "^0.3.3",
+    "react-native-simple-toast": "0.0.8",
     "react-native-slider": "^0.11.0",
     "react-navigation": "^1.0.0-beta.30"
   }
