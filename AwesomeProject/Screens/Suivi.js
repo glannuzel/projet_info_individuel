@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Text, View, ScrollView } from 'react-native';
-import { Alert, AppRegistry, Button, Image, TextInput } from 'react-native';
+import { Alert, AppRegistry, Button, Image, Picker, TextInput } from 'react-native';
 import { ActivityIndicator, ListView, TouchableHighlight } from 'react-native';
 import { StackNavigator} from 'react-navigation';
 import BottomNavigation, { Tab } from 'react-native-material-bottom-navigation';
@@ -118,9 +118,11 @@ export class Suivi extends Component {
     
     state={
           dataCharged: false,
+          affichagePicker: "tout"
     }
 
     componentWillMount=async()=>{
+      this.setState({dataCharged:false});
       myUser=[];
       myKey=[];
       try{
@@ -149,7 +151,40 @@ export class Suivi extends Component {
           }
       }
 
+      _mesTaches=async()=>{
+        this.setState({dataCharged: false});
+        myUser=[];
+        myKey=[];
+        try{
+            let user = firebase.auth().currentUser;
+            id = this.props.navigation.state.params.id;
+            //console.log(id);
+            firebase.database().ref(user.uid).child(id).orderByChild("ressource").equalTo("").on('child_added',
+            (data)=>{
+                myKey.push(data.key)
+                //console.log(myKey)
+                //console.log(myKey.length);
+                }
+              );
+                
+            firebase.database().ref(user.uid).child(id).orderByChild("ressource").equalTo("").on('value',
+            (data)=>{
+                myUser=data.val()
+                //console.log(data.val())
+                this.setState({dataCharged:true});
+                }
+            ); 
+            //essai=firebase.database().ref(user.uid).child(id).;
+            //console.log(essai);
+            }
+            catch(error){
+            console.log(error.ToString())
+            }
+        }
+
+    /*
     rechargerBD=async()=>{
+      this.setState({dataCharged:false});
       myUser=[];
       myKey=[];
       try{
@@ -171,13 +206,27 @@ export class Suivi extends Component {
       console.log(error.ToString())
       }
     }
+    */
 
     jaugeTacheRetard(){
       //this.setState({dataCharged: false});
       //this.rechargerBD();
       const liste = [];
         if (this.state.dataCharged){
-        for (let iter = 2; iter < myKey.length; iter++){
+          if(this.state.affichagePicker === "tout"){
+            for (let iter = 2; iter < myKey.length; iter++){
+                dateFinTache = new Date(myUser[myKey[iter]].dateFin);
+                let ajd = Math.ceil(Date.now() / (1000*3600*24));
+                if (Math.ceil(dateFinTache / (1000*3600*24)) < ajd ){
+                  dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
+                  liste.push(
+                    <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
+                  );
+                }
+              }
+            }
+        if(this.state.affichagePicker === "mesTaches"){
+          for (let iter = 0; iter < myKey.length; iter++){
             dateFinTache = new Date(myUser[myKey[iter]].dateFin);
             let ajd = Math.ceil(Date.now() / (1000*3600*24));
             if (Math.ceil(dateFinTache / (1000*3600*24)) < ajd ){
@@ -188,6 +237,7 @@ export class Suivi extends Component {
             }
           }
         }
+      }
       return liste;
     }
 
@@ -196,14 +246,27 @@ export class Suivi extends Component {
       //this.rechargerBD();
       const liste = [];
         if (this.state.dataCharged){
-        for (let iter = 2; iter < myKey.length; iter++){
-            dateFinTache = new Date(myUser[myKey[iter]].dateFin);
-            let ajd = Math.ceil(Date.now() / (1000*3600*24));
-            if ((Math.ceil(dateFinTache / (1000*3600*24)) <= ajd+3) && (Math.ceil(dateFinTache / (1000*3600*24))) >= ajd){
-              dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
-              liste.push(
-                <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
-              );
+          if(this.state.affichagePicker === "tout"){
+            for (let iter = 2; iter < myKey.length; iter++){
+                dateFinTache = new Date(myUser[myKey[iter]].dateFin);
+                let ajd = Math.ceil(Date.now() / (1000*3600*24));
+                if ((Math.ceil(dateFinTache / (1000*3600*24)) <= ajd+3) && (Math.ceil(dateFinTache / (1000*3600*24))) >= ajd){
+                  dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
+                  liste.push(
+                    <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
+                  );
+                }
+              }
+            }
+          if(this.state.affichagePicker === "mesTaches"){
+            for (let iter = 0; iter < myKey.length; iter++){
+              dateFinTache = new Date(myUser[myKey[iter]].dateFin);
+              let ajd = Math.ceil(Date.now() / (1000*3600*24));
+              if ((Math.ceil(dateFinTache / (1000*3600*24)) <= ajd+3) && (Math.ceil(dateFinTache / (1000*3600*24))) >= ajd){                dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
+                liste.push(
+                  <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
+                );
+              }
             }
           }
         }
@@ -215,14 +278,28 @@ export class Suivi extends Component {
       //this.rechargerBD();
       const liste = [];
         if (this.state.dataCharged){
-        for (let iter = 1; iter < myKey.length; iter++){
-            dateFinTache = new Date(myUser[myKey[iter]].dateFin);
-            let ajd = Math.ceil(Date.now() / (1000*3600*24));
-            if (Math.ceil(dateFinTache / (1000*3600*24)) > ajd+3){
-              dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
-              liste.push(
-                <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
-              );
+          if(this.state.affichagePicker === "tout"){
+            for (let iter = 1; iter < myKey.length; iter++){
+                dateFinTache = new Date(myUser[myKey[iter]].dateFin);
+                let ajd = Math.ceil(Date.now() / (1000*3600*24));
+                if (Math.ceil(dateFinTache / (1000*3600*24)) > ajd+3){
+                  dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
+                  liste.push(
+                    <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
+                  );
+                }
+              }
+            }
+          if(this.state.affichagePicker === "mesTaches"){
+            for (let iter = 0; iter < myKey.length; iter++){
+              dateFinTache = new Date(myUser[myKey[iter]].dateFin);
+              let ajd = Math.ceil(Date.now() / (1000*3600*24));
+              if (Math.ceil(dateFinTache / (1000*3600*24)) > ajd+3){
+                dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
+                liste.push(
+                  <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
+                );
+              }
             }
           }
         }
@@ -232,6 +309,24 @@ export class Suivi extends Component {
     render(){
         return (
             <ScrollView>
+
+              <View>
+                <Picker enabled={this.state.dataCharged}
+                      selectedValue={this.state.affichagePicker}
+                      onValueChange={(value) => {
+                        this.setState({affichagePicker: value});
+                        if(value === "mesTaches"){
+                          this._mesTaches();}
+                        else{
+                          if(value === "tout"){
+                            this.componentWillMount();
+                          }
+                        }}}>
+                  <Picker.Item label="Tout afficher" value="tout" key={1} />
+                  <Picker.Item label="Afficher uniquement mes tâches" value="mesTaches" key={2} />
+                </Picker>
+              </View>
+
               {this.state.dataCharged&&
               <View style={{marginBottom: 5}}>
                 <View style={{marginBottom: 5}}>

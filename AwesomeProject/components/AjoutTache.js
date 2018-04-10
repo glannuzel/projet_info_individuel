@@ -22,7 +22,8 @@ export class AjoutTache extends React.Component{
     isDateTimePickerVisible2: false,
     titre: "",
     description: "",
-    ressources: new Array(this.props.ressources[0]),
+    //ressources: new Array(this.props.ressources[0]),
+    ressources: "",
     dateDebut: new Date().getTime(),
     dateFin: new Date().getTime(),
     box: "check-box-outline-blank"
@@ -39,7 +40,7 @@ export class AjoutTache extends React.Component{
         description: `${this.state.description}`,
         dateDebut: this.state.dateDebut,
         dateFin: this.state.dateFin,
-        ressources: this.state.ressources,
+        ressource: this.state.ressources,
         avancement: 0,
         fin: false
         }
@@ -102,11 +103,13 @@ export class AjoutTache extends React.Component{
     const ressourcesAssociees = [];
     for (i = 0; i < this.props.ressources.length; i++) {
       ressourcesAssociees.push(
-        <Picker.Item label={`${this.props.ressources[i]}`} value={this.props.ressources[i]} key={i} />
+        <Picker.Item label={`${this.props.ressources[i]}`} value={`${this.props.ressources[i]}`} key={i} />
       );
     }
     return ressourcesAssociees;
   }
+
+
 
   render(){
       return (
@@ -194,9 +197,12 @@ export class AjoutTache extends React.Component{
               <Text style={styles.sousTitreTexte}>Affecter à la tâche : </Text>
               <View style={{borderColor: '#C3C3C3', backgroundColor: 'white', borderWidth: 1, borderRadius: 5, marginTop: 10, marginBottom: 10}}>
                 <Picker
-                      selectedValue={this.state.ressources[0]}
-                      onValueChange={value => {
-                        this.state.ressources.splice(0,1,value);
+                      //selectedValue={this.state.ressources[0]}
+                      selectedValue={this.state.ressources}
+                      onValueChange={(value) => {
+                        //this.state.ressources.splice(0,1,value);
+                        this.setState({ressources: value});
+                        console.log(this.state.ressources);
                       }}>
                       {this._listeRessources()}
                 </Picker>
