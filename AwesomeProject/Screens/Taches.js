@@ -17,6 +17,8 @@ import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-m
 require('../ConnexionBD.js');
 const myKey=new Array(0);
 const myUser=[];
+const myRessources=[];
+const myRessourcesKey=[];
 const semaine = new Array("Dim.", "Lun.","Mar.", "Mer.","Jeu.", "Ven.", "Sam.");
 
 export class Taches extends Component {
@@ -26,20 +28,6 @@ export class Taches extends Component {
         headerTintColor : 'white',
         headerTitleStyle : {textAlign: 'center',alignSelf:'center', color:'white'},
         headerStyle: { backgroundColor:'#46466E' },
-        headerRight: <View style={{paddingRight: 10}}><TouchableOpacity onPress={()=>{
-            Alert.alert(
-              'Déconnexion',
-              'Etes-vous sûr de vouloir vous déconnecter ?',
-              [
-                {text: 'Se déconnecter', onPress: ()=>{console.log('coucou')}},
-                {text: 'Annuler', onPress: ()=>console.log('annuler déco'), style: 'cancel'}
-              ],
-              {cancelable: false}
-            )
-            }}>
-            <Icon size={26} color="white" name="more-vert" />
-            </TouchableOpacity>
-            </View>
         });
 
     state={
@@ -54,24 +42,46 @@ export class Taches extends Component {
     componentWillMount=async()=>{
         myUser=[];
         myKey=[];
+        myRessources=[];
+        myRessourcesKey=[];
     try{
         let user = firebase.auth().currentUser;
         id = this.props.navigation.state.params.id;
         //console.log(id);
-        firebase.database().ref(user.uid).child(id).on('child_added',
+
+        //Récupération des tâches non achevées
+        firebase.database().ref(user.uid).child(id).orderByChild('fin').equalTo(false).on('child_added',
         (data)=>{
             myKey.push(data.key)
             //console.log(myKey)
             //console.log(myKey.length);
             });
             
-        firebase.database().ref(user.uid).child(id).on('value',
+        firebase.database().ref(user.uid).child(id).orderByChild('fin').equalTo(false).on('value',
         (data)=>{
             myUser=data.val()
             //console.log(data.val())
             this.setState({dataCharged:true});
             }
         ); 
+
+        //Récupération des ressources associées à un projet
+        firebase.database().ref(user.uid).child(id).child('ressources').on('child_added',
+        (data)=>{
+            myRessourcesKey.push(data.key);
+            //console.log(myRessourcesKey);
+            });
+            
+        firebase.database().ref(user.uid).child(id).child('ressources').on('value',
+        (data)=>{
+            myRessources=data.val();
+            //console.log(data.val());
+            //Indiquer que le chargement des données est achevé :
+            this.setState({dataCharged:true});
+            }
+        ); 
+        console.log(myRessources);
+        //console.log(myRessources[myRessourcesKey]);
         }
         catch(error){
         console.log(error.ToString())
@@ -81,7 +91,7 @@ export class Taches extends Component {
     listeTaches(){
         const liste = [];
         if (this.state.dataCharged){
-        for (let iter = 0; iter < myKey.length-2; iter++){
+        for (let iter = 0; iter < myKey.length; iter++){
             dateFinTache = new Date(myUser[myKey[iter]].dateFin);
             dateFinBienEcrite = semaine[dateFinTache.getDay()] + " " + dateFinTache.getDate()+ "/" + (dateFinTache.getMonth()+1) + "/" + dateFinTache.getFullYear();
             liste.push(
@@ -110,7 +120,7 @@ export class Taches extends Component {
                     <ScrollView style={{marginTop: 10}}>
                         <AjoutTache 
                             id={this.props.navigation.state.params.id} 
-                            ressources={myUser[myKey[myKey.length-1]]}
+                            ressources={myRessources}
                             ouvert={()=>this.setModalVisible(false)} 
                             rechargerBD={()=>this.componentWillMount()}/>
                     </ScrollView>

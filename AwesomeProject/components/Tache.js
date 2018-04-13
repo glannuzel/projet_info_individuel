@@ -21,6 +21,8 @@ export class Tache extends Component {
     
     state={
         finie: false,
+        annuler: false,
+        tacheTerminee: false,
         box: "check-box-outline-blank",
         avancee: this.props.tauxAvancement*100,
     }
@@ -29,17 +31,21 @@ export class Tache extends Component {
     if (this.state.box=="check-box-outline-blank")
     {
         this.setState({box: "check-box"});
+        this.setState({tacheTerminee: true});
     }
-    else { this.setState({box: "check-box-outline-blank"});}
+    else { 
+        this.setState({box: "check-box-outline-blank"});
+        this.setState({tacheTerminee: false});
+        }
     }
 
     marquerCommeFinie(){
         if(this.state.finie)
         {
-            this.setState({finie: false})
+            this.setState({finie: false});
         }
         else{
-            this.setState({finie: true})
+            this.setState({finie: true});
         }
     }
 
@@ -50,10 +56,29 @@ export class Tache extends Component {
         //console.log(projet);
         //console.log(id);
         firebase.database().ref(user.uid).child(projet).child(id).child('avancement').set(this.state.avancee/100);
+         if(this.state.tacheTerminee){
+            firebase.database().ref(user.uid).child(projet).child(id).child('fin').set(this.state.tacheTerminee);
+         }
         this.marquerCommeFinie();
         this.props.rechargerBD();
     }
 
+    demandeAnnulerTache(){
+        if(this.state.annuler)
+        {
+            this.setState({annuler: false});
+        }
+        else{
+            this.setState({annuler: true});
+        }
+    }
+
+    supprimerTache=async()=>{
+        let user = firebase.auth().currentUser;
+        projet = this.props.numeroProjet;
+        id = this.props.numeroTache;
+        firebase.database().ref(user.uid).child(projet).child(id).remove();
+    }
 
     avancementTache(value){
         this.setState({avancee: value})
@@ -61,8 +86,8 @@ export class Tache extends Component {
     
     render() {
       return (
-        <TouchableHighlight underlayColor='#D7D7D7' onPress={()=>this.marquerCommeFinie()}>
-            {!this.state.finie&&
+        <TouchableHighlight underlayColor='#D7D7D7' onPress={()=>this.marquerCommeFinie()} onLongPress={()=>this.demandeAnnulerTache()}>
+            {!this.state.finie&&!this.state.annuler&&
             <View style={{
                 marginRight: 10,
                 marginLeft: 10,
@@ -87,6 +112,7 @@ export class Tache extends Component {
                         </View>
                     </View>
             </View> ||
+            this.state.finie&&!this.state.annuler&&
             <View>
                 <View style={{
                     marginRight: 10,
@@ -145,6 +171,49 @@ export class Tache extends Component {
                     </View>
                 </View>
                 </View>
+            </View> ||
+            <View style={{
+                backgroundColor: '#EFEFEF',
+                marginRight: 10,
+                marginLeft: 10,
+                marginTop: 5,
+                marginBottom: 5,
+                borderRadius: 3,
+                borderWidth: 1,
+                borderColor: '#BDBDD7'}}>
+                    <View style={{flexDirection: 'row'}}>
+                    <View style={{flex: 5, padding: 5}}>
+                        <Text style={styles.sousTitreTexte}>{this.props.nom}</Text>
+                        <Text style={{color: '#8787A3'}}>{this.props.description}</Text>
+                        <View style={{flexDirection: 'row', marginTop: 10}}>
+                            <View style={{flex: 1}}></View>
+                            <View style={{flex: 3, flexDirection: 'row', backgroundColor: '#46466E', borderRadius: 3}}>
+                                <View style={{flex: 1}}>
+                                    <Icon size={20} color="white" name="event" />
+                                </View>
+                                <View style={{flex: 4}}>
+                                    <Text style={{color: 'white'}}>Fin : {this.props.dateFin}</Text>
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+                    <View style={{flex: 1, 
+                        alignItems: 'center',
+                        justifyContent: 'center', 
+                        backgroundColor: '#DD105E'}}>
+                        <TouchableHighlight style={{borderRadius: 30, padding: 5}} underlayColor='#AC0C49' onPress={()=>Alert.alert(
+                            'Supprimer la tâche',
+                            `Souhaitez-vous vraiment supprimer la tâche "${this.props.nom}" ? \n\nNote : Cette action est irréversible, cette tâche ne pourra pas être utilisée pour les calculs des KPI`,
+                            [
+                            {text: 'Supprimer la tâche', onPress: ()=>{this.supprimerTache()}},
+                            {text: 'Annuler', onPress: ()=>console.log('annuler déco'), style: 'cancel'}
+                            ],
+                            {cancelable: false}
+                        )}>
+                            <Icon name='close' color='white' size={24}/>
+                        </TouchableHighlight>
+                    </View>
+                    </View>
             </View>
             }
         </TouchableHighlight>

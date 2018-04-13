@@ -7,6 +7,7 @@ import BottomNavigation, { Tab } from 'react-native-material-bottom-navigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as firebase from 'firebase';
 import { NomRessource } from './NomRessource';
+import { AjoutRessource } from './AjoutRessource';
 import { MenuProvider, renderers } from 'react-native-popup-menu';
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 import Toast from 'react-native-simple-toast';
@@ -27,6 +28,7 @@ export class ParamProjet extends React.Component{
     ressources: "",
     isOpenedNom : false,
     isOpenedRessource : false,
+    isOpenedSupp : false,
   }; 
 
   _openNomProjet = () => {
@@ -36,7 +38,7 @@ export class ParamProjet extends React.Component{
       else{
         this.setState({isOpenedNom: true});
       }
-  }
+    }
 
   _openRessource = () => {
     if(this.state.isOpenedRessource){
@@ -45,7 +47,16 @@ export class ParamProjet extends React.Component{
       else{
         this.setState({isOpenedRessource: true});
       }
-}
+    }
+
+    _openSupprimer = () => {
+        if(this.state.isOpenedSupp){
+            this.setState({isOpenedSupp: false});
+            }
+            else{
+            this.setState({isOpenedSupp: true});
+            }
+    }
 
   _enregistrerNom=async()=>{
     //if(this.state.login){
@@ -60,7 +71,7 @@ export class ParamProjet extends React.Component{
    // }
   }
 
-  
+  /*
   _enregistrerRessource=async() =>{
     let user = firebase.auth().currentUser;
     id = this.props.id;
@@ -70,6 +81,7 @@ export class ParamProjet extends React.Component{
     firebase.database().ref(user.uid).child(id).child("ressources").set(nouvellesRessources);
     console.log("ajout"); 
   }
+  */
   
   _supprimerProjet=async()=>{
     let user = firebase.auth().currentUser;
@@ -81,7 +93,9 @@ export class ParamProjet extends React.Component{
 
   _updateNomProjet = (text) => this.setState({nomProjet: `${text}`});
 
+  /*
   _updateRessource = (text) => this.setState({nomRessource: `${text}`});
+*/
 
   _listeRessources(){
     const ressourcesAssociees = [];
@@ -103,6 +117,8 @@ export class ParamProjet extends React.Component{
   render(){
       return (
         <ScrollView>
+
+            
             <View style={{marginBottom: 10}}>
                 <TouchableHighlight underlayColor='#D7D7D7' onPress={() => this._openNomProjet()}>
                     <View style={{paddingRight : 10, backgroundColor: "#E0E0E0"}} >
@@ -122,9 +138,9 @@ export class ParamProjet extends React.Component{
 
                 {this.state.isOpenedNom&&
                 <View>
-                    <View>
+                    <View style={{backgroundColor: '#EEEEEE', borderRadius: 3, margin: 10}}>
                         <TextInput style={styles.nomProjet} placeholder="Nom du projet..." selectionColor='#46466E'
-                            value={this.props.nomProjet}
+                            value={this.state.nomProjet}
                             onChangeText={(text) => this._updateNomProjet(text)}
                             maxLength={30}/>
                     </View>
@@ -135,14 +151,39 @@ export class ParamProjet extends React.Component{
                 }
             </View>
 
-            <TouchableHighlight underlayColor='#D7D7D7' onPress={() => this._openRessource()}>
+            <View style={{marginBottom: 10}}>
+                <TouchableHighlight underlayColor='#D7D7D7' onPress={() => this._openRessource()}>
+                    <View style={{paddingRight : 10, backgroundColor: "#E0E0E0"}} >
+                        <View style={{flexDirection: 'row'}}>
+                            <View style={{flex: 6, paddingLeft: 15, justifyContent: 'center', alignItems: 'flex-start'}}>
+                                <Text style={{margin: 5, color: "#777777", fontSize: 16}}>Gérer les ressources</Text>
+                            </View>
+                            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
+                            {this.state.isOpenedRessource&&
+                                <Icon name="expand-more" size={25} color="#777777"/> ||
+                                <Icon name="chevron-right" size={25} color="#777777"/>
+                                }
+                            </View>
+                        </View>
+                    </View>
+                </TouchableHighlight>
+                
+                {this.state.isOpenedRessource&&
+                    <View style={{flex: 1, margin: 10}}>
+                        {this._listeRessources()}
+                        <AjoutRessource ressources={this.props.ressources} id={this.props.id}/>
+                    </View>
+                }
+            </View>
+
+            <TouchableHighlight underlayColor='#D7D7D7' onPress={() => this._openSupprimer()}>
                 <View style={{paddingRight : 10, backgroundColor: "#E0E0E0"}} >
                     <View style={{flexDirection: 'row'}}>
                         <View style={{flex: 6, paddingLeft: 15, justifyContent: 'center', alignItems: 'flex-start'}}>
-                            <Text style={{margin: 5, color: "#777777", fontSize: 16}}>Gérer les ressources</Text>
+                            <Text style={{margin: 5, color: "#777777", fontSize: 16}}>Supprimer le projet</Text>
                         </View>
                         <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
-                        {this.state.isOpenedRessource&&
+                        {this.state.isOpenedSupp&&
                             <Icon name="expand-more" size={25} color="#777777"/> ||
                             <Icon name="chevron-right" size={25} color="#777777"/>
                             }
@@ -151,37 +192,21 @@ export class ParamProjet extends React.Component{
                 </View>
             </TouchableHighlight>
             
-            {this.state.isOpenedRessource&&
-                <View style={{flex: 1, margin: 10}}>
-                    {this._listeRessources()}
-                    <View style={{flexDirection: 'row'}}>
-                        <View style={{flex: 5, alignItems: 'flex-start', justifyContent: 'center'}}>
-                            <TextInput style={styles.nomProjet} placeholder="Nom de la ressource..." selectionColor='#46466E'
-                                onChangeText={(text) => this._updateRessource(text)}
-                                maxLength={15}/>
-                        </View>
-                        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-                        <TouchableHighlight underlayColor='#D7D7D7' onPress={() => {this._enregistrerRessource(); this._updateRessource(""); Toast.show('Ressource ajoutée');}}>
-                                <Icon name='add-box' size={20} color="#EF7E56"/>
-                            </TouchableHighlight>
-                        </View>
-                    </View>
+            {this.state.isOpenedSupp&&
+                <View style={{flex: 1, margin: 15}}>
+                    <Button title="Supprimer le projet" color="#DD105E" onPress={()=>{Alert.alert(
+                            "Supprimer le projet",
+                            `Souhaitez-vous vraiment supprimer le projet "${this.props.nomProjet}" ?`,
+                            [
+                            {text: 'Supprimer le projet', onPress: () => this._supprimerProjet()},
+                            {text: 'Annuler', style: 'cancel'}
+                            ],
+                            {cancelable: false}
+                            )}}/>
                 </View>
             }
-
-
                            
-            <View style={{flex: 1, margin: 15}}>
-                <Button title="Supprimer le projet" color="#DD105E" onPress={()=>{Alert.alert(
-                        "Supprimer le projet",
-                        `Souhaitez-vous vraiment supprimer le projet "${this.props.nomProjet}" ?`,
-                        [
-                        {text: 'Supprimer le projet', onPress: () => this._supprimerProjet()},
-                        {text: 'Annuler', style: 'cancel'}
-                        ],
-                        {cancelable: false}
-                        )}}/>
-            </View>
+            
 
         </ScrollView>
 

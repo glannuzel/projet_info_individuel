@@ -118,7 +118,10 @@ export class Suivi extends Component {
     
     state={
           dataCharged: false,
-          affichagePicker: "tout"
+          affichagePicker: "tout",
+          isTachesEnRetardEmpty: true,
+          isTachesUrgentesEmpty: true,
+          isTachesEnCoursEmpty: true
     }
 
     componentWillMount=async()=>{
@@ -128,20 +131,21 @@ export class Suivi extends Component {
       try{
           let user = firebase.auth().currentUser;
           id = this.props.navigation.state.params.id;
+          let maRef = firebase.database().ref(user.uid).child(id);
           //console.log(id);
-          firebase.database().ref(user.uid).child(id).orderByChild('dateFin').on('child_added',
+          maRef.orderByChild('dateFin').on('child_added',
           (data)=>{
               myKey.push(data.key)
               //console.log(myKey)
               //console.log(myKey.length);
-              });
+          });
               
-          firebase.database().ref(user.uid).child(id).orderByChild('dateFin').on('value',
+          maRef.orderByChild('dateFin').on('value',
           (data)=>{
               myUser=data.val()
               //console.log(data.val())
               this.setState({dataCharged:true});
-              }
+            }
           ); 
           //essai=firebase.database().ref(user.uid).child(id).;
           //console.log(essai);
@@ -217,7 +221,7 @@ export class Suivi extends Component {
             for (let iter = 2; iter < myKey.length; iter++){
                 dateFinTache = new Date(myUser[myKey[iter]].dateFin);
                 let ajd = Math.ceil(Date.now() / (1000*3600*24));
-                if (Math.ceil(dateFinTache / (1000*3600*24)) < ajd ){
+                if (Math.ceil(dateFinTache / (1000*3600*24)) < ajd && !myUser[myKey[iter]].fin){
                   dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
                   liste.push(
                     <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
@@ -229,7 +233,7 @@ export class Suivi extends Component {
           for (let iter = 0; iter < myKey.length; iter++){
             dateFinTache = new Date(myUser[myKey[iter]].dateFin);
             let ajd = Math.ceil(Date.now() / (1000*3600*24));
-            if (Math.ceil(dateFinTache / (1000*3600*24)) < ajd ){
+            if (Math.ceil(dateFinTache / (1000*3600*24)) < ajd && !myUser[myKey[iter]].fin){
               dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
               liste.push(
                 <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
@@ -238,6 +242,12 @@ export class Suivi extends Component {
           }
         }
       }
+      console.log(liste.length)
+      if(liste.length != 0){ 
+        console.log("c'est le cas");
+        //this.setState({isTachesEnRetardEmpty:false});
+      }
+        //this.setState({isTachesEnRetardEmpty: false});}
       return liste;
     }
 
@@ -250,7 +260,7 @@ export class Suivi extends Component {
             for (let iter = 2; iter < myKey.length; iter++){
                 dateFinTache = new Date(myUser[myKey[iter]].dateFin);
                 let ajd = Math.ceil(Date.now() / (1000*3600*24));
-                if ((Math.ceil(dateFinTache / (1000*3600*24)) <= ajd+3) && (Math.ceil(dateFinTache / (1000*3600*24))) >= ajd){
+                if ((Math.ceil(dateFinTache / (1000*3600*24)) <= ajd+3) && (Math.ceil(dateFinTache / (1000*3600*24))) >= ajd && !myUser[myKey[iter]].fin){
                   dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
                   liste.push(
                     <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
@@ -262,7 +272,7 @@ export class Suivi extends Component {
             for (let iter = 0; iter < myKey.length; iter++){
               dateFinTache = new Date(myUser[myKey[iter]].dateFin);
               let ajd = Math.ceil(Date.now() / (1000*3600*24));
-              if ((Math.ceil(dateFinTache / (1000*3600*24)) <= ajd+3) && (Math.ceil(dateFinTache / (1000*3600*24))) >= ajd){                dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
+              if ((Math.ceil(dateFinTache / (1000*3600*24)) <= ajd+3) && (Math.ceil(dateFinTache / (1000*3600*24))) >= ajd && !myUser[myKey[iter]].fin){                dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
                 liste.push(
                   <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
                 );
@@ -270,6 +280,7 @@ export class Suivi extends Component {
             }
           }
         }
+        //if(liste.length !== 0){ this.setState({isTachesUrgentesEmpty: false});}
       return liste;
     }
 
@@ -282,7 +293,7 @@ export class Suivi extends Component {
             for (let iter = 1; iter < myKey.length; iter++){
                 dateFinTache = new Date(myUser[myKey[iter]].dateFin);
                 let ajd = Math.ceil(Date.now() / (1000*3600*24));
-                if (Math.ceil(dateFinTache / (1000*3600*24)) > ajd+3){
+                if (Math.ceil(dateFinTache / (1000*3600*24)) > ajd+3 && !myUser[myKey[iter]].fin){
                   dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
                   liste.push(
                     <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
@@ -294,7 +305,7 @@ export class Suivi extends Component {
             for (let iter = 0; iter < myKey.length; iter++){
               dateFinTache = new Date(myUser[myKey[iter]].dateFin);
               let ajd = Math.ceil(Date.now() / (1000*3600*24));
-              if (Math.ceil(dateFinTache / (1000*3600*24)) > ajd+3){
+              if (Math.ceil(dateFinTache / (1000*3600*24)) > ajd+3 && !myUser[myKey[iter]].fin){
                 dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
                 liste.push(
                   <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
@@ -303,6 +314,7 @@ export class Suivi extends Component {
             }
           }
         }
+        //if(liste.length !== 0){ this.setState({isTachesEnCoursEmpty: false});}
       return liste;
     }
 
@@ -330,15 +342,21 @@ export class Suivi extends Component {
               {this.state.dataCharged&&
               <View style={{marginBottom: 5}}>
                 <View style={{marginBottom: 5}}>
+                  
                   <Text style={{margin: 10, fontSize: 20, color: "#46466E"}}>Tâches en retard</Text>
+                  
                     {this.jaugeTacheRetard()}
                 </View>
                 <View style={{marginBottom: 5}}>
+                  
                   <Text style={{margin: 10, fontSize: 20, color: "#46466E"}}>Tâches en urgentes</Text>
+                  
                     {this.jaugeTacheUrgente()}
                 </View>
                 <View style={{marginBottom: 5}}>
+                  
                   <Text style={{margin: 10, fontSize: 20, color: "#46466E"}}>Tâches en cours</Text>
+                  
                     {this.jaugeTacheEnCours()}
                 </View>
               </View> ||

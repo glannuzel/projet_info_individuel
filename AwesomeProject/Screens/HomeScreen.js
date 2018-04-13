@@ -97,7 +97,7 @@ export class HomeScreen extends React.Component {
     listeProjet(){
       const liste = [];
       for (let iter = 0; iter < myKey.length; iter++){
-        console.log(myUser[myKey[iter]].ressources);
+        //console.log(myUser[myKey[iter]].ressources);
         liste.push(
         <NomProjet nom={myUser[myKey[iter]].nomProjet} ressource={myUser[myKey[iter]].ressources} numero={myKey[iter]} navigation={this.props.navigation} />
         );
@@ -135,10 +135,11 @@ export class HomeScreen extends React.Component {
                     <View style={{flex: 3}}>
                         <TextInput style={styles.nomProjet} placeholder="Ajouter un projet..." selectionColor='#46466E'
                         onChangeText={(text) => this._updateNomProjet(text)}
-                        maxLength={30}/>
+                        maxLength={30}
+                        ref={input => { this.textInput = input}}/>
                     </View>
                     <View style={{flex: 1, justifyContent: 'center'}}>
-                        <Button title="Ajouter" onPress={()=>this.ajouterProjet()} color="#EF7E56" />
+                        <Button title="Ajouter" onPress={()=>{this.ajouterProjet(); this.textInput.clear();}} color="#EF7E56" />
                     </View>
                 </View>
               </View>

@@ -40,9 +40,18 @@ export class NomProjet extends React.Component{
           <Modal animationType="slide" transparent={false} visible={this.state.modalVisible}>
 
             <View style={{flexDirection: 'row', alignItems: 'center', margin: 0, backgroundColor: "#E0E0E0"}}>
-                <View style={{flex: 3}}/>
+                  <View style={{flex: 3}}>
+                    <View style={{flexDirection: 'row'}}>
+                      <View style={{flex: 1, padding: 10}}>
+                        <Icon name='settings' size={30} color="#777777"/>
+                      </View>
+                      <View style={{flex: 3, justifyContent: 'center'}}>
+                        <Text style={{color: "#777777", fontSize: 20}}>{this.props.nom}</Text>
+                      </View>
+                    </View>
+                  </View>
                   <View style={{flex: 1, padding: 10, alignItems: 'flex-end', justifyContent: 'center'}}>
-                      <TouchableHighlight underlayColor="#D7D7D7" onPress={()=>this._setModalVisible(false)}>
+                      <TouchableHighlight style={{borderRadius: 30, padding: 5}} underlayColor="#D7D7D7" onPress={()=>this._setModalVisible(false)}>
                           <Icon name='close' color="#46466E" size={30}/>
                       </TouchableHighlight>
                   </View>

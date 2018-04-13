@@ -5,46 +5,50 @@ import { ActivityIndicator, ScrollView, ListView, TouchableOpacity, TouchableHig
 import { StackNavigator} from 'react-navigation';
 import BottomNavigation, { Tab } from 'react-native-material-bottom-navigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Tache } from '../components/Tache';
 import * as firebase from 'firebase';
-import { AjoutTache } from '../components/AjoutTache';
+import { NomRessource } from './NomRessource';
 import { MenuProvider, renderers } from 'react-native-popup-menu';
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 import Toast from 'react-native-simple-toast';
 
 require('../ConnexionBD.js');
-const myKey=new Array(0);
-const myUser=[];
 const styles = require('../style/Style');
 
-export class NomRessource extends React.Component{
+export class AjoutRessource extends React.Component{
   constructor(props){
     super(props);
   }
 
   state = {
+    nomRessource: "",
   }; 
 
-  _supprimerRessource=async() =>{
+  _updateRessource = (text) => this.setState({nomRessource: `${text}`});
+
+  _enregistrerRessource=async() =>{
     let user = firebase.auth().currentUser;
     id = this.props.id;
     let nouvellesRessources = this.props.ressources;
-    nouvellesRessources.splice(this.props.numero,1);
-    console.log(id);
+    nouvellesRessources.push(this.state.nomRessource);
     firebase.database().ref(user.uid).child(id).child("ressources").set(nouvellesRessources);
-    console.log("ajout");
-    this.props.ouvert(); 
+  }
+
+  componentDidMount=async() =>{
+      this.setState({nomRessource: ""});
   }
 
   render(){
       return (
-        <View style={{flexDirection: 'row'}}>
-            <View style={{flex: 5, alignItems: 'flex-start', justifyContent: 'center', color: '#46466E', margin: 10}}>
-                <Text> {this.props.ressources[this.props.numero]} </Text>
+        <View style={{flexDirection: 'row', backgroundColor: '#EEEEEE', borderRadius: 3, marginTop: 5}}>
+            <View style={{flex: 5, justifyContent: 'center', color: '#46466E', paddingLeft: 5}}>
+                    <TextInput style={styles.nomProjet} placeholder="Nom de la ressource..." selectionColor='#46466E'
+                                    onChangeText={(text) => this._updateRessource(text)}
+                                    maxLength={15}
+                                    ref={input => { this.textInput = input}}/>
             </View>
             <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-                <TouchableHighlight style={{borderRadius: 20, padding: 5}} underlayColor='#D7D7D7' onPress={() => this._supprimerRessource()}>
-                    <Icon name='close' size={20} color="#EF7E56"/>
+                <TouchableHighlight style={{borderRadius: 20, padding: 5}} underlayColor='#D7D7D7' onPress={() => {this._enregistrerRessource(); this.textInput.clear(); Toast.show('Ressource ajoutée');}}>
+                    <Icon name='add' size={20} color="#46466E"/>
                 </TouchableHighlight>
             </View>
         </View>
