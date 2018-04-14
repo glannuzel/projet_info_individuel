@@ -80,7 +80,7 @@ export class Taches extends Component {
             this.setState({dataCharged:true});
             }
         ); 
-        console.log(myRessources);
+        //console.log(myRessources);
         //console.log(myRessources[myRessourcesKey]);
         }
         catch(error){

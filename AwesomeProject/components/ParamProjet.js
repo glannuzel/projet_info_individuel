@@ -62,12 +62,12 @@ export class ParamProjet extends React.Component{
     //if(this.state.login){
         //let user = firebase.auth().currentUser;
         //id = user.uid;
-        console.log(this.props.nomProjet);
+        //console.log(this.props.nomProjet);
         let user = firebase.auth().currentUser;
         id = this.props.id;
-        console.log(id);
+        //console.log(id);
         firebase.database().ref(user.uid).child(id).child("nomProjet").set(this.state.nomProjet);
-        console.log("ajout");
+        //console.log("ajout");
    // }
   }
 
@@ -87,7 +87,7 @@ export class ParamProjet extends React.Component{
     let user = firebase.auth().currentUser;
     id = this.props.id;
     firebase.database().ref(user.uid).child(id).remove();
-    console.log("suppression projet");
+    //console.log("suppression projet");
     this.props.ouvert(); 
   }
 
@@ -99,7 +99,7 @@ export class ParamProjet extends React.Component{
 
   _listeRessources(){
     const ressourcesAssociees = [];
-    console.log(this.props.ressources);
+    //console.log(this.props.ressources);
     ressourcesAssociees.push(
         <View style={{flexDirection: 'row'}}>
             <View style={{flex: 1, alignItems: 'flex-start', justifyContent: 'center', color: '#46466E', margin: 10}}>

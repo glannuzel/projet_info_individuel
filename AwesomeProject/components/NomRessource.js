@@ -28,12 +28,25 @@ export class NomRessource extends React.Component{
   _supprimerRessource=async() =>{
     let user = firebase.auth().currentUser;
     id = this.props.id;
+    console.log("avant");
+    console.log(this.props.ressources[this.props.numero]);
+    firebase.database().ref(user.uid).child(id).orderByChild("ressource").equalTo(`${this.props.ressources[this.props.numero]}`).on('child_added',
+    (data)=>{
+        console.log("après")
+        myKey.push(data.key); }
+    );
+    console.log(myKey.length);
+    console.log(myKey);
+    let i=0;
+    while (i<myKey.length)
+    {
+        console.log('supp');
+        firebase.database().ref(user.uid).child(id).child(myKey[i]).remove();
+        i=i+1;
+    }
     let nouvellesRessources = this.props.ressources;
     nouvellesRessources.splice(this.props.numero,1);
-    console.log(id);
     firebase.database().ref(user.uid).child(id).child("ressources").set(nouvellesRessources);
-    console.log("ajout");
-    this.props.ouvert(); 
   }
 
   render(){
@@ -43,7 +56,15 @@ export class NomRessource extends React.Component{
                 <Text> {this.props.ressources[this.props.numero]} </Text>
             </View>
             <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-                <TouchableHighlight style={{borderRadius: 20, padding: 5}} underlayColor='#D7D7D7' onPress={() => this._supprimerRessource()}>
+                <TouchableHighlight style={{borderRadius: 20, padding: 5}} underlayColor='#D7D7D7' onPress={() =>{Alert.alert(
+                            "Supprimer la ressource",
+                            `Souhaitez-vous vraiment supprimer la ressource "${this.props.ressources[this.props.numero]}" ?\n\nNote : toutes les tâches associées à cette ressource seront également supprimées`,
+                            [
+                            {text: 'Annuler', style: 'cancel'},
+                            {text: 'Supprimer la ressource', onPress: () => {this._supprimerRessource();  Toast.show('Ressource supprimée');}}                            
+                            ],
+                            {cancelable: false}
+                            )}}>
                     <Icon name='close' size={20} color="#EF7E56"/>
                 </TouchableHighlight>
             </View>

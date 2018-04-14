@@ -18,11 +18,18 @@ const mesTachesFinies=[];
 const mesTachesFiniesKey=[];
 const mesTachesEnCours=[];
 const mesTachesEnCoursKey=[];
+const lesTaches=[];
+const lesTachesKey=[];
+const mesRessources=[];
+const mesRessourcesKey=[];
+const mesCouleurs=['#DD105E', '#46466E','#EF7E56','#8787A3','#BDBDD7'];
+let couleurGraphe=[];
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   title: {
     fontSize: 24,
@@ -52,47 +59,95 @@ export class Kpi extends Component {
       mesTachesFiniesKey=[];
       mesTachesEnCours=[];
       mesTachesEnCoursKey=[];
+      lesNombresDeTaches=[];
+      mesRessources=[];
+      mesRessourcesKey=[];
+      couleurGraphe=[];
+
       try{
           let user = firebase.auth().currentUser;
           id = this.props.navigation.state.params.id;
           let maRef = firebase.database().ref(user.uid).child(id);
-          //console.log(id);
+
+          //Récupération des taches finies
           maRef.orderByChild('fin').equalTo(true).on('child_added',
           (data)=>{
             mesTachesFiniesKey.push(data.key)
-              //console.log(myKey)
-              //console.log(myKey.length);
           });
-              
           maRef.orderByChild('fin').equalTo(true).on('value',
           (data)=>{
-            mesTachesFinies=data.val()
-              //console.log(data.val())
-              this.setState({dataCharged:true});
+            mesTachesFinies=data.val()              
             }
           ); 
           
+          //Récupération des tâches non achevées
           maRef.orderByChild('fin').equalTo(false).on('child_added',
           (data)=>{
             mesTachesEnCoursKey.push(data.key)
-              //console.log(myKey)
-              //console.log(myKey.length);
-          });
-              
+          });  
           maRef.orderByChild('fin').equalTo(false).on('value',
           (data)=>{
               mesTachesEnCours=data.val()
-              //console.log(data.val())
-              this.setState({dataCharged:true});
             }
-          ); 
-          console.log(mesTachesFiniesKey.length);
-          console.log(mesTachesEnCoursKey.length);
+          );
+
+          //Récupération des ressources
+          maRef.child('ressources').on('child_added',
+          (data)=>{
+            mesRessourcesKey.push(data.key)
+          });  
+          maRef.child('ressources').on('value',
+          (data)=>{
+              mesRessources=data.val()
+            }
+          );
+
+          //Récupération des tâches ordonnées par ressource
+          for(i=0;i<mesRessourcesKey.length;i++)
+          {
+            let maRessource = mesRessources[i];
+            let numberOfTasks = 0;
+            if(maRessource=="(moi)"){ maRessource = "";}
+            maRef.orderByChild('ressource').equalTo(`${maRessource}`).on('child_added',
+            (data)=>{
+              numberOfTasks = numberOfTasks+1;
+            });
+            lesNombresDeTaches.push(numberOfTasks);
+            couleurGraphe.push(mesCouleurs[i]);
           }
+          //console.log(lesNombresDeTaches);
+
+          if(mesTachesEnCoursKey.length!=0 || mesTachesFiniesKey.length!=0){
+            this.setState({dataCharged: true});
+          }
+
+          }
+
           catch(error){
           console.log(error.ToString())
           }
   }
+
+  lesressources(){
+    const liste=[];
+    //console.log(couleurGraphe.length);
+    for (i=0; i<couleurGraphe.length;i++)
+    {
+      liste.push(
+      <View style={{flexDirection: 'row'}}>
+        <View style={{flex:1}}/>
+        <View style={{flex: 1, backgroundColor: `${couleurGraphe[i]}`, margin: 2}}/>
+        <View style={{flex:1}}/>
+        <View style={{flex: 7}}>
+          <Text>{mesRessources[i]}</Text>
+        </View>
+      </View>
+      )
+    }
+    return liste;
+  }
+
+
 
   render() {
     const chart_wh = 100;
@@ -104,8 +159,10 @@ export class Kpi extends Component {
     return (
       <ScrollView style={{flex: 1}}>
         <View style={styles.container}>
-          
-          <Text style={styles.title}>Doughnut</Text>
+        {!this.state.dataCharged &&
+          <View/> ||
+          <View>
+          <Text style={styles.title}>Evolution du Projet</Text>
           <PieChart
             chart_wh={chart_wh}
             series={series}
@@ -114,6 +171,24 @@ export class Kpi extends Component {
             coverRadius={0.5}
             coverFill={'#FFF'}
           />
+          <Text style={styles.title}>Répartition des tâches</Text>
+          <View style={{flexDirection: 'row'}}>
+            <View style={{flex: 2}}>
+              <PieChart
+                chart_wh={chart_wh}
+                series={lesNombresDeTaches}
+                sliceColor={couleurGraphe}
+                doughnut={true}
+                coverRadius={0.5}
+                coverFill={'#FFF'}
+              />
+            </View>
+            <View style={{flex: 3}}>
+              {this.lesressources()}
+            </View>
+          </View>
+          </View>
+          }
         </View>
       </ScrollView>
     );

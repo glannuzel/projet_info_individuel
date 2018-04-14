@@ -242,9 +242,9 @@ export class Suivi extends Component {
           }
         }
       }
-      console.log(liste.length)
+      //console.log(liste.length)
       if(liste.length != 0){ 
-        console.log("c'est le cas");
+        //console.log("c'est le cas");
         //this.setState({isTachesEnRetardEmpty:false});
       }
         //this.setState({isTachesEnRetardEmpty: false});}

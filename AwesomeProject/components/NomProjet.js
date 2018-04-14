@@ -23,7 +23,7 @@ export class NomProjet extends React.Component{
   }
 
   _onLongPress(etat){
-    console.log(this.props.ressource);
+    //console.log(this.props.ressource);
     this.setState({effacer: etat})
   }
 
