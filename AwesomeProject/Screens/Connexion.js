@@ -7,10 +7,11 @@ import * as firebase from 'firebase';
 
 
 require('../ConnexionBD.js');
-const adresseMail="glannuzel@ensc.fr";
-const mdp="123456";
-const id="KU2entkOqKYXHLKqDu4p5DJeKvz2";
-const user=new Array(0);
+//const adresseMail="glannuzel@ensc.fr";
+//const mdp="123456";
+const adresseMail="";
+const mdp="";
+const user=[];
 const myUser=[];
 
 export class Connexion extends React.Component {
@@ -20,42 +21,56 @@ export class Connexion extends React.Component {
       static navigationOptions = {
         header:null
     };
+
     signUp=async()=>{
         if(adresseMail&&mdp){
             try {
-            await firebase.auth()
-                .createUserWithEmailAndPassword(adresseMail, mdp);
-            this.setState({login:true})
-            console.log("Account created");
-
-            } catch (error) {
+                await firebase.auth().createUserWithEmailAndPassword(adresseMail, mdp);
+                this.setState({login:true})
+                console.log("Account created");
+            }
+            catch (error) {
+                if(error.toString() == "Error: The email address is badly formatted."){
+                    alert("Le format de l'adresse e-mail est incorrect.")
+                }
+                if(error.toString() == "Error: Password should be at least 6 characters"){
+                    alert("Le mot de passe doit contenir au moins 6 caractères.")
+                }
+                if(error.toString() == "Error: The email address is already in use by another account."){
+                    alert("Un compte est déjà associé à cette adresse e-mail.");
+                }
                 console.log(error.toString())
             }
         }
         else{
-            console.log('pas ok')
+            alert('Veuillez remplir tous les champs.');
         }
       }
-    login=async()=> {
     
-    try {
-        await firebase.auth()
-            .signInWithEmailAndPassword(adresseMail, mdp);
-            this.setState({login:true})
+
+    login=async()=> {
+        try {
+            await firebase.auth().signInWithEmailAndPassword(adresseMail, mdp);
+            this.setState({login:true});
+            // Navigation vers la page des projets
             this.props.navigation.navigate('Home');
-        console.log("Logged In!");
-
-        // Navigate to the Home page
-
-    } catch (error) {
-        console.log(error.toString())
+            console.log("Logged In!");
+        }
+        catch (error) {
+            if(error.toString() == "Error: The password is invalid or the user does not have a password."){
+                alert("Le mot de passe est invalide.");
+            }
+            if(error.toString() == "Error: The email address is badly formatted."){
+                alert("Le format de l'adresse e-mail est incorrect.")
+            }
+            if(error.toString() == "Error: There is no user record corresponding to this identifier. The user may have been deleted."){
+                alert("Utilisateur inconnu. L'adresse e-mail est erronée ou l'utilisateur n'existe pas.")
+            }
+            //alert(error.toString());
+            console.log(error.toString())
+        }
     }
 
-    }
-
-    coucou(){
-    console.log("coucou"+myUser[user[0]].name);
-    }
     render(){
     return (
         <View style={{flex: 1, backgroundColor: '#46466E'}}>
@@ -113,9 +128,3 @@ export class Connexion extends React.Component {
     )
     }
 }
-
-/*
-<Button title='mes infos' disabled={!this.state.login} onPress={()=>this.infos()}/>
-                    <Button title='Display Data' disabled={!this.state.login} onPress={()=>this.displayData()}/>
-                    <Button title='coucou' onPress={()=>this.coucou()}/>
-*/
