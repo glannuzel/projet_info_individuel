@@ -61,6 +61,12 @@ export class HomeScreen extends React.Component {
             //console.log(myKey)
             //console.log(myKey.length);
             });
+          
+            firebase.database().ref(id).on('child_removed',
+            (data)=>{
+            let index = myKey.indexOf(data.key);
+            myKey.splice(index,1);
+        });
             
         firebase.database().ref(id).on('value',
           (data)=>{

@@ -14,44 +14,44 @@ import Toast from 'react-native-simple-toast';
 require('../ConnexionBD.js');
 const styles = require('../style/Style');
 
+//Champ pour ajouter une ressource
 export class AjoutRessource extends React.Component{
-  constructor(props){
-    super(props);
-  }
+    constructor(props){
+        super(props);
+    }
 
-  state = {
-    nomRessource: "",
-  }; 
+    state = {
+        nomRessource: "", //nom de la ressource
+    }; 
 
-  _updateRessource = (text) => this.setState({nomRessource: `${text}`});
+    //Mettre à jour le statenomRessource
+    _updateRessource = (text) => this.setState({nomRessource: `${text}`});
 
-  _enregistrerRessource=async() =>{
-    let user = firebase.auth().currentUser;
-    id = this.props.id;
-    let nouvellesRessources = this.props.ressources;
-    nouvellesRessources.push(this.state.nomRessource);
-    firebase.database().ref(user.uid).child(id).child("ressources").set(nouvellesRessources);
-  }
+    //Ajouter la ressource à la base de données
+    _enregistrerRessource=async() =>{
+        let user = firebase.auth().currentUser;
+        id = this.props.id;
+        let nouvellesRessources = this.props.ressources;
+        nouvellesRessources.push(this.state.nomRessource);
+        firebase.database().ref(user.uid).child(id).child("ressources").set(nouvellesRessources);
+    }
 
-  componentDidMount=async() =>{
-      this.setState({nomRessource: ""});
-  }
-
-  render(){
-      return (
-        <View style={{flexDirection: 'row', backgroundColor: '#EEEEEE', borderRadius: 3, marginTop: 5}}>
-            <View style={{flex: 5, justifyContent: 'center', color: '#46466E', paddingLeft: 5}}>
-                    <TextInput style={styles.nomProjet} placeholder="Nom de la ressource..." selectionColor='#46466E'
-                                    onChangeText={(text) => this._updateRessource(text)}
-                                    maxLength={15}
-                                    ref={input => { this.textInput = input}}/>
+    render(){
+        return (
+            <View style={{flexDirection: 'row', backgroundColor: '#EEEEEE', borderRadius: 3, marginTop: 5}}>
+                <View style={{flex: 5, justifyContent: 'center', color: '#46466E', paddingLeft: 5}}>
+                        <TextInput style={styles.nomProjet} placeholder="Nom de la ressource..." selectionColor='#46466E'
+                                        onChangeText={(text) => this._updateRessource(text)}
+                                        maxLength={15}
+                                        ref={input => { this.textInput = input}}/>
+                </View>
+                <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+                    <TouchableHighlight style={{borderRadius: 20, padding: 5}} underlayColor='#D7D7D7' 
+                        onPress={() => {this._enregistrerRessource(); this.textInput.clear(); Toast.show('Ressource ajoutée');}}>
+                        <Icon name='add' size={20} color="#46466E"/>
+                    </TouchableHighlight>
+                </View>
             </View>
-            <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-                <TouchableHighlight style={{borderRadius: 20, padding: 5}} underlayColor='#D7D7D7' onPress={() => {this._enregistrerRessource(); this.textInput.clear(); Toast.show('Ressource ajoutée');}}>
-                    <Icon name='add' size={20} color="#46466E"/>
-                </TouchableHighlight>
-            </View>
-        </View>
         );
     }
 }

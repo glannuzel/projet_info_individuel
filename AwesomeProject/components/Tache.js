@@ -77,7 +77,12 @@ export class Tache extends Component {
         let user = firebase.auth().currentUser;
         projet = this.props.numeroProjet;
         id = this.props.numeroTache;
+        console.log("SUPPRIMER LA TACHE");
+        //console.log(projet);
+        //console.log(id);
+        this.props.razDonnees();
         firebase.database().ref(user.uid).child(projet).child(id).remove();
+        this.props.rechargerBD();
     }
 
     avancementTache(value){

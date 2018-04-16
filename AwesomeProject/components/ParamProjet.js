@@ -18,37 +18,39 @@ const myUser=[];
 const styles = require('../style/Style');
 
 export class ParamProjet extends React.Component{
-  constructor(props){
-    super(props);
-  }
 
-  state = {
-    nomProjet: `${this.props.nomProjet}`,
-    nomRessource: "",
-    ressources: "",
-    isOpenedNom : false,
-    isOpenedRessource : false,
-    isOpenedSupp : false,
-  }; 
-
-  _openNomProjet = () => {
-      if(this.state.isOpenedNom){
-        this.setState({isOpenedNom: false});
-      }
-      else{
-        this.setState({isOpenedNom: true});
-      }
+    constructor(props){
+        super(props);
     }
 
-  _openRessource = () => {
-    if(this.state.isOpenedRessource){
-        this.setState({isOpenedRessource: false});
-      }
-      else{
-        this.setState({isOpenedRessource: true});
-      }
+    state = {
+        nomProjet: `${this.props.nomProjet}`,
+        isOpenedNom : false, //Ouverture et fermeture de l'onglet nom du projet
+        isOpenedRessource : false, //Ouverture et fermeture de l'onglet ressources
+        isOpenedSupp : false, //Ouverture et fermeture de l'onglet suppression du projet
+    }; 
+
+    //Inversion du state isOpenedNom
+    _openNomProjet = () => {
+        if(this.state.isOpenedNom){
+            this.setState({isOpenedNom: false});
+        }
+        else{
+            this.setState({isOpenedNom: true});
+        }
     }
 
+    //Inversion du state isOpenedRessource
+    _openRessource = () => {
+        if(this.state.isOpenedRessource){
+            this.setState({isOpenedRessource: false});
+        }
+        else{
+            this.setState({isOpenedRessource: true});
+        }
+    }
+
+    //Inversion du state isOpenedSupp
     _openSupprimer = () => {
         if(this.state.isOpenedSupp){
             this.setState({isOpenedSupp: false});
@@ -58,108 +60,111 @@ export class ParamProjet extends React.Component{
             }
     }
 
-  _enregistrerNom=async()=>{
-    //if(this.state.login){
-        //let user = firebase.auth().currentUser;
-        //id = user.uid;
-        //console.log(this.props.nomProjet);
+    //Changement du nom du projet dans la base de données
+    _enregistrerNom=async()=>{
         let user = firebase.auth().currentUser;
         id = this.props.id;
-        //console.log(id);
         firebase.database().ref(user.uid).child(id).child("nomProjet").set(this.state.nomProjet);
-        //console.log("ajout");
-   // }
-  }
-
-  /*
-  _enregistrerRessource=async() =>{
-    let user = firebase.auth().currentUser;
-    id = this.props.id;
-    console.log(id);
-    let nouvellesRessources = this.props.ressources;
-    nouvellesRessources.push(this.state.nomRessource);
-    firebase.database().ref(user.uid).child(id).child("ressources").set(nouvellesRessources);
-    console.log("ajout"); 
-  }
-  */
-  
-  _supprimerProjet=async()=>{
-    let user = firebase.auth().currentUser;
-    id = this.props.id;
-    firebase.database().ref(user.uid).child(id).remove();
-    //console.log("suppression projet");
-    this.props.ouvert(); 
-  }
-
-  _updateNomProjet = (text) => this.setState({nomProjet: `${text}`});
-
-  /*
-  _updateRessource = (text) => this.setState({nomRessource: `${text}`});
-*/
-
-  _listeRessources(){
-    const ressourcesAssociees = [];
-    //console.log(this.props.ressources);
-    ressourcesAssociees.push(
-        <View style={{flexDirection: 'row'}}>
-            <View style={{flex: 1, alignItems: 'flex-start', justifyContent: 'center', color: '#46466E', margin: 10}}>
-                <Text> {this.props.ressources[0]} </Text>
-            </View>
-        </View>);
-    for (i = 1; i < this.props.ressources.length; i++) {
-      ressourcesAssociees.push(
-        <NomRessource numero={i} ressources={this.props.ressources} id={this.props.id}/>
-      );
     }
-    return ressourcesAssociees;
-  }
+  
+    //Suppression du projet de la base de données
+    _supprimerProjet=async()=>{
+        let user = firebase.auth().currentUser;
+        id = this.props.id;
+        firebase.database().ref(user.uid).child(id).remove();
+        this.props.ouvert(); 
+    }
 
-  render(){
-      return (
-        <ScrollView>
+    //Mise à jour du nom du projet dans le state nomProjet
+    _updateNomProjet = (text) => this.setState({nomProjet: `${text}`});
 
-            
-            <View style={{marginBottom: 10}}>
-                <TouchableHighlight underlayColor='#D7D7D7' onPress={() => this._openNomProjet()}>
-                    <View style={{paddingRight : 10, backgroundColor: "#E0E0E0"}} >
-                        <View style={{flexDirection: 'row'}}>
-                            <View style={{flex: 6, paddingLeft: 15, justifyContent: 'center', alignItems: 'flex-start'}}>
-                                <Text style={{margin: 5, color: "#777777", fontSize: 16}}>Modifier le nom du projet</Text>
-                            </View>
-                            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
-                                {this.state.isOpenedNom&&
-                                <Icon name="expand-more" size={25} color="#777777"/> ||
-                                <Icon name="chevron-right" size={25} color="#777777"/>
-                                }
+    //Lister toutes les ressources associées au projet
+    //Première ressource mise à part pour empêcher sa suppression
+    _listeRessources(){
+        const ressourcesAssociees = [];
+        ressourcesAssociees.push(
+            <View style={{flexDirection: 'row'}}>
+                <View style={{flex: 1, alignItems: 'flex-start', justifyContent: 'center', color: '#46466E', margin: 10}}>
+                    <Text> {this.props.ressources[0]} </Text>
+                </View>
+            </View>);
+        for (i = 1; i < this.props.ressources.length; i++) {
+            ressourcesAssociees.push(
+                <NomRessource numero={i} ressources={this.props.ressources} id={this.props.id}/>
+            );
+        }
+        return ressourcesAssociees;
+    }
+
+    render(){
+        return (
+            <ScrollView>
+                
+                <View style={{marginBottom: 10}}>
+                    <TouchableHighlight underlayColor='#D7D7D7' onPress={() => this._openNomProjet()}>
+                        <View style={{paddingRight : 10, backgroundColor: "#E0E0E0"}} >
+                            <View style={{flexDirection: 'row'}}>
+                                <View style={{flex: 6, paddingLeft: 15, justifyContent: 'center', alignItems: 'flex-start'}}>
+                                    <Text style={{margin: 5, color: "#777777", fontSize: 16}}>Modifier le nom du projet</Text>
+                                </View>
+                                <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
+                                    {this.state.isOpenedNom&&
+                                    <Icon name="expand-more" size={25} color="#777777"/> ||
+                                    <Icon name="chevron-right" size={25} color="#777777"/>
+                                    }
+                                </View>
                             </View>
                         </View>
-                    </View>
-                </TouchableHighlight>
+                    </TouchableHighlight>
 
-                {this.state.isOpenedNom&&
-                <View>
-                    <View style={{backgroundColor: '#EEEEEE', borderRadius: 3, margin: 10}}>
-                        <TextInput style={styles.nomProjet} placeholder="Nom du projet..." selectionColor='#46466E'
-                            value={this.state.nomProjet}
-                            onChangeText={(text) => this._updateNomProjet(text)}
-                            maxLength={30}/>
+                    {this.state.isOpenedNom&&
+                    <View>
+                        <View style={{backgroundColor: '#EEEEEE', borderRadius: 3, margin: 10}}>
+                            <TextInput style={styles.nomProjet} placeholder="Nom du projet..." selectionColor='#46466E'
+                                value={this.state.nomProjet}
+                                onChangeText={(text) => this._updateNomProjet(text)}
+                                maxLength={30}/>
+                        </View>
+                        <View style={{margin: 15}}>
+                            <Button title="Enregistrer" onPress={()=>{this._enregistrerNom(); Toast.show('Nom du projet modifié');}} color="#EF7E56"/>
+                        </View>
                     </View>
-                    <View style={{margin: 15}}>
-                        <Button title="Enregistrer" onPress={()=>{this._enregistrerNom(); Toast.show('Nom du projet modifié');}} color="#EF7E56"/>
-                    </View>
+                    }
                 </View>
-                }
-            </View>
 
-            <View style={{marginBottom: 10}}>
-                <TouchableHighlight underlayColor='#D7D7D7' onPress={() => this._openRessource()}>
+                <View style={{marginBottom: 10}}>
+                    <TouchableHighlight underlayColor='#D7D7D7' onPress={() => this._openRessource()}>
+                        <View style={{paddingRight : 10, backgroundColor: "#E0E0E0"}} >
+                            <View style={{flexDirection: 'row'}}>
+                                <View style={{flex: 6, paddingLeft: 15, justifyContent: 'center', alignItems: 'flex-start'}}>
+                                    <Text style={{margin: 5, color: "#777777", fontSize: 16}}>Gérer les ressources</Text>
+                                </View>
+                                <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
+                                {this.state.isOpenedRessource&&
+                                    <Icon name="expand-more" size={25} color="#777777"/> ||
+                                    <Icon name="chevron-right" size={25} color="#777777"/>
+                                    }
+                                </View>
+                            </View>
+                        </View>
+                    </TouchableHighlight>
+                    
+                    {this.state.isOpenedRessource&&
+                        <View style={{flex: 1, margin: 10}}>
+                            {this._listeRessources()}
+                            <AjoutRessource ressources={this.props.ressources} id={this.props.id}/>
+                        </View>
+                    }
+                </View>
+
+                <TouchableHighlight underlayColor='#D7D7D7' onPress={() => this._openSupprimer()}>
                     <View style={{paddingRight : 10, backgroundColor: "#E0E0E0"}} >
                         <View style={{flexDirection: 'row'}}>
                             <View style={{flex: 6, paddingLeft: 15, justifyContent: 'center', alignItems: 'flex-start'}}>
-                                <Text style={{margin: 5, color: "#777777", fontSize: 16}}>Gérer les ressources</Text>
+                                <Text style={{margin: 5, color: "#777777", fontSize: 16}}>Supprimer le projet</Text>
                             </View>
                             <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
-                            {this.state.isOpenedRessource&&
+                            {this.state.isOpenedSupp&&
                                 <Icon name="expand-more" size={25} color="#777777"/> ||
                                 <Icon name="chevron-right" size={25} color="#777777"/>
                                 }
@@ -168,48 +173,21 @@ export class ParamProjet extends React.Component{
                     </View>
                 </TouchableHighlight>
                 
-                {this.state.isOpenedRessource&&
-                    <View style={{flex: 1, margin: 10}}>
-                        {this._listeRessources()}
-                        <AjoutRessource ressources={this.props.ressources} id={this.props.id}/>
+                {this.state.isOpenedSupp&&
+                    <View style={{flex: 1, margin: 15}}>
+                        <Button title="Supprimer le projet" color="#DD105E" onPress={()=>{Alert.alert(
+                                "Supprimer le projet",
+                                `Souhaitez-vous vraiment supprimer le projet "${this.props.nomProjet}" ?`,
+                                [
+                                {text: 'Supprimer le projet', onPress: () => this._supprimerProjet()},
+                                {text: 'Annuler', style: 'cancel'}
+                                ],
+                                {cancelable: false}
+                                )}}/>
                     </View>
                 }
-            </View>
 
-            <TouchableHighlight underlayColor='#D7D7D7' onPress={() => this._openSupprimer()}>
-                <View style={{paddingRight : 10, backgroundColor: "#E0E0E0"}} >
-                    <View style={{flexDirection: 'row'}}>
-                        <View style={{flex: 6, paddingLeft: 15, justifyContent: 'center', alignItems: 'flex-start'}}>
-                            <Text style={{margin: 5, color: "#777777", fontSize: 16}}>Supprimer le projet</Text>
-                        </View>
-                        <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
-                        {this.state.isOpenedSupp&&
-                            <Icon name="expand-more" size={25} color="#777777"/> ||
-                            <Icon name="chevron-right" size={25} color="#777777"/>
-                            }
-                        </View>
-                    </View>
-                </View>
-            </TouchableHighlight>
-            
-            {this.state.isOpenedSupp&&
-                <View style={{flex: 1, margin: 15}}>
-                    <Button title="Supprimer le projet" color="#DD105E" onPress={()=>{Alert.alert(
-                            "Supprimer le projet",
-                            `Souhaitez-vous vraiment supprimer le projet "${this.props.nomProjet}" ?`,
-                            [
-                            {text: 'Supprimer le projet', onPress: () => this._supprimerProjet()},
-                            {text: 'Annuler', style: 'cancel'}
-                            ],
-                            {cancelable: false}
-                            )}}/>
-                </View>
-            }
-                           
-            
-
-        </ScrollView>
-
+            </ScrollView>
         );
     }
 }

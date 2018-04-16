@@ -22,30 +22,31 @@ export class NomRessource extends React.Component{
     super(props);
   }
 
-  state = {
-  }; 
-
   _supprimerRessource=async() =>{
     let user = firebase.auth().currentUser;
     id = this.props.id;
-    console.log("avant");
     console.log(this.props.ressources[this.props.numero]);
+
+    //Récupération de toutes les tâches attribuées à la ressource
     firebase.database().ref(user.uid).child(id).orderByChild("ressource").equalTo(`${this.props.ressources[this.props.numero]}`).on('child_added',
     (data)=>{
-        console.log("après")
         myKey.push(data.key); }
     );
     console.log(myKey.length);
     console.log(myKey);
     let i=0;
+
+    //Suppression de ces tâches de la base des données
     while (i<myKey.length)
     {
-        console.log('supp');
         firebase.database().ref(user.uid).child(id).child(myKey[i]).remove();
         i=i+1;
     }
+
+    //Suppression de la ressource de la liste des ressources
     let nouvellesRessources = this.props.ressources;
     nouvellesRessources.splice(this.props.numero,1);
+    //Suppression de la ressource de la base de données
     firebase.database().ref(user.uid).child(id).child("ressources").set(nouvellesRessources);
   }
 

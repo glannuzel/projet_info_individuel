@@ -62,7 +62,7 @@ export class NomProjet extends React.Component{
                       id={this.props.numero} 
                       nomProjet={this.props.nom}
                       ressources={this.props.ressource}
-                      ouvert={()=>this._setModalVisible(false)} 
+                      ouvert={()=>this._setModalVisible(false)}
                       />
               </ScrollView>
 

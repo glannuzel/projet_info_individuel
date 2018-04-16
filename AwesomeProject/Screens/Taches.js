@@ -37,13 +37,22 @@ export class Taches extends Component {
 
     setModalVisible(visible) {
         this.setState({modalVisible: visible});
-      }
+    }
+
+    setDataUncharged(){
+        this.setState({dataCharged: false});
+        //console.log('RAZ');
+        //console.log(this.state.dataCharged);
+    }
 
     componentWillMount=async()=>{
+
+        this.setState({dataCharged: false});
         myUser=[];
         myKey=[];
         myRessources=[];
         myRessourcesKey=[];
+
     try{
         let user = firebase.auth().currentUser;
         id = this.props.navigation.state.params.id;
@@ -61,7 +70,7 @@ export class Taches extends Component {
         (data)=>{
             myUser=data.val()
             //console.log(data.val())
-            this.setState({dataCharged:true});
+            //this.setState({dataCharged:true});
             }
         ); 
 
@@ -77,12 +86,14 @@ export class Taches extends Component {
             myRessources=data.val();
             //console.log(data.val());
             //Indiquer que le chargement des données est achevé :
-            this.setState({dataCharged:true});
             }
         ); 
+        console.log("rechargement");
+        this.setState({dataCharged:true});
         //console.log(myRessources);
         //console.log(myRessources[myRessourcesKey]);
         }
+
         catch(error){
         console.log(error.ToString())
         }
@@ -90,12 +101,23 @@ export class Taches extends Component {
 
     listeTaches(){
         const liste = [];
+        //console.log("Dans la fonction listeTache");
+        //console.log("longueur de la liste : "+myKey.length);
+        //console.log("données chargées ? " + this.state.dataCharged);
         if (this.state.dataCharged){
         for (let iter = 0; iter < myKey.length; iter++){
+            //console.log("iter = " + iter);
+            //console.log(myUser[myKey[iter]]);
             dateFinTache = new Date(myUser[myKey[iter]].dateFin);
             dateFinBienEcrite = semaine[dateFinTache.getDay()] + " " + dateFinTache.getDate()+ "/" + (dateFinTache.getMonth()+1) + "/" + dateFinTache.getFullYear();
             liste.push(
-            <Tache numeroProjet={this.props.navigation.state.params.id} numeroTache={myKey[iter]} nom={myUser[myKey[iter]].titre} description={myUser[myKey[iter]].description} dateFin={dateFinBienEcrite} tauxAvancement={myUser[myKey[iter]].avancement} rechargerBD={()=>this.componentWillMount()}/>
+            <Tache numeroProjet={this.props.navigation.state.params.id} 
+                numeroTache={myKey[iter]} nom={myUser[myKey[iter]].titre} 
+                description={myUser[myKey[iter]].description} 
+                dateFin={dateFinBienEcrite} 
+                tauxAvancement={myUser[myKey[iter]].avancement} 
+                rechargerBD={()=>this.componentWillMount()}
+                razDonnees={()=>this.setDataUncharged()}/>
             );
         }
     }
@@ -141,29 +163,3 @@ export class Taches extends Component {
       );
     }
 }
-
-//this.props.navigation.navigate('AjoutTache', {titre: "Ajouter une tâche", id: `${this.props.navigation.state.params.id}`})}
-
-
-/*
-<MenuProvider><View style={{paddingRight: 10}}><TouchableOpacity onPress={()=>{
-            if(this.state.menuOpened){this.setState({menuOpened: false});}
-            else{this.setState({menuOpened: true});}}}>
-            <Menu opened={this.state.menuOpened}
-            onBackdropPress={() => this.setState({menuOpened: false})}
-            onSelect={value => alert(`Selected number: ${value}`)}>
-              <MenuTrigger children={this.headerRight} onPress={this.openMenu}/>
-                <MenuOptions>
-                  <MenuOption value={1} text='coucou' onSelect={() => console.log('coucou')}/>
-                  <MenuOption value={2} onSelect={() => console.log('deco')}>
-                  <View style={{flexDirection: 'row'}}>
-                    <View style={{flex:1}}><Icon size={20} color="grey" name="exit-to-app"/></View>
-                    <View style={{flex:3}}><Text>Se déconnecter</Text></View>
-                  </View>
-                  </MenuOption>
-                </MenuOptions>
-          </Menu>
-            <Icon size={26} color="white" name="more-vert" />
-            </TouchableOpacity>
-            </View></MenuProvider>
-            */
