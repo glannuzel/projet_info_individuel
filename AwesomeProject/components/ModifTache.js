@@ -67,13 +67,11 @@ export class ModifTache extends React.Component{
     _hideDateTimePicker2 = () => this.setState({ isDateTimePickerVisible2: false });
   
     _handleDatePicked1 = (date) => {
-        alert(`A date has been picked: ${date.getTime()}`);
         this._updateDateDebut(date);
         this._hideDateTimePicker1();
     };
 
     _handleDatePicked2 = (date) => {
-        alert(`A date has been picked: ${date.getTime()}`);
         this._updateDateFin(date);
         this._hideDateTimePicker2();
     };

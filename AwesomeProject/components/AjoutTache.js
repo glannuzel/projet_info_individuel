@@ -5,6 +5,7 @@ import { ActivityIndicator, ListView, ScrollView, TouchableOpacity, KeyboardAvoi
 import { StackNavigator} from 'react-navigation';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { AutoExpandingTextInput } from './AutoExpandingTextInput';
 import * as firebase from 'firebase';
 
 const styles = require('../style/Style');
@@ -24,7 +25,6 @@ export class AjoutTache extends React.Component{
         isDateTimePickerVisible2: false,
         titre: "",
         description: "",
-        //ressources: new Array(this.props.ressources[0]),
         ressources: "(moi)",
         dateDebut: new Date().getTime(),
         dateFin: new Date().getTime(),
@@ -53,7 +53,12 @@ export class AjoutTache extends React.Component{
 
     _updateDescription = (text) => this.setState({description: `${text}`});
 
-    _updateDateFin = (date) => this.setState({dateFin: date.getTime()});
+    _updateDateFin = (date) => {
+        this.setState({dateFin: date.getTime()});
+        if(this.state.dateDebut > this.state.dateFin){
+          this.setState({dateDebut : this.state.dateFin});
+      }
+    }
 
     _updateDateDebut = (date) => {
         this.setState({dateDebut: date.getTime()});
@@ -69,13 +74,13 @@ export class AjoutTache extends React.Component{
     _hideDateTimePicker2 = () => this.setState({ isDateTimePickerVisible2: false });
   
     _handleDatePicked1 = (date) => {
-        alert(`A date has been picked: ${date.getTime()}`);
+        //alert(`A date has been picked: ${date.getTime()}`);
         this._updateDateDebut(date);
         this._hideDateTimePicker1();
     };
 
     _handleDatePicked2 = (date) => {
-        alert(`A date has been picked: ${date.getTime()}`);
+        //alert(`A date has been picked: ${date.getTime()}`);
         this._updateDateFin(date);
         this._hideDateTimePicker2();
     };
@@ -222,59 +227,3 @@ export class AjoutTache extends React.Component{
         );
     }
 }
-
-class AutoExpandingTextInput extends React.Component {
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            text: '',
-            height: 0
-        };
-    }
-
-    render() {
-        return (
-            <TextInput
-              {...this.props}
-              multiline={true}
-              onContentSizeChange={(event) => {
-                  if (this.state.height <= 120)
-                  {this.setState({ height: event.nativeEvent.contentSize.height });}
-              }}
-              style={[styles.default, {height: Math.max(35, this.state.height)}]}
-            />
-        );
-    }
-}
-  /*
-  <Picker>
-                  <Picker.Item label="Java" value="java" />
-                  <Picker.Item label="JavaScript" value="js" />
-              </Picker>
-              <CheckBox
-                title='Click Here'
-                checked={this.state.checked}
-              />
-              */
-
-  /*
-<Picker>
-              <Picker.Item label="blablabla"/>
-              <Picker.Item label="nfieojf"/>
-            </Picker>
-
-            <CheckBox label="Click here"/>
-            */
-
-/*
-<View style={{marginTop: 15}}>
-  <Text style={styles.sousTitreTexte}>CheckList</Text>
-  <TouchableOpacity onPress={this._checkBoxClick}>
-    <Icon size={24} name={this.state.box} color="grey"/>
-  </TouchableOpacity>
-  <TouchableOpacity onPress={this._checkBoxClick}>
-    <Icon size={24} name={this.state.box} color="grey"/>
-  </TouchableOpacity>
-</View>
-*/

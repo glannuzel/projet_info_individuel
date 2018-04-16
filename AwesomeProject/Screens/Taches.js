@@ -154,6 +154,9 @@ export class Taches extends Component {
                 <View style={{marginTop: 12}}>
                     <Button raised title='AJOUTER UNE TACHE' iconRight={{name: 'add-circle'}} backgroundColor="#EF7E56" onPress={()=>this.setModalVisible(true)}/>
                 </View>
+                <View style={{marginTop: 10}}>
+                    <Text style={{color: "#8787A3", fontSize: 16, textAlign: 'right'}}>Nombre d'éléments : {myKey.length}</Text>
+                </View>
                 <View style={{width: '100%', marginTop: 10}}>
                     {this.listeTaches()}
                 </View>

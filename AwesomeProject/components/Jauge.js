@@ -178,7 +178,7 @@ export class Jauge extends React.Component{
                 </View>
             </View>
             <View style={styles.backflipcard}>
-                    <Text style={{color: '#8787A3'}}>{this.props.description}</Text>
+                    <Text style={{color: '#8787A3'}}>Tâche affectée à : {this.props.ressource}</Text>
                     <Text style={{color: this.couleurTexte()}}>{this.Retard()}</Text>  
             </View>
             </FlipCard>

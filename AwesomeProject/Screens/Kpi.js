@@ -147,6 +147,29 @@ export class Kpi extends Component {
     return liste;
   }
 
+  lesEtatsTaches(){
+    const liste=[];
+    liste.push(
+      <View style={{flexDirection: 'row'}}>
+        <View style={{flex:1}}/>
+        <View style={{flex: 1, backgroundColor: '#DD105E', margin: 2}}/>
+        <View style={{flex:1}}/>
+        <View style={{flex: 7}}>
+          <Text>Tâches terminées</Text>
+        </View>
+      </View>);
+      liste.push(
+        <View style={{flexDirection: 'row'}}>
+          <View style={{flex:1}}/>
+          <View style={{flex: 1, backgroundColor: '#46466E', margin: 2}}/>
+          <View style={{flex:1}}/>
+          <View style={{flex: 7}}>
+            <Text>Tâches en cours et à venir</Text>
+          </View>
+        </View>);
+    return liste;
+  }
+
 
 
   render() {
@@ -162,31 +185,38 @@ export class Kpi extends Component {
         {!this.state.dataCharged &&
           <View/> ||
           <View>
-          <Text style={styles.title}>Evolution du Projet</Text>
-          <PieChart
-            chart_wh={chart_wh}
-            series={series}
-            sliceColor={sliceColor}
-            doughnut={true}
-            coverRadius={0.5}
-            coverFill={'#FFF'}
-          />
-          <Text style={styles.title}>Répartition des tâches</Text>
-          <View style={{flexDirection: 'row'}}>
-            <View style={{flex: 2}}>
-              <PieChart
-                chart_wh={chart_wh}
-                series={lesNombresDeTaches}
-                sliceColor={couleurGraphe}
-                doughnut={true}
-                coverRadius={0.5}
-                coverFill={'#FFF'}
-              />
+            <Text style={styles.title}>Evolution du Projet</Text>
+            <View style={{flexDirection: 'row'}}>
+                <View style={{flex: 2}}>
+                  <PieChart
+                    chart_wh={chart_wh}
+                    series={series}
+                    sliceColor={sliceColor}
+                    doughnut={true}
+                    coverRadius={0.5}
+                    coverFill={'#FFF'}
+                  />
+                </View>
+                <View style={{flex: 3}}>
+                {this.lesEtatsTaches()}
+                </View>
+              </View>
+            <Text style={styles.title}>Répartition des tâches</Text>
+            <View style={{flexDirection: 'row'}}>
+              <View style={{flex: 2}}>
+                <PieChart
+                  chart_wh={chart_wh}
+                  series={lesNombresDeTaches}
+                  sliceColor={couleurGraphe}
+                  doughnut={true}
+                  coverRadius={0.5}
+                  coverFill={'#FFF'}
+                />
+              </View>
+              <View style={{flex: 3}}>
+                {this.lesressources()}
+              </View>
             </View>
-            <View style={{flex: 3}}>
-              {this.lesressources()}
-            </View>
-          </View>
           </View>
           }
         </View>
@@ -194,14 +224,3 @@ export class Kpi extends Component {
     );
   }
 }
-
-/*<StatusBar
-            hidden={false}
-          />
-          <Text style={styles.title}>Basic</Text>
-          <PieChart
-            chart_wh={chart_wh}
-            series={series}
-            sliceColor={sliceColor}
-          />
-          */

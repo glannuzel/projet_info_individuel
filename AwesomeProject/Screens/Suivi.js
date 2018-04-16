@@ -30,54 +30,14 @@ export class Suivi extends Component {
     state={
           dataCharged: false,
           affichagePicker: "tout",
-          isTachesEnRetardEmpty: true,
-          isTachesUrgentesEmpty: true,
-          isTachesEnCoursEmpty: true
+          isTachesEnRetardDisplayed: true,
+          isTachesUrgentesDisplayed: true,
+          isTachesEnCoursDisplayed: true,
+          isTachesAVenirDisplayed: false
     }
-/*
-    componentWillUpdate=async(nextProps, nextState) =>{
-      console.log("dans componentwillupdate");
-      let user = firebase.auth().currentUser;
-      id = this.props.navigation.state.params.id;
-      let maRef = firebase.database().ref(user.uid).child(id);
-      maRef.orderByChild('dateFin').on('child_removed',
-      ()=>{
-          console.log("dans le removed");
-          console.log(myKey.length);
-          this.setState({dataCharged: false});
-      });
-      if (nextState.dataCharged == true && this.state.dataCharged == false) {
-        console.log("condition validée");
-        this.rechargerBD();
-      }
-      let user = firebase.auth().currentUser;
-      id = this.props.navigation.state.params.id;
-      let maRef = firebase.database().ref(user.uid).child(id);
-      console.log(myKey.length);
-      maRef.orderByChild('dateFin').on('child_removed',
-      (data)=>{
-          console.log("dans le removed");
-          this.componentWillMount();
-          //myKey.delete(data.key)
-          //console.log(myKey)
-          //console.log(myKey.length);
-      });
-      if (nextState.dataCharged == true && this.state.dataCharged == false) {
-        console.log("condition validée");
-        this.componentWillMount();
-      }
-     
-    }
-     */
-
-    
-    componentDidMount(){
-      console.log("dans componentDidMount");
-      //this.setState({dataCharged: false});
-    }
+  
 
     componentWillMount=async()=>{
-      console.log("dans component will mount");
       this.setState({dataCharged:false});
       myUser=[];
       myKey=[];
@@ -118,76 +78,24 @@ export class Suivi extends Component {
           }
       }
 
-      _mesTaches=async()=>{
-        this.setState({dataCharged: false});
-        myUser=[];
-        myKey=[];
-        try{
-            let user = firebase.auth().currentUser;
-            id = this.props.navigation.state.params.id;
-            //console.log(id);
-            firebase.database().ref(user.uid).child(id).orderByChild("ressource").equalTo("").on('child_added',
-            (data)=>{
-                myKey.push(data.key)
-                //console.log(myKey)
-                //console.log(myKey.length);
-                }
-              );
-                
-            firebase.database().ref(user.uid).child(id).orderByChild("ressource").equalTo("").on('value',
-            (data)=>{
-                myUser=data.val()
-                //console.log(data.val())
-                this.setState({dataCharged:true});
-                }
-            ); 
-            //essai=firebase.database().ref(user.uid).child(id).;
-            //console.log(essai);
-            }
-            catch(error){
-            console.log(error.ToString())
-            }
-        }
-
-    
-    rechargerBD=async()=>{
-      this.setState({dataCharged:false});
-      console.log("dans rechargerBD");
-      myUser=[];
-      myKey=[];
-      try{
-          let user = firebase.auth().currentUser;
-          id = this.props.navigation.state.params.id;
-          let maRef = firebase.database().ref(user.uid).child(id);
-          //console.log(id);
-          maRef.orderByChild('dateFin').on('child_added',
-          (data)=>{
-              myKey.push(data.key)
-              //console.log(myKey)
-              //console.log(myKey.length);
-          });
-              
-          maRef.orderByChild('dateFin').on('value',
-          (data)=>{
-              myUser=data.val()
-              //console.log(data.val())
-              this.setState({dataCharged:true});
-            }
-          ); 
-          //essai=firebase.database().ref(user.uid).child(id).;
-          //console.log(essai);
-          }
-          catch(error){
-          console.log(error.ToString())
-          }
-        }
-
     jaugeTacheRetard(){
-      //this.setState({dataCharged: false});
-      //this.rechargerBD();
       const liste = [];
         if (this.state.dataCharged){
-          if(this.state.affichagePicker === "tout"){
+          if(this.state.affichagePicker === "mesTaches"){
+            for (let iter = 2; iter < myKey.length; iter++){
+              if(myUser[myKey[iter]].ressource == "(moi)"){
+                dateFinTache = new Date(myUser[myKey[iter]].dateFin);
+                let ajd = Math.ceil(Date.now() / (1000*3600*24));
+                if (Math.ceil(dateFinTache / (1000*3600*24)) < ajd && !myUser[myKey[iter]].fin){
+                  dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
+                  liste.push(
+                    <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
+                  );
+                }
+              }
+            }
+          }
+          else{
             for (let iter = 2; iter < myKey.length; iter++){
                 dateFinTache = new Date(myUser[myKey[iter]].dateFin);
                 let ajd = Math.ceil(Date.now() / (1000*3600*24));
@@ -199,18 +107,7 @@ export class Suivi extends Component {
                 }
               }
             }
-        if(this.state.affichagePicker === "mesTaches"){
-          for (let iter = 0; iter < myKey.length; iter++){
-            dateFinTache = new Date(myUser[myKey[iter]].dateFin);
-            let ajd = Math.ceil(Date.now() / (1000*3600*24));
-            if (Math.ceil(dateFinTache / (1000*3600*24)) < ajd && !myUser[myKey[iter]].fin){
-              dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
-              liste.push(
-                <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
-              );
-            }
-          }
-        }
+        
       }
       //console.log(liste.length)
       if(liste.length != 0){ 
@@ -222,11 +119,22 @@ export class Suivi extends Component {
     }
 
     jaugeTacheUrgente(){
-      //this.setState({dataCharged: false});
-      //this.rechargerBD();
       const liste = [];
         if (this.state.dataCharged){
-          if(this.state.affichagePicker === "tout"){
+          if(this.state.affichagePicker === "mesTaches"){
+            for (let iter = 2; iter < myKey.length; iter++){
+              if(myUser[myKey[iter]].ressource == "(moi)"){
+                dateFinTache = new Date(myUser[myKey[iter]].dateFin);
+                let ajd = Math.ceil(Date.now() / (1000*3600*24));
+                if ((Math.ceil(dateFinTache / (1000*3600*24)) <= ajd+3) && (Math.ceil(dateFinTache / (1000*3600*24))) >= ajd && !myUser[myKey[iter]].fin){                dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
+                  liste.push(
+                    <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
+                  );
+                }
+              }
+            }
+          }
+          else{
             for (let iter = 2; iter < myKey.length; iter++){
                 dateFinTache = new Date(myUser[myKey[iter]].dateFin);
                 let ajd = Math.ceil(Date.now() / (1000*3600*24));
@@ -238,17 +146,6 @@ export class Suivi extends Component {
                 }
               }
             }
-          if(this.state.affichagePicker === "mesTaches"){
-            for (let iter = 0; iter < myKey.length; iter++){
-              dateFinTache = new Date(myUser[myKey[iter]].dateFin);
-              let ajd = Math.ceil(Date.now() / (1000*3600*24));
-              if ((Math.ceil(dateFinTache / (1000*3600*24)) <= ajd+3) && (Math.ceil(dateFinTache / (1000*3600*24))) >= ajd && !myUser[myKey[iter]].fin){                dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
-                liste.push(
-                  <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
-                );
-              }
-            }
-          }
         }
         console.log("TACHES URGENTES : ");
         console.log(myKey.length);
@@ -257,12 +154,11 @@ export class Suivi extends Component {
     }
 
     jaugeTacheEnCours(){
-      //this.setState({dataCharged: false});
-      //this.rechargerBD();
       const liste = [];
         if (this.state.dataCharged){
-          if(this.state.affichagePicker === "tout"){
-            for (let iter = 1; iter < myKey.length; iter++){
+          if(this.state.affichagePicker === "mesTaches"){
+            for (let iter = 2; iter < myKey.length; iter++){
+              if(myUser[myKey[iter]].ressource == "(moi)"){
                 dateFinTache = new Date(myUser[myKey[iter]].dateFin);
                 let ajd = Math.ceil(Date.now() / (1000*3600*24));
                 if (Math.ceil(dateFinTache / (1000*3600*24)) > ajd+3 && !myUser[myKey[iter]].fin){
@@ -273,23 +169,60 @@ export class Suivi extends Component {
                 }
               }
             }
-          if(this.state.affichagePicker === "mesTaches"){
-            for (let iter = 0; iter < myKey.length; iter++){
-              dateFinTache = new Date(myUser[myKey[iter]].dateFin);
-              let ajd = Math.ceil(Date.now() / (1000*3600*24));
-              if (Math.ceil(dateFinTache / (1000*3600*24)) > ajd+3 && !myUser[myKey[iter]].fin){
-                dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
-                liste.push(
-                  <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
-                );
+          }
+          else{
+            for (let iter = 2; iter < myKey.length; iter++){
+                dateFinTache = new Date(myUser[myKey[iter]].dateFin);
+                let ajd = Math.ceil(Date.now() / (1000*3600*24));
+                if (Math.ceil(dateFinTache / (1000*3600*24)) > ajd+3 && !myUser[myKey[iter]].fin){
+                  dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
+                  liste.push(
+                    <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
+                  );
+                }
               }
             }
-          }
         }
       //this.componentDidMount();
         //if(liste.length !== 0){ this.setState({isTachesEnCoursEmpty: false});}
       return liste;
     }
+
+    jaugeTacheAVenir(){
+      const liste = [];
+        if (this.state.dataCharged){
+          if(this.state.affichagePicker === "mesTaches"){
+            for (let iter = 2; iter < myKey.length; iter++){
+              if(myUser[myKey[iter]].ressource == "(moi)"){
+                dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
+                let ajd = Math.ceil(Date.now() / (1000*3600*24));
+                if (Math.ceil(dateDebutTache / (1000*3600*24)) > ajd && !myUser[myKey[iter]].fin){
+                  dateFinTache = new Date(myUser[myKey[iter]].dateFin);
+                  liste.push(
+                    <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} ressource={myUser[myKey[iter]].ressource} nomTache={myUser[myKey[iter]].titre}/>
+                  );
+                }
+              }
+            }
+          }
+          else{
+            for (let iter = 2; iter < myKey.length; iter++){
+                dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
+                let ajd = Math.ceil(Date.now() / (1000*3600*24));
+                if (Math.ceil(dateDebutTache / (1000*3600*24)) > ajd && !myUser[myKey[iter]].fin){
+                  dateFinTache = new Date(myUser[myKey[iter]].dateFin);
+                  liste.push(
+                    <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} nomTache={myUser[myKey[iter]].titre}/>
+                  );
+                }
+              }
+            }
+        }
+        //if(liste.length !== 0){ this.setState({isTachesEnCoursEmpty: false});}
+      return liste;
+    }
+
+
 
     render(){
         
@@ -302,38 +235,89 @@ export class Suivi extends Component {
                       onValueChange={(value) => {
                         this.setState({affichagePicker: value});
                         if(value === "mesTaches"){
-                          this._mesTaches();}
+                          this.setState({isTachesEnRetardDisplayed: true});
+                          this.setState({isTachesUrgentesDisplayed: true});
+                          this.setState({isTachesEnCoursDisplayed: true});
+                          this.setState({isTachesAVenirDisplayed: false});
+                          }
                         else{
                           if(value === "tout"){
-                            this.componentWillMount();
+                            this.setState({isTachesEnRetardDisplayed: true});
+                            this.setState({isTachesUrgentesDisplayed: true});
+                            this.setState({isTachesEnCoursDisplayed: true});
+                            this.setState({isTachesAVenirDisplayed: false});
+                          }
+                          if(value == "retard"){
+                            this.setState({isTachesEnRetardDisplayed: true});
+                            this.setState({isTachesUrgentesDisplayed: false});
+                            this.setState({isTachesEnCoursDisplayed: false});
+                            this.setState({isTachesAVenirDisplayed: false});
+                          }
+                          if(value == "urgentes"){
+                            this.setState({isTachesEnRetardDisplayed: false});
+                            this.setState({isTachesUrgentesDisplayed: true});
+                            this.setState({isTachesEnCoursDisplayed: false});
+                            this.setState({isTachesAVenirDisplayed: false});
+                          }
+                          if(value == "aVenir"){
+                            this.setState({isTachesEnRetardDisplayed: false});
+                            this.setState({isTachesUrgentesDisplayed: false});
+                            this.setState({isTachesEnCoursDisplayed: false});
+                            this.setState({isTachesAVenirDisplayed: true});
                           }
                         }}}>
-                  <Picker.Item label="Tout afficher" value="tout" key={1} />
-                  <Picker.Item label="Afficher uniquement mes tâches" value="mesTaches" key={2} />
+                  <Picker.Item label="Toutes les tâches en cours" value="tout" key={1} />
+                  <Picker.Item label="Uniquement mes tâches" value="mesTaches" key={2} />
+                  <Picker.Item label="Uniquement tâches en retard" value="retard" key={3} />
+                  <Picker.Item label="Uniquement tâches urgentes" value="urgentes" key={4} />
+                  <Picker.Item label="Tâches à venir" value="aVenir" key={5} />
                 </Picker>
               </View>
 
               {this.state.dataCharged&&
+              this.state.isTachesEnRetardDisplayed&&this.state.isTachesUrgentesDisplayed&&this.state.isTachesEnCoursDisplayed&&!this.state.isTachesAVenirDisplayed&&
               <View style={{marginBottom: 5}}>
                 <View style={{marginBottom: 5}}>
-                  
                   <Text style={{margin: 10, fontSize: 20, color: "#46466E"}}>Tâches en retard</Text>
-                  
                     {this.jaugeTacheRetard()}
                 </View>
                 <View style={{marginBottom: 5}}>
-                  
                   <Text style={{margin: 10, fontSize: 20, color: "#46466E"}}>Tâches en urgentes</Text>
-                  
                     {this.jaugeTacheUrgente()}
                 </View>
                 <View style={{marginBottom: 5}}>
-                  
-                  <Text style={{margin: 10, fontSize: 20, color: "#46466E"}}>Tâches en cours</Text>
-                  
+                  <Text style={{margin: 10, fontSize: 20, color: "#46466E"}}>Autres tâches en cours</Text>
                     {this.jaugeTacheEnCours()}
                 </View>
               </View> ||
+
+              this.state.dataCharged&&
+              this.state.isTachesEnRetardDisplayed&&!this.state.isTachesUrgentesDisplayed&&!this.state.isTachesEnCoursDisplayed&&!this.state.isTachesAVenirDisplayed&&
+              <View style={{marginBottom: 5}}>
+                <View style={{marginBottom: 5}}>
+                  <Text style={{margin: 10, fontSize: 20, color: "#46466E"}}>Tâches en retard</Text>
+                    {this.jaugeTacheRetard()}
+                </View>
+              </View> ||
+
+              this.state.dataCharged&&
+              !this.state.isTachesEnRetardDisplayed&&this.state.isTachesUrgentesDisplayed&&!this.state.isTachesEnCoursDisplayed&&!this.state.isTachesAVenirDisplayed&&
+              <View style={{marginBottom: 5}}>
+                <View style={{marginBottom: 5}}>
+                  <Text style={{margin: 10, fontSize: 20, color: "#46466E"}}>Tâches en urgentes</Text>
+                    {this.jaugeTacheUrgente()}
+                </View>
+              </View> ||
+
+              this.state.dataCharged&&
+              !this.state.isTachesEnRetardDisplayed&&!this.state.isTachesUrgentesDisplayed&&!this.state.isTachesEnCoursDisplayed&&this.state.isTachesAVenirDisplayed&&
+              <View style={{marginBottom: 5}}>
+                <View style={{marginBottom: 5}}>
+                  <Text style={{margin: 10, fontSize: 20, color: "#46466E"}}>Tâches à venir</Text>
+                    {this.jaugeTacheAVenir()}
+                </View>
+              </View> ||
+
               <View style={{marginTop:'30%',justifyContent:'center',alignItems:'center'}}>
                 <ActivityIndicator size="large" color="#DD105E"/>
                 <Text>Chargement en cours...</Text>
@@ -343,15 +327,3 @@ export class Suivi extends Component {
           );
         }
     }
-
-    /*
-    <View style={{flex: 1}}>
-                <ProgressBarClassic progress={20} label="un label"/>
-              </View>
-              <View style={{flex: 1}}>
-                <ProgressBarClassic progress={40} color="#111111" label="autre chose"/>
-              </View>
-              <View style={{flex: 1}}>
-                <ProgressBarClassic progress={10} label="une tâche"/>
-              </View>
-              */
