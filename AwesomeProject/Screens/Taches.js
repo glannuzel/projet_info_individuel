@@ -113,8 +113,12 @@ export class Taches extends Component {
             liste.push(
             <Tache numeroProjet={this.props.navigation.state.params.id} 
                 numeroTache={myKey[iter]} nom={myUser[myKey[iter]].titre} 
+                ressources={myRessources}
+                laRessource={myUser[myKey[iter]].ressource}
                 description={myUser[myKey[iter]].description} 
-                dateFin={dateFinBienEcrite} 
+                //dateFin={dateFinBienEcrite}
+                dateFin={dateFinTache}
+                dateDebut={myUser[myKey[iter]].dateDebut}
                 tauxAvancement={myUser[myKey[iter]].avancement} 
                 rechargerBD={()=>this.componentWillMount()}
                 razDonnees={()=>this.setDataUncharged()}/>

@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 import { Alert, AppRegistry, Button, Image, TextInput, Picker, CheckBox } from 'react-native';
 import { ActivityIndicator, ListView, ScrollView, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import { StackNavigator} from 'react-navigation';
+import { AutoExpandingTextInput } from './AutoExpandingTextInput';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as firebase from 'firebase';
@@ -13,7 +14,7 @@ require('../ConnexionBD.js');
 //Tableau des jours de la semaine abbréviés
 const semaine = new Array("Dim.", "Lun.","Mar.", "Mer.","Jeu.", "Ven.", "Sam.");
 
-export class AjoutTache extends React.Component{
+export class ModifTache extends React.Component{
 
     constructor(props){
       super(props);
@@ -22,29 +23,26 @@ export class AjoutTache extends React.Component{
     state = {
         isDateTimePickerVisible1: false,
         isDateTimePickerVisible2: false,
-        titre: "",
-        description: "",
-        //ressources: new Array(this.props.ressources[0]),
-        ressources: "(moi)",
-        dateDebut: new Date().getTime(),
-        dateFin: new Date().getTime(),
-        box: "check-box-outline-blank"
+        titre: this.props.nom,
+        description: this.props.description,
+        ressource: this.props.ressource,
+        dateDebut: new Date(this.props.dateDebut).getTime(),
+        dateFin: new Date(this.props.dateFin).getTime(),
     };
 
     enregistrer=async()=>{
+        console.log("dans enregistrer");
         let user = firebase.auth().currentUser;
-        id = this.props.id;
-        let obj={
-        titre: `${this.state.titre}`,
-        description: `${this.state.description}`,
-        dateDebut: this.state.dateDebut,
-        dateFin: this.state.dateFin,
-        ressource: this.state.ressources,
-        avancement: 0,
-        fin: false
-        }
-        firebase.database().ref(user.uid).child(id).push(obj);
-        console.log("ajout");
+        id = this.props.numeroProjet;
+        console.log(id);
+        tache = this.props.numeroTache;
+        console.log(tache);
+        firebase.database().ref(user.uid).child(id).child(tache).child("titre").set(this.state.titre);
+        firebase.database().ref(user.uid).child(id).child(tache).child("description").set(this.state.description);
+        firebase.database().ref(user.uid).child(id).child(tache).child("ressource").set(this.state.ressource);
+        firebase.database().ref(user.uid).child(id).child(tache).child("dateFin").set(this.state.dateFin);
+        firebase.database().ref(user.uid).child(id).child(tache).child("dateDebut").set(this.state.dateDebut);
+        console.log("tâche modifiée");
         this.props.ouvert();
         this.props.rechargerBD();
     }
@@ -80,22 +78,10 @@ export class AjoutTache extends React.Component{
         this._hideDateTimePicker2();
     };
 
-    _onSubmitEdit = () => {
-        alert("VLAIDE");
-    };
-
-    _checkBoxClick = () => {
-        if (this.state.box=="check-box-outline-blank")
-        {
-            this.setState({box: "check-box"});
-        }
-        else { this.setState({box: "check-box-outline-blank"});}
-    }
-
     _ecrireDate = (date) =>{
         date = new Date(date);
         dateBienEcrite = semaine[date.getDay()] + " " + date.getDate()+ "/" + (date.getMonth()+1) + "/" + date.getFullYear();
-        return dateBienEcrite
+        return dateBienEcrite;
     }
 
     _listeRessources(){
@@ -120,6 +106,7 @@ export class AjoutTache extends React.Component{
                   underlineColorAndroid='transparent' 
                   placeholder="Titre de la tâche" 
                   selectionColor='#46466E'
+                  value={this.state.titre}
                   onChangeText={(text) => this._updateTitre(text)} />
             </View>
             <Text style={styles.sousTitreTexte}>Description</Text>
@@ -127,6 +114,7 @@ export class AjoutTache extends React.Component{
                 <AutoExpandingTextInput style={{ height: 40, margin: 10, padding: 5 }} 
                 underlineColorAndroid='transparent'
                 placeholder="Description ..."
+                value={this.state.description}
                 selectionColor='#46466E'
                 onChangeText={(text) => this._updateDescription(text)}
                 maxLength={500}
@@ -198,11 +186,11 @@ export class AjoutTache extends React.Component{
                 <View style={{borderColor: '#C3C3C3', backgroundColor: 'white', borderWidth: 1, borderRadius: 5, marginTop: 10, marginBottom: 10}}>
                   <Picker
                         //selectedValue={this.state.ressources[0]}
-                        selectedValue={this.state.ressources}
+                        selectedValue={this.state.ressource}
                         onValueChange={(value) => {
                           //this.state.ressources.splice(0,1,value);
-                          this.setState({ressources: value});
-                          console.log(this.state.ressources);
+                          this.setState({ressource: value});
+                          console.log(this.state.ressource);
                         }}>
                         {this._listeRessources()}
                   </Picker>
@@ -211,7 +199,7 @@ export class AjoutTache extends React.Component{
               
             <View style={{flexDirection: 'row', justifyContent: "space-between"}}>
               <View style={{flex: 1, margin: 15}}>
-                <Button title="Enregistrer" onPress={()=>this.enregistrer()} color="#EF7E56"/>
+                <Button title="Enregistrer" onPress={()=>{this.enregistrer();}} color="#EF7E56"/>
               </View>
               <View style={{flex: 1, margin: 15}}>
                 <Button title="Annuler" onPress={()=>this.props.ouvert()} color="#DD105E"/>
@@ -222,7 +210,7 @@ export class AjoutTache extends React.Component{
         );
     }
 }
-
+/*
 class AutoExpandingTextInput extends React.Component {
 
     constructor(props) {
@@ -247,34 +235,4 @@ class AutoExpandingTextInput extends React.Component {
         );
     }
 }
-  /*
-  <Picker>
-                  <Picker.Item label="Java" value="java" />
-                  <Picker.Item label="JavaScript" value="js" />
-              </Picker>
-              <CheckBox
-                title='Click Here'
-                checked={this.state.checked}
-              />
-              */
-
-  /*
-<Picker>
-              <Picker.Item label="blablabla"/>
-              <Picker.Item label="nfieojf"/>
-            </Picker>
-
-            <CheckBox label="Click here"/>
-            */
-
-/*
-<View style={{marginTop: 15}}>
-  <Text style={styles.sousTitreTexte}>CheckList</Text>
-  <TouchableOpacity onPress={this._checkBoxClick}>
-    <Icon size={24} name={this.state.box} color="grey"/>
-  </TouchableOpacity>
-  <TouchableOpacity onPress={this._checkBoxClick}>
-    <Icon size={24} name={this.state.box} color="grey"/>
-  </TouchableOpacity>
-</View>
 */

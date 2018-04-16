@@ -107,7 +107,7 @@ export class Kpi extends Component {
           {
             let maRessource = mesRessources[i];
             let numberOfTasks = 0;
-            if(maRessource=="(moi)"){ maRessource = "";}
+            //if(maRessource=="(moi)"){ maRessource = "";}
             maRef.orderByChild('ressource').equalTo(`${maRessource}`).on('child_added',
             (data)=>{
               numberOfTasks = numberOfTasks+1;
