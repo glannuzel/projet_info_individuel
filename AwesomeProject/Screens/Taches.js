@@ -75,7 +75,16 @@ export class Taches extends Component {
             //console.log(data.val())
             //this.setState({dataCharged:true});
             }
-        ); 
+        );
+
+        firebase.database().ref(user.uid).child(id).on('child_removed',
+        (data)=>{
+            this.setState({nomRecherche: ""});
+            //console.log(myKey)
+            //console.log(myKey.length);
+        });
+
+
 
         //Récupération des ressources associées à un projet
         firebase.database().ref(user.uid).child(id).child('ressources').on('child_added',
@@ -125,7 +134,7 @@ export class Taches extends Component {
                         dateDebut={myUser[myKey[iter]].dateDebut}
                         tauxAvancement={myUser[myKey[iter]].avancement} 
                         rechargerBD={()=>this.componentWillMount()}
-                        razDonnees={()=>this.setDataUncharged()}/>
+                        razDonnees={()=>{this.setDataUncharged();}}/>
                     );
                 }
             }
