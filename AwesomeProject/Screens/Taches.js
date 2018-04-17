@@ -15,6 +15,7 @@ import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-m
  
 //const BarreNavigation = require('../components/BarreNavigation');
 require('../ConnexionBD.js');
+const styles = require('../style/Style');
 const myKey=new Array(0);
 const myUser=[];
 const myRessources=[];
@@ -33,6 +34,8 @@ export class Taches extends Component {
     state={
         dataCharged: false,
         modalVisible: false,
+        rechercheTache: false,
+        nomRecherche: "",
     }
 
     setModalVisible(visible) {
@@ -105,28 +108,49 @@ export class Taches extends Component {
         //console.log("longueur de la liste : "+myKey.length);
         //console.log("données chargées ? " + this.state.dataCharged);
         if (this.state.dataCharged){
-        for (let iter = 0; iter < myKey.length; iter++){
-            //console.log("iter = " + iter);
-            //console.log(myUser[myKey[iter]]);
-            dateFinTache = new Date(myUser[myKey[iter]].dateFin);
-            dateFinBienEcrite = semaine[dateFinTache.getDay()] + " " + dateFinTache.getDate()+ "/" + (dateFinTache.getMonth()+1) + "/" + dateFinTache.getFullYear();
-            liste.push(
-            <Tache numeroProjet={this.props.navigation.state.params.id} 
-                numeroTache={myKey[iter]} nom={myUser[myKey[iter]].titre} 
-                ressources={myRessources}
-                laRessource={myUser[myKey[iter]].ressource}
-                description={myUser[myKey[iter]].description} 
-                //dateFin={dateFinBienEcrite}
-                dateFin={dateFinTache}
-                dateDebut={myUser[myKey[iter]].dateDebut}
-                tauxAvancement={myUser[myKey[iter]].avancement} 
-                rechargerBD={()=>this.componentWillMount()}
-                razDonnees={()=>this.setDataUncharged()}/>
-            );
+            if(this.state.nomRecherche == ""){
+                for (let iter = 0; iter < myKey.length; iter++){
+                    //console.log("iter = " + iter);
+                    //console.log(myUser[myKey[iter]]);
+                    dateFinTache = new Date(myUser[myKey[iter]].dateFin);
+                    dateFinBienEcrite = semaine[dateFinTache.getDay()] + " " + dateFinTache.getDate()+ "/" + (dateFinTache.getMonth()+1) + "/" + dateFinTache.getFullYear();
+                    liste.push(
+                    <Tache numeroProjet={this.props.navigation.state.params.id} 
+                        numeroTache={myKey[iter]} nom={myUser[myKey[iter]].titre} 
+                        ressources={myRessources}
+                        laRessource={myUser[myKey[iter]].ressource}
+                        description={myUser[myKey[iter]].description} 
+                        //dateFin={dateFinBienEcrite}
+                        dateFin={dateFinTache}
+                        dateDebut={myUser[myKey[iter]].dateDebut}
+                        tauxAvancement={myUser[myKey[iter]].avancement} 
+                        rechargerBD={()=>this.componentWillMount()}
+                        razDonnees={()=>this.setDataUncharged()}/>
+                    );
+                }
+            }
+            else{
+                for (let iter = 0; iter < myKey.length; iter++){
+                    if(myUser[myKey[iter]].titre.indexOf(this.state.nomRecherche) != -1){
+                        liste.push(
+                            <Tache numeroProjet={this.props.navigation.state.params.id} 
+                                numeroTache={myKey[iter]} nom={myUser[myKey[iter]].titre} 
+                                ressources={myRessources}
+                                laRessource={myUser[myKey[iter]].ressource}
+                                description={myUser[myKey[iter]].description} 
+                                dateFin={dateFinTache}
+                                dateDebut={myUser[myKey[iter]].dateDebut}
+                                tauxAvancement={myUser[myKey[iter]].avancement} 
+                                rechargerBD={()=>this.componentWillMount()}
+                                razDonnees={()=>this.setDataUncharged()}/>
+                        );
+                    }
+                }
+            }
         }
-    }
       return liste;
     }
+
 
     render() {
         const { navigate } = this.props.navigation;
@@ -154,6 +178,22 @@ export class Taches extends Component {
                 <View style={{marginTop: 12}}>
                     <Button raised title='AJOUTER UNE TACHE' iconRight={{name: 'add-circle'}} backgroundColor="#EF7E56" onPress={()=>this.setModalVisible(true)}/>
                 </View>
+
+                <View style={{flexDirection: 'row', backgroundColor: '#DDDDDD', borderRadius: 3, marginTop: 10, marginRight : 10, marginLeft: 10}}>
+                    <View style={{flex: 5, justifyContent: 'center', color: '#AAAAAA'}}>
+                            <TextInput style={styles.nomProjet} placeholder="Rechercher une tâche" placeholderTextColor="#AAAAAA"
+                                            selectionColor='#46466E'
+                                            onChangeText={(text) => this.setState({nomRecherche: text})}
+                                            ref={input => { this.textInput = input}}/>
+                    </View>
+                    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+                        <TouchableHighlight style={{borderRadius: 20, padding: 5}} underlayColor='#D7D7D7' 
+                            onPress={() => {this.setState({rechercheTache: true});}}>
+                            <Icon name='search' size={20} color="#46466E"/>
+                        </TouchableHighlight>
+                    </View>
+                </View>
+
                 <View style={{marginTop: 10}}>
                     <Text style={{color: "#8787A3", fontSize: 16, textAlign: 'right'}}>Nombre d'éléments : {myKey.length}</Text>
                 </View>
@@ -161,6 +201,7 @@ export class Taches extends Component {
                     {this.listeTaches()}
                 </View>
             </View> ||
+
             <View style={{marginTop:'30%',justifyContent:'center',alignItems:'center'}}>
             <ActivityIndicator size="large" color="#DD105E"/>
             <Text>Chargement en cours...</Text>

@@ -107,10 +107,9 @@ export class Suivi extends Component {
                 }
               }
             }
-        
       }
       if(liste.length == 0){ 
-        liste.push(<Text style={{marginLeft: 20, color: "CCCCCC"}}>Aucune tâche actuellement en retard</Text>)
+        liste.push(<Text style={{marginLeft: 20, color: "#AAAAAA"}}>Aucune tâche actuellement en retard</Text>)
       }
       return liste;
     }
@@ -118,13 +117,18 @@ export class Suivi extends Component {
     jaugeTacheUrgente(){
       const liste = [];
         if (this.state.dataCharged){
+
           if(this.state.affichagePicker === "mesTaches"){
+
             for (let iter = 2; iter < myKey.length; iter++){
+              dateFinTache = new Date(myUser[myKey[iter]].dateFin);
+              dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
+              let ajd = Math.ceil(Date.now() / (1000*3600*24));
+              let fin = Math.ceil(dateFinTache / (1000*3600*24));
+              let debut = Math.ceil(dateDebutTache / (1000*3600*24));
+
               if(myUser[myKey[iter]].ressource == "(moi)"){
-                dateFinTache = new Date(myUser[myKey[iter]].dateFin);
-                let ajd = Math.ceil(Date.now() / (1000*3600*24));
-                if ((Math.ceil(dateFinTache / (1000*3600*24)) <= ajd+3) && (Math.ceil(dateFinTache / (1000*3600*24))) >= ajd && !myUser[myKey[iter]].fin){                
-                  dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
+                if (!myUser[myKey[iter]].fin && (debut <= ajd) && (fin >= ajd)&& (fin <= ajd+3)){                
                   liste.push(
                     <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} ressource={myUser[myKey[iter]].ressource} nomTache={myUser[myKey[iter]].titre}/>
                   );
@@ -135,9 +139,11 @@ export class Suivi extends Component {
           else{
             for (let iter = 2; iter < myKey.length; iter++){
                 dateFinTache = new Date(myUser[myKey[iter]].dateFin);
+                dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
                 let ajd = Math.ceil(Date.now() / (1000*3600*24));
-                if ((Math.ceil(dateFinTache / (1000*3600*24)) <= ajd+3) && (Math.ceil(dateFinTache / (1000*3600*24))) >= ajd && !myUser[myKey[iter]].fin){
-                  dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
+                let fin = Math.ceil(dateFinTache / (1000*3600*24));
+                let debut = Math.ceil(dateDebutTache / (1000*3600*24));
+                if (!myUser[myKey[iter]].fin && (debut <= ajd) && (fin >= ajd)&& (fin <= ajd+3)){
                   liste.push(
                     <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} ressource={myUser[myKey[iter]].ressource} nomTache={myUser[myKey[iter]].titre}/>
                   );
@@ -146,7 +152,7 @@ export class Suivi extends Component {
             }
         }
         if(liste.length == 0){ 
-          liste.push(<Text style={{marginLeft: 20, color: "CCCCCC"}}>Aucune tâche urgente pour le moment</Text>)
+          liste.push(<Text style={{marginLeft: 20, color: "#AAAAAA"}}>Aucune tâche urgente pour le moment</Text>)
         }
       return liste;
     }
@@ -182,7 +188,7 @@ export class Suivi extends Component {
             }
         }
         if(liste.length == 0){ 
-          liste.push(<Text style={{marginLeft: 20, color: "CCCCCC"}}>Aucune autre tâche en cours pour le moment</Text>)
+          liste.push(<Text style={{marginLeft: 20, color: "#AAAAAA"}}>Aucune autre tâche en cours pour le moment</Text>)
         }
       return liste;
     }
@@ -218,7 +224,7 @@ export class Suivi extends Component {
             }
         }
         if(liste.length == 0){ 
-          liste.push(<Text style={{marginLeft: 20, color: "CCCCCC"}}>Aucune tâche à venir pour le moment</Text>)
+          liste.push(<Text style={{marginLeft: 20, color: "#AAAAAA"}}>Aucune tâche à venir pour le moment</Text>)
         }
       return liste;
     }
@@ -230,7 +236,7 @@ export class Suivi extends Component {
         return (
             <ScrollView>
 
-              <View style={{backgroundColor: '#CCCCCC', borderRadius: 3, marginTop: 10, marginRight: 10, marginLeft: 10}}>
+              <View style={{backgroundColor: '#DDDDDD', borderRadius: 3, marginTop: 10, marginRight: 10, marginLeft: 10}}>
                 <Picker enabled={this.state.dataCharged}
                       selectedValue={this.state.affichagePicker}
                       onValueChange={(value) => {

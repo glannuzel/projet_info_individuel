@@ -96,7 +96,7 @@ export class Jauge extends React.Component{
             }
         }
         else{
-            duree = Math.abs(fin-debut);
+            duree = Math.abs(fin-debut)+1;
         }
         return duree;
     }
