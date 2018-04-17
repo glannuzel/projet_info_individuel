@@ -47,9 +47,8 @@ export class AjoutTache extends React.Component{
         fin: false
         }
         firebase.database().ref(user.uid).child(id).push(obj);
-        console.log("ajout");
         this.props.ouvert();
-        this.props.rechargerBD();
+        //this.props.rechargerBD();
       }
       else{
         this.setState({couleurChampTitre: '#F4CCCC'});

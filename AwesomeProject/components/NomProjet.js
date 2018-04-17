@@ -29,6 +29,7 @@ export class NomProjet extends React.Component{
 
   _setModalVisible=(etat)=>{
     this.setState({modalVisible: etat});
+    this.setState({effacer: !etat});
   }
   
   render(){

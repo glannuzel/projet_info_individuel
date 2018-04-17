@@ -7,7 +7,8 @@ import BottomNavigation, { Tab } from 'react-native-material-bottom-navigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import FlipCard from 'react-native-flip-card';
 import Slider from 'react-native-slider';
-import { ModifTache } from './ModifTache'
+import { ModifTache } from './ModifTache';
+import Toast from 'react-native-simple-toast';
 import * as firebase from 'firebase';
 
 require('../ConnexionBD.js');
@@ -61,6 +62,7 @@ export class Tache extends Component {
     setModalVisible(etat){
         this.setState({isModalVisible: etat});
     }
+
     mettreAJour=async()=>{
         let user = firebase.auth().currentUser;
         projet = this.props.numeroProjet;
@@ -70,6 +72,7 @@ export class Tache extends Component {
         firebase.database().ref(user.uid).child(projet).child(id).child('avancement').set(this.state.avancee/100);
          if(this.state.tacheTerminee){
             firebase.database().ref(user.uid).child(projet).child(id).child('fin').set(this.state.tacheTerminee);
+            Toast.show('Tâche terminée');
          }
         this.marquerCommeFinie();
         this.props.rechargerBD();
@@ -92,9 +95,10 @@ export class Tache extends Component {
         console.log("SUPPRIMER LA TACHE");
         //console.log(projet);
         //console.log(id);
-        this.props.razDonnees();
+        //this.props.razDonnees();
         firebase.database().ref(user.uid).child(projet).child(id).remove();
-        this.props.rechargerBD();
+        //this.props.rechargerBD();
+        Toast.show('Tâche supprimée');
     }
 
     avancementTache(value){

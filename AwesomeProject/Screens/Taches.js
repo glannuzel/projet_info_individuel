@@ -64,7 +64,7 @@ export class Taches extends Component {
         //Récupération des tâches non achevées
         firebase.database().ref(user.uid).child(id).orderByChild('fin').equalTo(false).on('child_added',
         (data)=>{
-            myKey.push(data.key)
+            myKey.push(data.key);
             //console.log(myKey)
             //console.log(myKey.length);
             });
@@ -77,9 +77,13 @@ export class Taches extends Component {
             }
         );
 
-        firebase.database().ref(user.uid).child(id).on('child_removed',
+        firebase.database().ref(user.uid).child(id).orderByChild('fin').equalTo(false).on('child_removed',
         (data)=>{
+            this.setState({dataCharged: false});
             this.setState({nomRecherche: ""});
+            let index = myKey.indexOf(data.key);
+            myKey.splice(index,1);
+            this.setState({dataCharged: true});
             //console.log(myKey)
             //console.log(myKey.length);
         });
