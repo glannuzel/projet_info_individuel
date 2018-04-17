@@ -14,6 +14,7 @@ import * as firebase from 'firebase';
 
 
 require('../ConnexionBD.js');
+const styles = require('../style/Style');
 const myKey=new Array(0);
 const myUser=[];
 const essai=[];
@@ -285,15 +286,15 @@ export class Suivi extends Component {
               this.state.isTachesEnRetardDisplayed&&this.state.isTachesUrgentesDisplayed&&this.state.isTachesEnCoursDisplayed&&!this.state.isTachesAVenirDisplayed&&
               <View style={{marginBottom: 5}}>
                 <View style={{marginBottom: 5}}>
-                  <Text style={{margin: 10, fontSize: 20, color: "#46466E"}}>Tâches en retard</Text>
+                  <Text style={styles.enTete}>Tâches en retard</Text>
                     {this.jaugeTacheRetard()}
                 </View>
                 <View style={{marginBottom: 5}}>
-                  <Text style={{margin: 10, fontSize: 20, color: "#46466E"}}>Tâches urgentes</Text>
+                  <Text style={styles.enTete}>Tâches urgentes</Text>
                     {this.jaugeTacheUrgente()}
                 </View>
                 <View style={{marginBottom: 5}}>
-                  <Text style={{margin: 10, fontSize: 20, color: "#46466E"}}>Autres tâches en cours</Text>
+                  <Text style={styles.enTete}>Autres tâches en cours</Text>
                     {this.jaugeTacheEnCours()}
                 </View>
               </View> ||
@@ -302,7 +303,7 @@ export class Suivi extends Component {
               this.state.isTachesEnRetardDisplayed&&!this.state.isTachesUrgentesDisplayed&&!this.state.isTachesEnCoursDisplayed&&!this.state.isTachesAVenirDisplayed&&
               <View style={{marginBottom: 5}}>
                 <View style={{marginBottom: 5}}>
-                  <Text style={{margin: 10, fontSize: 20, color: "#46466E"}}>Tâches en retard</Text>
+                  <Text style={styles.enTete}>Tâches en retard</Text>
                     {this.jaugeTacheRetard()}
                 </View>
               </View> ||
@@ -311,7 +312,7 @@ export class Suivi extends Component {
               !this.state.isTachesEnRetardDisplayed&&this.state.isTachesUrgentesDisplayed&&!this.state.isTachesEnCoursDisplayed&&!this.state.isTachesAVenirDisplayed&&
               <View style={{marginBottom: 5}}>
                 <View style={{marginBottom: 5}}>
-                  <Text style={{margin: 10, fontSize: 20, color: "#46466E"}}>Tâches urgentes</Text>
+                  <Text style={styles.enTete}>Tâches urgentes</Text>
                     {this.jaugeTacheUrgente()}
                 </View>
               </View> ||
@@ -320,7 +321,7 @@ export class Suivi extends Component {
               !this.state.isTachesEnRetardDisplayed&&!this.state.isTachesUrgentesDisplayed&&!this.state.isTachesEnCoursDisplayed&&this.state.isTachesAVenirDisplayed&&
               <View style={{marginBottom: 5}}>
                 <View style={{marginBottom: 5}}>
-                  <Text style={{margin: 10, fontSize: 20, color: "#46466E"}}>Tâches à venir</Text>
+                  <Text style={styles.enTete}>Tâches à venir</Text>
                     {this.jaugeTacheAVenir()}
                 </View>
               </View> ||

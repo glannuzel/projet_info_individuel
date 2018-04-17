@@ -13,10 +13,11 @@ import * as firebase from 'firebase';
 
 
 require('../ConnexionBD.js');
+const styles = require('../style/Style');
 const myKey=new Array(0);
-const mesTachesFinies=[];
+//const mesTachesFinies=[];
 const mesTachesFiniesKey=[];
-const mesTachesEnCours=[];
+const mesTachesAVenirKey=[];
 const mesTachesEnCoursKey=[];
 const lesTaches=[];
 const lesTachesKey=[];
@@ -25,17 +26,6 @@ const mesRessourcesKey=[];
 const mesCouleurs=['#DD105E', '#46466E','#EF7E56','#8787A3','#BDBDD7'];
 let couleurGraphe=[];
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  title: {
-    fontSize: 24,
-    margin: 10
-  }
-});
 
 export class Kpi extends Component {
     static navigationOptions = ({ navigation }) => ({
@@ -53,15 +43,25 @@ export class Kpi extends Component {
     super(props);
   }
 
+  getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+
   componentWillMount=async()=>{
     this.setState({dataCharged:false});
-      mesTachesFinies=[];
+      //mesTachesFinies=[];
       mesTachesFiniesKey=[];
-      mesTachesEnCours=[];
+      mesTachesAVenirKey=[];
       mesTachesEnCoursKey=[];
       lesNombresDeTaches=[];
       mesRessources=[];
       mesRessourcesKey=[];
+      dates=[];
       couleurGraphe=[];
 
       try{
@@ -72,29 +72,55 @@ export class Kpi extends Component {
           //Récupération des taches finies
           maRef.orderByChild('fin').equalTo(true).on('child_added',
           (data)=>{
-            mesTachesFiniesKey.push(data.key)
+            mesTachesFiniesKey.push(data.key);
           });
+          maRef.orderByChild('fin').equalTo(true).on('child_removed',
+          (data)=>{
+            mesTachesFiniesKey.pop();
+          });
+          /*
           maRef.orderByChild('fin').equalTo(true).on('value',
           (data)=>{
             mesTachesFinies=data.val()              
             }
           ); 
-          
+          */
+
           //Récupération des tâches non achevées
           maRef.orderByChild('fin').equalTo(false).on('child_added',
           (data)=>{
-            mesTachesEnCoursKey.push(data.key)
+            let dateDebut = new Date(data.child('dateDebut').val());
+            let debut = Math.ceil(dateDebut / (1000*3600*24));
+            let ajd = Math.ceil(Date.now() / (1000*3600*24));
+            if (debut<=ajd){
+              mesTachesEnCoursKey.push(data.key);
+            }
+            else{
+              mesTachesAVenirKey.push(data.key);
+            }
+            
           });  
+          maRef.orderByChild('fin').equalTo(false).on('child_removed',
+          (data)=>{
+            mesTachesEnCoursKey.pop();
+          });
+          /*
           maRef.orderByChild('fin').equalTo(false).on('value',
           (data)=>{
               mesTachesEnCours=data.val()
             }
           );
+          */
 
           //Récupération des ressources
           maRef.child('ressources').on('child_added',
           (data)=>{
             mesRessourcesKey.push(data.key)
+          });  
+          maRef.child('ressources').on('child_removed',
+          (data)=>{
+            let index = mesRessourcesKey.indexOf(data.key);
+            mesRessourcesKey.splice(index,1);
           });  
           maRef.child('ressources').on('value',
           (data)=>{
@@ -110,10 +136,18 @@ export class Kpi extends Component {
             //if(maRessource=="(moi)"){ maRessource = "";}
             maRef.orderByChild('ressource').equalTo(`${maRessource}`).on('child_added',
             (data)=>{
-              numberOfTasks = numberOfTasks+1;
+                if(data.child("fin").val() == false){
+                  numberOfTasks = numberOfTasks+1;
+                }
             });
             lesNombresDeTaches.push(numberOfTasks);
-            couleurGraphe.push(mesCouleurs[i]);
+            if(couleurGraphe.length <= mesCouleurs.length){
+                couleurGraphe.push(mesCouleurs[i]);
+            }
+            else{
+                couleurGraphe.push(this.getRandomColor());
+            }
+            
           }
           //console.log(lesNombresDeTaches);
 
@@ -139,7 +173,7 @@ export class Kpi extends Component {
         <View style={{flex: 1, backgroundColor: `${couleurGraphe[i]}`, margin: 2}}/>
         <View style={{flex:1}}/>
         <View style={{flex: 7}}>
-          <Text>{mesRessources[i]}</Text>
+          <Text>{mesRessources[i]} : {lesNombresDeTaches[i]}</Text>
         </View>
       </View>
       )
@@ -155,7 +189,7 @@ export class Kpi extends Component {
         <View style={{flex: 1, backgroundColor: '#DD105E', margin: 2}}/>
         <View style={{flex:1}}/>
         <View style={{flex: 7}}>
-          <Text>Tâches terminées</Text>
+          <Text>Tâches terminées : {mesTachesFiniesKey.length}</Text>
         </View>
       </View>);
       liste.push(
@@ -164,18 +198,26 @@ export class Kpi extends Component {
           <View style={{flex: 1, backgroundColor: '#46466E', margin: 2}}/>
           <View style={{flex:1}}/>
           <View style={{flex: 7}}>
-            <Text>Tâches en cours et à venir</Text>
+            <Text>Tâches en cours : { mesTachesEnCoursKey.length}</Text>
+          </View>
+        </View>);
+      liste.push(
+        <View style={{flexDirection: 'row'}}>
+          <View style={{flex:1}}/>
+          <View style={{flex: 1, backgroundColor: '#8787A3', margin: 2}}/>
+          <View style={{flex:1}}/>
+          <View style={{flex: 7}}>
+            <Text>Tâches à venir : { mesTachesAVenirKey.length}</Text>
           </View>
         </View>);
     return liste;
   }
 
 
-
   render() {
     const chart_wh = 100;
-    const series = [mesTachesFiniesKey.length, mesTachesEnCoursKey.length];
-    const sliceColor = ['#DD105E', '#46466E'];
+    const series = [mesTachesFiniesKey.length, mesTachesEnCoursKey.length, mesTachesAVenirKey.length];
+    const sliceColor = ['#DD105E', '#46466E', '#8787A3'];
     //const series = [1, 2, 3, 4, 5]
     //const sliceColor = ['#F44336','#2196F3','#FFEB3B', '#4CAF50', '#FF9800']
  
@@ -185,9 +227,9 @@ export class Kpi extends Component {
         {!this.state.dataCharged &&
           <View/> ||
           <View>
-            <Text style={styles.title}>Evolution du Projet</Text>
-            <View style={{flexDirection: 'row'}}>
-                <View style={{flex: 2}}>
+            <Text style={styles.enTete}>Evolution du Projet</Text>
+            <View style={styles.elementIndicateur}>
+                <View style={styles.positionGraphe}>
                   <PieChart
                     chart_wh={chart_wh}
                     series={series}
@@ -201,9 +243,9 @@ export class Kpi extends Component {
                 {this.lesEtatsTaches()}
                 </View>
               </View>
-            <Text style={styles.title}>Répartition des tâches</Text>
-            <View style={{flexDirection: 'row'}}>
-              <View style={{flex: 2}}>
+            <Text style={styles.enTete}>Répartition des tâches non achevées</Text>
+            <View style={styles.elementIndicateur}>
+              <View style={styles.positionGraphe}>
                 <PieChart
                   chart_wh={chart_wh}
                   series={lesNombresDeTaches}

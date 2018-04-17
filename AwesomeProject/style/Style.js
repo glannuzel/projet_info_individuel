@@ -7,12 +7,32 @@ const styles = StyleSheet.create({
       backgroundColor: '#46466E',
       padding: 10,
     },
+    container: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    enTete: {
+      margin: 10, 
+      marginTop: 20,
+      fontSize: 20, 
+      color: "#46466E"
+    },
+    positionGraphe: {
+      flex: 2, 
+      justifyContent: 'center', 
+      alignItems: 'center'
+    },
+    elementIndicateur: {
+      flexDirection: 'row', 
+      alignItems: 'center', 
+    },
     appName:{
       color: '#EF7E56',
       fontFamily: 'Raleway',
       fontWeight: 'bold',
       fontSize: 30,
-      textShadowOffset: {width: 2, heitgh: 2}
+      textShadowOffset: {width: 2, height: 2}
     },
     sousTitre:{
       backgroundColor: '#BDBDD7',
