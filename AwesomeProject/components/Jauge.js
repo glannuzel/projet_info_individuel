@@ -73,9 +73,11 @@ export class Jauge extends React.Component{
     dureeTache(){
         let duree;
         //console.log(this.props.dateDebut);
-        let timeDiff = Math.abs(this.props.dateFin - this.props.dateDebut);
+        let fin = Math.ceil(this.props.dateFin / (1000*3600*24));
+        let debut = Math.ceil(this.props.dateDebut / (1000*3600*24));
+        duree = Math.abs(fin - debut) + 1;
         //console.log(timeDiff);
-        duree = Math.ceil(timeDiff / (1000*3600*24));
+        //duree = Math.ceil(timeDiff / (1000*3600*24));
         //console.log(duree);
         return duree;
     }
@@ -84,31 +86,37 @@ export class Jauge extends React.Component{
         let duree;
         let fin = Math.ceil(this.props.dateFin / (1000*3600*24));
         let ajd = Math.ceil(Date.now() / (1000*3600*24));
-        if(fin > ajd){
-            duree = Math.abs(fin - ajd);
+        let debut = Math.ceil(this.props.dateDebut / (1000*3600*24));
+        if(debut <= ajd){
+            if(fin >= ajd){
+                duree = Math.abs(fin - ajd);
+            }
+            else{
+                duree = 0;
+            }
         }
         else{
-            duree = 0;
+            duree = Math.abs(fin-debut);
         }
         return duree;
     }
 
     avancementDuree(){
         let avancement;
-        let timeDiff = Math.abs(this.props.dateFin - this.props.dateDebut);
-        let diffDaysTache = Math.ceil(timeDiff / (1000*3600*24));
-        let avancementDiff = Math.abs(this.props.dateDebut - Date.now());
-        let diffDaysAvancement = Math.ceil(avancementDiff / (1000*3600*24));
-        if (diffDaysAvancement >= diffDaysTache){
+        let timeDiff = this.dureeTache();
+        let timeLeft = this.dureeRestante();
+        //let avancementDiff = Math.abs(this.props.dateDebut - Date.now());
+        //let diffDaysAvancement = Math.ceil(avancementDiff / (1000*3600*24));
+        if (timeLeft == 0){
             avancement = 1;
         }
         else{
-            avancement = diffDaysAvancement / diffDaysTache;
+            avancement = 1 - timeLeft / timeDiff;
         }
         return avancement;
     }
 
-    Retard(){
+    echeance(){
         let indication;
         let ajd = Math.ceil(Date.now()/(1000*3600*24));
         let dateFinTache = Math.ceil(this.props.dateFin / (1000*3600*24));
@@ -125,6 +133,27 @@ export class Jauge extends React.Component{
         {
             let timeDiff = Math.abs(dateFinTache - ajd);
             indication = "Retard de : " + timeDiff + " jour(s)";
+        }
+        return indication;
+    }
+
+    debut(){
+        let indication;
+        let ajd = Math.ceil(Date.now()/(1000*3600*24));
+        let dateDebutTache = Math.ceil(this.props.dateDebut / (1000*3600*24));
+        if(dateDebutTache > ajd)
+        {
+            let timeDiff = Math.abs(dateDebutTache - ajd);
+            indication = "Début dans : " + timeDiff + " jour(s)";
+        }
+        if(dateDebutTache === ajd)
+        {
+            indication = "Début : aujourd'hui";
+        }
+        if(dateDebutTache < ajd)
+        {
+            let timeDiff = Math.abs(ajd - dateDebutTache);
+            indication = "Début il y a : " + timeDiff + " jour(s)";
         }
         return indication;
     }
@@ -179,7 +208,8 @@ export class Jauge extends React.Component{
             </View>
             <View style={styles.backflipcard}>
                     <Text style={{color: '#8787A3'}}>Tâche affectée à : {this.props.ressource}</Text>
-                    <Text style={{color: this.couleurTexte()}}>{this.Retard()}</Text>  
+                    <Text style={{color: '#46466E'}}>{this.debut()}</Text> 
+                    <Text style={{color: this.couleurTexte()}}>{this.echeance()}</Text>
             </View>
             </FlipCard>
         </View>

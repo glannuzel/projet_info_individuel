@@ -7,10 +7,10 @@ import * as firebase from 'firebase';
 
 
 require('../ConnexionBD.js');
-//const adresseMail="glannuzel@ensc.fr";
-//const mdp="123456";
-const adresseMail="";
-const mdp="";
+const adresseMail="glannuzel@ensc.fr";
+const mdp="123456";
+//const adresseMail="";
+//const mdp="";
 const user=[];
 const myUser=[];
 
@@ -43,31 +43,36 @@ export class Connexion extends React.Component {
             }
         }
         else{
-            alert('Veuillez remplir tous les champs.');
+            alert('Veillez entrer une adresse e-mail et un mot de passe.');
         }
       }
     
 
     login=async()=> {
-        try {
-            await firebase.auth().signInWithEmailAndPassword(adresseMail, mdp);
-            this.setState({login:true});
-            // Navigation vers la page des projets
-            this.props.navigation.navigate('Home');
-            console.log("Logged In!");
+        if(adresseMail&&mdp){
+            try {
+                await firebase.auth().signInWithEmailAndPassword(adresseMail, mdp);
+                this.setState({login:true});
+                // Navigation vers la page des projets
+                this.props.navigation.navigate('Home');
+                console.log("Logged In!");
+            }
+            catch (error) {
+                if(error.toString() == "Error: The password is invalid or the user does not have a password."){
+                    alert("Le mot de passe est invalide.");
+                }
+                if(error.toString() == "Error: The email address is badly formatted."){
+                    alert("Le format de l'adresse e-mail est incorrect.")
+                }
+                if(error.toString() == "Error: There is no user record corresponding to this identifier. The user may have been deleted."){
+                    alert("Utilisateur inconnu. L'adresse e-mail est erronée ou l'utilisateur n'existe pas.")
+                }
+                //alert(error.toString());
+                console.log(error.toString())
+            }
         }
-        catch (error) {
-            if(error.toString() == "Error: The password is invalid or the user does not have a password."){
-                alert("Le mot de passe est invalide.");
-            }
-            if(error.toString() == "Error: The email address is badly formatted."){
-                alert("Le format de l'adresse e-mail est incorrect.")
-            }
-            if(error.toString() == "Error: There is no user record corresponding to this identifier. The user may have been deleted."){
-                alert("Utilisateur inconnu. L'adresse e-mail est erronée ou l'utilisateur n'existe pas.")
-            }
-            //alert(error.toString());
-            console.log(error.toString())
+        else{
+            alert("Veillez entrer une adresse e-mail et un mot de passe.");
         }
     }
 
