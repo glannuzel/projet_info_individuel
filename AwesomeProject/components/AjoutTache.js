@@ -25,6 +25,8 @@ export class AjoutTache extends React.Component{
         isDateTimePickerVisible2: false,
         titre: "",
         description: "",
+        couleurChampTitre: "white",
+        contourChampTitre: "#C3C3C3",
         ressources: "(moi)",
         dateDebut: new Date().getTime(),
         dateFin: new Date().getTime(),
@@ -32,6 +34,7 @@ export class AjoutTache extends React.Component{
     };
 
     enregistrer=async()=>{
+      if(this.state.titre != ""){
         let user = firebase.auth().currentUser;
         id = this.props.id;
         let obj={
@@ -47,6 +50,12 @@ export class AjoutTache extends React.Component{
         console.log("ajout");
         this.props.ouvert();
         this.props.rechargerBD();
+      }
+      else{
+        this.setState({couleurChampTitre: '#F4CCCC'});
+        this.setState({contourChampTitre: '#DD105E'});
+        alert('Vous devez donner un titre à cette tâche.');
+      }
     }
 
     _updateTitre = (text) => this.setState({titre: `${text}`});
@@ -120,7 +129,7 @@ export class AjoutTache extends React.Component{
         <ScrollView style={{marginLeft: 15, marginRight: 15}}>
 
             <Text style={styles.sousTitreTexte}>Titre de la tâche</Text>
-            <View style={{borderColor: '#C3C3C3', backgroundColor: 'white', borderWidth: 1, borderRadius: 5, marginTop: 10, marginBottom: 10, padding: 5}}>
+            <View style={{borderColor: this.state.contourChampTitre, backgroundColor: this.state.couleurChampTitre, borderWidth: 1, borderRadius: 5, marginTop: 10, marginBottom: 10, padding: 5}}>
                 <TextInput
                   underlineColorAndroid='transparent' 
                   placeholder="Titre de la tâche" 

@@ -25,13 +25,15 @@ export class ModifTache extends React.Component{
         isDateTimePickerVisible2: false,
         titre: this.props.nom,
         description: this.props.description,
+        couleurChampTitre: "white",
+        contourChampTitre: "#C3C3C3",
         ressource: this.props.ressource,
         dateDebut: new Date(this.props.dateDebut).getTime(),
         dateFin: new Date(this.props.dateFin).getTime(),
     };
 
     enregistrer=async()=>{
-        console.log("dans enregistrer");
+      if(this.state.titre != ""){
         let user = firebase.auth().currentUser;
         id = this.props.numeroProjet;
         console.log(id);
@@ -45,6 +47,12 @@ export class ModifTache extends React.Component{
         console.log("tâche modifiée");
         this.props.ouvert();
         this.props.rechargerBD();
+      }
+      else{
+        this.setState({couleurChampTitre: '#F4CCCC'});
+        this.setState({contourChampTitre: '#DD105E'});
+        alert('Vous devez donner un titre à cette tâche.');
+      }
     }
 
     _updateTitre = (text) => this.setState({titre: `${text}`});
@@ -99,7 +107,7 @@ export class ModifTache extends React.Component{
         <ScrollView style={{marginLeft: 15, marginRight: 15}}>
 
             <Text style={styles.sousTitreTexte}>Titre de la tâche</Text>
-            <View style={{borderColor: '#C3C3C3', backgroundColor: 'white', borderWidth: 1, borderRadius: 5, marginTop: 10, marginBottom: 10, padding: 5}}>
+            <View style={{borderColor: this.state.contourChampTitre, backgroundColor: this.state.couleurChampTitre, borderWidth: 1, borderRadius: 5, marginTop: 10, marginBottom: 10, padding: 5}}>
                 <TextInput
                   underlineColorAndroid='transparent' 
                   placeholder="Titre de la tâche" 

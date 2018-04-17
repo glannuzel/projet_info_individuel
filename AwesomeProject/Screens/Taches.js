@@ -160,7 +160,9 @@ export class Taches extends Component {
             <View style={{flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
                 <Modal animationType="slide" transparent={false} visible={this.state.modalVisible}>
                     <View style={{flexDirection: 'row', alignItems: 'center', margin: 0, backgroundColor: "#E0E0E0"}}>
-                        <View style={{flex: 3}}/>
+                        <View style={{flex: 3}}>
+                            <Text style={{color: "#777777", fontSize: 20, marginLeft: 15}}>Ajouter une tâche</Text>
+                        </View>
                         <View style={{flex: 1, padding: 10, alignItems: 'flex-end', justifyContent: 'center'}}>
                             <TouchableHighlight underlayColor="#D7D7D7" onPress={()=>this.setModalVisible(false)}>
                                 <Icon name='close' color="#46466E" size={30}/>
