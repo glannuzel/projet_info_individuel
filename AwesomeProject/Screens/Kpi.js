@@ -1,13 +1,5 @@
 import React, { Component } from 'react';
 import { Text, View, ScrollView } from 'react-native';
-import { Alert, AppRegistry, Button, Image, Picker,  StatusBar, StyleSheet, TextInput } from 'react-native';
-import { ActivityIndicator, ListView, TouchableHighlight } from 'react-native';
-import { StackNavigator} from 'react-navigation';
-import BottomNavigation, { Tab } from 'react-native-material-bottom-navigation';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import ProgressBarClassic from 'react-native-progress-bar-classic';
-import AnimatedBar from 'react-native-animated-bar';
-import { Jauge } from '../components/Jauge';
 import PieChart from 'react-native-pie-chart';
 import * as firebase from 'firebase';
 
@@ -15,18 +7,15 @@ import * as firebase from 'firebase';
 require('../ConnexionBD.js');
 const styles = require('../style/Style');
 const myKey=new Array(0);
-//const mesTachesFinies=[];
-const mesTachesFiniesKey=[];
-const mesTachesAVenirKey=[];
-const mesTachesEnCoursKey=[];
-const lesTaches=[];
-const lesTachesKey=[];
-const mesRessources=[];
-const mesRessourcesKey=[];
-const mesCouleurs=['#DD105E', '#46466E','#EF7E56','#8787A3','#BDBDD7'];
-let couleurGraphe=[];
+const mesTachesFiniesKey=[]; //tableau des id des tâches finies
+const mesTachesAVenirKey=[]; //tableau des id des tâches à venir
+const mesTachesEnCoursKey=[]; //tableau des id des tâches en cours
+const mesRessources=[]; //tableau des ressources
+const mesRessourcesKey=[]; //tableau des id des ressources
+const mesCouleurs=['#DD105E', '#46466E','#EF7E56','#8787A3','#BDBDD7']; //tableau des couleurs de la charte graphique
+let couleurGraphe=[]; //tableau des couleurs pour le graphique
 
-
+//Ecran contenant les indicateurs
 export class Kpi extends Component {
     static navigationOptions = ({ navigation }) => ({
         title: `${navigation.state.params.titre}`,
@@ -36,13 +25,14 @@ export class Kpi extends Component {
         });
 
   state={
-    dataCharged: false
+    dataCharged: false, //chargement des données achevé
   }
 
   constructor(props) {
     super(props);
   }
 
+  //Fonction permettant d'obtenir une couleur aléatoire
   getRandomColor() {
     var letters = '0123456789ABCDEF';
     var color = '#';
@@ -52,9 +42,9 @@ export class Kpi extends Component {
     return color;
   }
 
+  //Fonction appelé avant le premier render()
   componentWillMount=async()=>{
-    this.setState({dataCharged:false});
-      //mesTachesFinies=[];
+      this.setState({dataCharged:false});
       mesTachesFiniesKey=[];
       mesTachesAVenirKey=[];
       mesTachesEnCoursKey=[];
@@ -65,8 +55,8 @@ export class Kpi extends Component {
       couleurGraphe=[];
 
       try{
-          let user = firebase.auth().currentUser;
-          id = this.props.navigation.state.params.id;
+          let user = firebase.auth().currentUser; //ref de l'utilisateur
+          id = this.props.navigation.state.params.id; //id dur projet concerné
           let maRef = firebase.database().ref(user.uid).child(id);
 
           //Récupération des taches finies
@@ -78,13 +68,6 @@ export class Kpi extends Component {
           (data)=>{
             mesTachesFiniesKey.pop();
           });
-          /*
-          maRef.orderByChild('fin').equalTo(true).on('value',
-          (data)=>{
-            mesTachesFinies=data.val()              
-            }
-          ); 
-          */
 
           //Récupération des tâches non achevées
           maRef.orderByChild('fin').equalTo(false).on('child_added',
@@ -97,20 +80,12 @@ export class Kpi extends Component {
             }
             else{
               mesTachesAVenirKey.push(data.key);
-            }
-            
+            } 
           });  
           maRef.orderByChild('fin').equalTo(false).on('child_removed',
           (data)=>{
             mesTachesEnCoursKey.pop();
           });
-          /*
-          maRef.orderByChild('fin').equalTo(false).on('value',
-          (data)=>{
-              mesTachesEnCours=data.val()
-            }
-          );
-          */
 
           //Récupération des ressources
           maRef.child('ressources').on('child_added',
@@ -133,7 +108,6 @@ export class Kpi extends Component {
           {
             let maRessource = mesRessources[i];
             let numberOfTasks = 0;
-            //if(maRessource=="(moi)"){ maRessource = "";}
             maRef.orderByChild('ressource').equalTo(`${maRessource}`).on('child_added',
             (data)=>{
                 if(data.child("fin").val() == false){
@@ -149,8 +123,8 @@ export class Kpi extends Component {
             }
             
           }
-          //console.log(lesNombresDeTaches);
 
+          //Afficher quelque chose uniquement s'il y a des tâches
           if(mesTachesEnCoursKey.length!=0 || mesTachesFiniesKey.length!=0){
             this.setState({dataCharged: true});
           }
@@ -158,13 +132,13 @@ export class Kpi extends Component {
           }
 
           catch(error){
-          console.log(error.ToString())
+            console.log(error.ToString())
           }
   }
 
+  //liste des ressources avec légende
   lesressources(){
     const liste=[];
-    //console.log(couleurGraphe.length);
     for (i=0; i<couleurGraphe.length;i++)
     {
       liste.push(
@@ -181,6 +155,7 @@ export class Kpi extends Component {
     return liste;
   }
 
+  //légende du graphe 1 d'état des tâches
   lesEtatsTaches(){
     const liste=[];
     liste.push(
@@ -216,10 +191,10 @@ export class Kpi extends Component {
 
   render() {
     const chart_wh = 100;
+    //Données du graphe 1 :
     const series = [mesTachesFiniesKey.length, mesTachesEnCoursKey.length, mesTachesAVenirKey.length];
+    //Couleurs du graphe 1 :
     const sliceColor = ['#DD105E', '#46466E', '#8787A3'];
-    //const series = [1, 2, 3, 4, 5]
-    //const sliceColor = ['#F44336','#2196F3','#FFEB3B', '#4CAF50', '#FF9800']
  
     return (
       <ScrollView style={{flex: 1}}>

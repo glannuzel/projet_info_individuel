@@ -1,11 +1,8 @@
 import React, { Component } from 'react';
 import { Text, View } from 'react-native';
-import { Alert, AppRegistry, Button, Image, TextInput, Modal} from 'react-native';
-import { ActivityIndicator, ScrollView, ListView, TouchableHighlight, TouchableOpacity } from 'react-native';
-import { StackNavigator} from 'react-navigation';
-import BottomNavigation, { Tab } from 'react-native-material-bottom-navigation';
+import { Alert, Button, Modal } from 'react-native';
+import { ScrollView, TouchableHighlight, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import FlipCard from 'react-native-flip-card';
 import Slider from 'react-native-slider';
 import { ModifTache } from './ModifTache';
 import Toast from 'react-native-simple-toast';
@@ -23,20 +20,22 @@ export class Tache extends Component {
       }
     
     state={
-        finie: false,
-        annuler: false,
-        tacheTerminee: false,
-        isModalVisible: false,
-        box: "check-box-outline-blank",
-        avancee: this.props.tauxAvancement*100,
+        finie: false, //visibilité de l'élément pour marquer une tâche finie
+        annuler: false, //visibilité de l'élément permettant la suppression d'une tâche
+        tacheTerminee: false, //tâche marquée comme terminée
+        isModalVisible: false, //ouverture modal de modification de tâche
+        box: "check-box-outline-blank", //checkbox pour marquer comme finie
+        avancee: this.props.tauxAvancement*100, //taux d'avancement de la tâche
     }
 
+    //Rendre la date compréhensible par l'utilisateur
     dateBienEcrite(date){
         maDate = new Date(date);
         dateBienEcrite = semaine[maDate.getDay()] + " " + maDate.getDate()+ "/" + (maDate.getMonth()+1) + "/" + maDate.getFullYear();
         return dateBienEcrite;
     }
     
+    //Inversion du state de la checkbox au clic
     _checkBoxClick = () => {
     if (this.state.box=="check-box-outline-blank")
     {
@@ -49,6 +48,7 @@ export class Tache extends Component {
         }
     }
 
+    //Changement de visibilité de l'élément permettant de marquer comme finie
     marquerCommeFinie(){
         if(this.state.finie)
         {
@@ -59,25 +59,28 @@ export class Tache extends Component {
         }
     }
 
+    //Ouverture et fermeture du modal de modification de la tâche
     setModalVisible(etat){
         this.setState({isModalVisible: etat});
     }
 
+    //Mise à jour de la tâche
     mettreAJour=async()=>{
         let user = firebase.auth().currentUser;
         projet = this.props.numeroProjet;
         id = this.props.numeroTache;
-        //console.log(projet);
-        //console.log(id);
         firebase.database().ref(user.uid).child(projet).child(id).child('avancement').set(this.state.avancee/100);
-         if(this.state.tacheTerminee){
+        if(this.state.tacheTerminee){
             firebase.database().ref(user.uid).child(projet).child(id).child('fin').set(this.state.tacheTerminee);
             Toast.show('Tâche terminée');
-         }
+        }
+        else {
+            Toast.show('Avancement mis à jour');
+        }
         this.marquerCommeFinie();
-        //this.props.rechargerBD();
     }
 
+    //Visibilité de l'élément permettant la suppression d'une tâche
     demandeAnnulerTache(){
         if(this.state.annuler)
         {
@@ -88,19 +91,16 @@ export class Tache extends Component {
         }
     }
 
+    //Suppression de la tâche de la base de données
     supprimerTache=async()=>{
         let user = firebase.auth().currentUser;
         projet = this.props.numeroProjet;
         id = this.props.numeroTache;
-        console.log("SUPPRIMER LA TACHE");
-        //console.log(projet);
-        //console.log(id);
-        //this.props.razDonnees();
         firebase.database().ref(user.uid).child(projet).child(id).remove();
-        //this.props.rechargerBD();
         Toast.show('Tâche supprimée');
     }
 
+    //Changement du state de l'avancement de la tâche
     avancementTache(value){
         this.setState({avancee: value})
     }
@@ -225,8 +225,8 @@ export class Tache extends Component {
                                     description={this.props.description} 
                                     dateFin={this.props.dateFin}
                                     dateDebut={this.props.dateDebut}
-                                    ouvert={()=>this.setModalVisible(false)} 
-                                    rechargerBD={()=>this.props.rechargerBD()}/>
+                                    ouvert={()=>this.setModalVisible(false)}
+                                    modifFaite={()=>this.demandeAnnulerTache()} />
                             </ScrollView>
                         </Modal>
                         <View style={{flexDirection: 'row'}}>
@@ -266,8 +266,8 @@ export class Tache extends Component {
                                         'Supprimer la tâche',
                                         `Souhaitez-vous vraiment supprimer la tâche "${this.props.nom}" ? \n\nNote : Cette action est irréversible, cette tâche ne pourra pas être utilisée pour les calculs des KPI`,
                                         [
-                                        {text: 'Supprimer la tâche', onPress: ()=>{this.supprimerTache()}},
-                                        {text: 'Annuler', onPress: ()=>console.log('annuler déco'), style: 'cancel'}
+                                        {text: 'Supprimer la tâche', onPress: ()=>{this.supprimerTache(); this.demandeAnnulerTache();}},
+                                        {text: 'Annuler', style: 'cancel'}
                                         ],
                                         {cancelable: false}
                                     )}>

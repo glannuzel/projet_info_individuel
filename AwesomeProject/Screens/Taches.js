@@ -1,27 +1,23 @@
 import React, { Component } from 'react';
 import { Text, View } from 'react-native';
-import { Alert, AppRegistry, Image, TextInput, Modal} from 'react-native';
+import { TextInput, Modal} from 'react-native';
 import { Button } from 'react-native-elements';
-import { ActivityIndicator, ScrollView, ListView, TouchableOpacity, TouchableHighlight } from 'react-native';
-import { StackNavigator} from 'react-navigation';
-import BottomNavigation, { Tab } from 'react-native-material-bottom-navigation';
+import { ActivityIndicator, ScrollView, TouchableHighlight } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Tache } from '../components/Tache';
 import * as firebase from 'firebase';
 import { AjoutTache } from '../components/AjoutTache';
-import { MenuProvider, renderers } from 'react-native-popup-menu';
-import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 
- 
-//const BarreNavigation = require('../components/BarreNavigation');
 require('../ConnexionBD.js');
 const styles = require('../style/Style');
 const myKey=new Array(0);
 const myUser=[];
 const myRessources=[];
 const myRessourcesKey=[];
+//Tableau des abbréviation des jours de la semaine
 const semaine = new Array("Dim.", "Lun.","Mar.", "Mer.","Jeu.", "Ven.", "Sam.");
 
+//Ecran d'affichage de l'ensemble des tâches
 export class Taches extends Component {
     static navigationOptions = ({ navigation }) => ({
         title: `${navigation.state.params.titre}`,
@@ -32,110 +28,88 @@ export class Taches extends Component {
         });
 
     state={
-        dataCharged: false,
-        modalVisible: false,
-        rechercheTache: false,
-        nomRecherche: "",
+        dataCharged: false, //chargement des données terminé
+        modalVisible: false, //Modal d'ajout de tâche visible
+        rechercheTache: false, //recherche en cours
+        nomRecherche: "", //valeur dans la barre de recherche
     }
 
+    //Ouverture et fermeture du modal d'ajout de tâche
     setModalVisible(visible) {
         this.setState({modalVisible: visible});
     }
 
-    setDataUncharged(){
-        this.setState({dataCharged: false});
-        //console.log('RAZ');
-        //console.log(this.state.dataCharged);
-    }
-
+    //Fonction appelée à la destruction du composant
     componentWillUnmount() {
         let user = firebase.auth().currentUser;
         id = this.props.navigation.state.params.id;
+        //Destruction de toutes les écoutes
         firebase.database().ref(user.uid).child(id).orderByChild('fin').equalTo(false).off();
     }
 
+    //Fonction appelée avant le premier render()
     componentWillMount=async()=>{
 
         this.setState({dataCharged: false});
 
             try{
-                let user = firebase.auth().currentUser;
-                id = this.props.navigation.state.params.id;
-                //console.log(id);
+                let user = firebase.auth().currentUser; //ref de l'utilisateur
+                id = this.props.navigation.state.params.id; //id de l'utilisateur
 
-                //if(nbAppel == 0)
-                //{
-                    myUser=[];
-                    myKey=[];
-                    myRessources=[];
-                    myRessourcesKey=[];
+                myUser=[];
+                myKey=[];
+                myRessources=[];
+                myRessourcesKey=[];
 
-                //Récupération des tâches non achevées
+                //Récupération des tâches non achevées et écoute sur les ajouts, suppressions et modifications
                 firebase.database().ref(user.uid).child(id).orderByChild('fin').equalTo(false).on('child_added',
                 (data)=>{
                     myKey.push(data.key);
-                    //console.log(myKey)
-                    //console.log(myKey.length);
                     this.setState({dataCharged:true});
                     });
                 
                 firebase.database().ref(user.uid).child(id).orderByChild('fin').equalTo(false).on('child_removed',
                 (data)=>{
-                    //this.setState({dataCharged: false});
                     this.setState({nomRecherche: ""});
                     let index = myKey.indexOf(data.key);
                     myKey.splice(index,1);
                     this.setState({dataCharged: true});
-                    //console.log(myKey)
-                    //console.log(myKey.length);
-                    });
-                //}
+                });
                     
                 firebase.database().ref(user.uid).child(id).orderByChild('fin').equalTo(false).on('value',
                 (data)=>{
                     myUser=data.val();
-                    //console.log(data.val());
-                    //console.log(data.val())
                     this.setState({dataCharged:true});
                     }
                 );
 
-                //Récupération des ressources associées à un projet
+                //Récupération des ressources associées à un projet et écoutes
                 firebase.database().ref(user.uid).child(id).child('ressources').on('child_added',
                 (data)=>{
                     myRessourcesKey.push(data.key);
-                    //console.log(myRessourcesKey);
                     });
                     
                 firebase.database().ref(user.uid).child(id).child('ressources').on('value',
                 (data)=>{
                     myRessources=data.val();
-                    //console.log(data.val());
-                    //Indiquer que le chargement des données est achevé :
                     }
                 ); 
-                console.log("rechargement");
+
                 this.setState({dataCharged:true});
-                //console.log(myRessources);
-                //console.log(myRessources[myRessourcesKey]);
                 }
 
             catch(error){
-            console.log(error.ToString())
+                console.log(error.ToString())
             }
         this.setState({dataCharged: true});
     }
 
+    //Fonction listant les tâches en cours du projet
     listeTaches(){
         const liste = [];
-        //console.log("Dans la fonction listeTache");
-        //console.log("longueur de la liste : "+myKey.length);
-        //console.log("données chargées ? " + this.state.dataCharged);
         if (this.state.dataCharged){
             if(this.state.nomRecherche == ""){
                 for (let iter = 0; iter < myKey.length; iter++){
-                    //console.log("iter = " + iter);
-                    //console.log(myUser[myKey[iter]]);
                     dateFinTache = new Date(myUser[myKey[iter]].dateFin);
                     dateFinBienEcrite = semaine[dateFinTache.getDay()] + " " + dateFinTache.getDate()+ "/" + (dateFinTache.getMonth()+1) + "/" + dateFinTache.getFullYear();
                     liste.push(
@@ -144,12 +118,9 @@ export class Taches extends Component {
                         ressources={myRessources}
                         laRessource={myUser[myKey[iter]].ressource}
                         description={myUser[myKey[iter]].description} 
-                        //dateFin={dateFinBienEcrite}
                         dateFin={dateFinTache}
                         dateDebut={myUser[myKey[iter]].dateDebut}
-                        tauxAvancement={myUser[myKey[iter]].avancement} 
-                        rechargerBD={()=>this.componentWillMount()}
-                        razDonnees={()=>{this.setDataUncharged();}}/>
+                        tauxAvancement={myUser[myKey[iter]].avancement} />
                     );
                 }
             }
@@ -164,9 +135,7 @@ export class Taches extends Component {
                                 description={myUser[myKey[iter]].description} 
                                 dateFin={dateFinTache}
                                 dateDebut={myUser[myKey[iter]].dateDebut}
-                                tauxAvancement={myUser[myKey[iter]].avancement} 
-                                rechargerBD={()=>this.componentWillMount()}
-                                razDonnees={()=>this.setDataUncharged()}/>
+                                tauxAvancement={myUser[myKey[iter]].avancement} />
                         );
                     }
                 }
@@ -177,7 +146,7 @@ export class Taches extends Component {
 
 
     render() {
-        const { navigate } = this.props.navigation;
+    const { navigate } = this.props.navigation;
       return (
         <ScrollView>
             {this.state.dataCharged&&
@@ -197,8 +166,7 @@ export class Taches extends Component {
                         <AjoutTache 
                             id={this.props.navigation.state.params.id} 
                             ressources={myRessources}
-                            ouvert={()=>this.setModalVisible(false)} 
-                            rechargerBD={()=>this.componentWillMount()}/>
+                            ouvert={()=>this.setModalVisible(false)} />
                     </ScrollView>
                 </Modal>
                 <View style={{marginTop: 12}}>

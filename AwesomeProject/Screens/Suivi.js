@@ -1,25 +1,18 @@
 import React, { Component } from 'react';
 import { Text, View, ScrollView } from 'react-native';
-import { Alert, AppRegistry, Button, Image, Picker, TextInput } from 'react-native';
-import { ActivityIndicator, ListView, TouchableHighlight } from 'react-native';
-import { StackNavigator} from 'react-navigation';
-import BottomNavigation, { Tab } from 'react-native-material-bottom-navigation';
+import { Picker } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import ProgressBarClassic from 'react-native-progress-bar-classic';
-import AnimatedBar from 'react-native-animated-bar';
 import { Jauge } from '../components/Jauge';
 import * as firebase from 'firebase';
-//import { Chart } from 'react-google-charts';
-//import { ReactGantt } from 'gantt-for-react';
 
 
 require('../ConnexionBD.js');
 const styles = require('../style/Style');
 const myKey=new Array(0);
 const myUser=[];
-const essai=[];
 
-
+//Page de représentation graphique
 export class Suivi extends Component {
     static navigationOptions = ({ navigation }) => ({
         title: `${navigation.state.params.titre}`,
@@ -29,14 +22,15 @@ export class Suivi extends Component {
         });
     
     state={
-          dataCharged: false,
-          affichagePicker: "tout",
-          isTachesEnRetardDisplayed: true,
-          isTachesUrgentesDisplayed: true,
-          isTachesEnCoursDisplayed: true,
-          isTachesAVenirDisplayed: false
+          dataCharged: false, //chargement des données terminé
+          affichagePicker: "tout", //valeur du picker
+          isTachesEnRetardDisplayed: true, //affichage tâches en retard
+          isTachesUrgentesDisplayed: true, //affichage tâches urgentes
+          isTachesEnCoursDisplayed: true, //affichage tâches en cours
+          isTachesAVenirDisplayed: false //affichage tâches à venir
     }
 
+    //Fonction appelée lors de la destruction du composant
     componentWillUnmount() {
       let user = firebase.auth().currentUser;
       id = this.props.navigation.state.params.id;
@@ -44,48 +38,45 @@ export class Suivi extends Component {
       maRef.orderByChild('dateFin').off();
     }
   
-
+    //Fonction appelée avant le premier affichage du render()
     componentWillMount=async()=>{
       this.setState({dataCharged:false});
       myUser=[];
       myKey=[];
+
       try{
           let user = firebase.auth().currentUser;
           id = this.props.navigation.state.params.id;
           let maRef = firebase.database().ref(user.uid).child(id);
-          //console.log(id);
+
+          //Récupération des id des tâches pas date de fin et écoute sur les ajouts
           maRef.orderByChild('dateFin').on('child_added',
           (data)=>{
               myKey.push(data.key)
-              //console.log(myKey)
-              //console.log(myKey.length);
           });
-              
+          
+          //Récupération des valeurs des tâches et écoute sur les modifs
           maRef.orderByChild('dateFin').on('value',
           (data)=>{
               myUser=data.val()
-              //console.log(data.val())
               this.setState({dataCharged:true});
             }
           ); 
 
+          //Ecoute sur les suppression des tâches
           maRef.orderByChild('dateFin').on('child_removed',
           (data)=>{
               let index = myKey.indexOf(data.key);
               myKey.splice(index,1);
-          //myKey.delete(data.key)
-          //console.log(myKey)
-          //console.log(myKey.length);
           });
 
-          //essai=firebase.database().ref(user.uid).child(id).;
-          //console.log(essai);
           }
           catch(error){
-          console.log(error.ToString())
+            console.log(error.ToString())
           }
       }
 
+    //Liste des éléments en retard
     jaugeTacheRetard(){
       const liste = [];
         if (this.state.dataCharged){
@@ -122,6 +113,7 @@ export class Suivi extends Component {
       return liste;
     }
 
+    //Liste des éléments urgents
     jaugeTacheUrgente(){
       const liste = [];
         if (this.state.dataCharged){
@@ -165,6 +157,7 @@ export class Suivi extends Component {
       return liste;
     }
 
+    //Liste des éléments en cours
     jaugeTacheEnCours(){
       const liste = [];
         if (this.state.dataCharged){
@@ -209,6 +202,7 @@ export class Suivi extends Component {
       return liste;
     }
 
+    //Liste des éléments à venir
     jaugeTacheAVenir(){
       const liste = [];
         if (this.state.dataCharged){

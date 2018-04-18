@@ -1,39 +1,19 @@
 import React, { Component } from 'react';
-import { Text, View, ScrollView } from 'react-native';
-import { Alert, AppRegistry, Button, Image, TextInput, CheckBox } from 'react-native';
-import { ActivityIndicator, ListView, TouchableHighlight, TouchableOpacity } from 'react-native';
-import { StackNavigator} from 'react-navigation';
-import BottomNavigation, { Tab } from 'react-native-material-bottom-navigation';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import ProgressBarClassic from 'react-native-progress-bar-classic';
+import { Text, View } from 'react-native';
 import AnimatedBar from "react-native-animated-bar";
 import FlipCard from 'react-native-flip-card';
 
 const styles = require('../style/Style');
 
+
+//Composant contenant les jauges d'avancement
 export class Jauge extends React.Component{
+
     constructor(props){
-      super(props);
+        super(props);
     }
 
-    /*
-    couleurJauge(){
-        let couleur;
-        if(this.props.dateFin > Date.now())
-        {
-            couleur= "#8787A3";
-        }
-        else{
-            if(this.props.dateFin === Date.now()){
-                couleur="#EF7E56";
-            }
-            else{
-                couleur="#DD105E";
-            }
-        }
-        return couleur;
-    }
-*/
+    //Couleur de la jauge selon le temps restant
     couleurJaugeDuree(){
         let couleur;
         if(this.avancementDuree() === 1)
@@ -51,6 +31,7 @@ export class Jauge extends React.Component{
         return couleur;
     }
 
+    //Couleur du texte selon l'échéance
     couleurTexte(){
         let couleur;
         let fin = Math.ceil(this.props.dateFin / (1000*3600*24));
@@ -59,29 +40,27 @@ export class Jauge extends React.Component{
         {
             couleur= "#46466E";
         }
-        else{
+        else {
             if(fin === ajd){
                 couleur="#EF7E56";
             }
-            else{
+            else {
                 couleur="#DD105E";
             }
         }
         return couleur;
     }
 
+    //Calcul de la durée totale de la tâche
     dureeTache(){
         let duree;
-        //console.log(this.props.dateDebut);
         let fin = Math.ceil(this.props.dateFin / (1000*3600*24));
         let debut = Math.ceil(this.props.dateDebut / (1000*3600*24));
         duree = Math.abs(fin - debut) + 1;
-        //console.log(timeDiff);
-        //duree = Math.ceil(timeDiff / (1000*3600*24));
-        //console.log(duree);
         return duree;
     }
 
+    //Calcul de la durée restante de la tâche
     dureeRestante(){
         let duree;
         let fin = Math.ceil(this.props.dateFin / (1000*3600*24));
@@ -91,22 +70,21 @@ export class Jauge extends React.Component{
             if(fin >= ajd){
                 duree = Math.abs(fin - ajd);
             }
-            else{
+            else {
                 duree = 0;
             }
         }
-        else{
+        else {
             duree = Math.abs(fin-debut)+1;
         }
         return duree;
     }
 
+    //Calcul du pourcentage d'avancement de la date
     avancementDuree(){
         let avancement;
         let timeDiff = this.dureeTache();
         let timeLeft = this.dureeRestante();
-        //let avancementDiff = Math.abs(this.props.dateDebut - Date.now());
-        //let diffDaysAvancement = Math.ceil(avancementDiff / (1000*3600*24));
         if (timeLeft == 0){
             avancement = 1;
         }
@@ -116,6 +94,7 @@ export class Jauge extends React.Component{
         return avancement;
     }
 
+    //Calcul du temps entre ajd et l'échéance
     echeance(){
         let indication;
         let ajd = Math.ceil(Date.now()/(1000*3600*24));
@@ -137,6 +116,7 @@ export class Jauge extends React.Component{
         return indication;
     }
 
+    //Calcul du temps entre ajd et le début de la tâche
     debut(){
         let indication;
         let ajd = Math.ceil(Date.now()/(1000*3600*24));
@@ -163,54 +143,54 @@ export class Jauge extends React.Component{
         <View style={{flex: 1, paddingTop: 10, paddingHorizontal: 20, justifyContent: "space-around"}}>
 
             <FlipCard style={styles.flipcard}
-            friction={10}
-            perspective={1000}
-            flipHorizontal={true}
-            flipVertical={false}
-            flip={false}
-            clickable={true}>
-            <View>
+                friction={10}
+                perspective={1000}
+                flipHorizontal={true}
+                flipVertical={false}
+                flip={false}
+                clickable={true}>
                 <View>
-                    <Text>{this.props.nomTache}</Text>
                     <View>
-                        <AnimatedBar
-                            progress={this.props.tauxChargement}
-                            height={null}
-                            borderColor="#BDBDD7"
-                            barColor={this.couleurJaugeDuree()}
-                            borderRadius={20}
-                            borderWidth={0}
-                            animate={false}>
-                            <View style={{flexDirection: "row",justifyContent: "center", alignItems: "center"}}>
-                                <Text style={{ fontSize: 15, backgroundColor: "transparent", color: "#FFF"}}>
-                                {this.props.tauxChargement * 100}%
-                                </Text>
-                            </View>
-                        </AnimatedBar>
-                    </View>
-                    <View style={{marginTop: 5}}>
-                        <AnimatedBar
-                            progress={this.avancementDuree()}
-                            height={null}
-                            borderColor="#BDBDD7"
-                            barColor={this.couleurJaugeDuree()}
-                            borderRadius={20}
-                            borderWidth={0}
-                            animate={false}>
-                            <View style={{flexDirection: "row",justifyContent: "center", alignItems: "center"}}>
-                                <Text style={{ fontSize: 15, backgroundColor: "transparent", color: "#FFF"}}>
-                                {this.dureeRestante()} jour(s) restant(s) sur {this.dureeTache()} jour(s)
-                                </Text>
-                            </View>
-                        </AnimatedBar>
+                        <Text>{this.props.nomTache}</Text>
+                        <View>
+                            <AnimatedBar
+                                progress={this.props.tauxChargement}
+                                height={null}
+                                borderColor="#BDBDD7"
+                                barColor={this.couleurJaugeDuree()}
+                                borderRadius={20}
+                                borderWidth={0}
+                                animate={false}>
+                                <View style={{flexDirection: "row",justifyContent: "center", alignItems: "center"}}>
+                                    <Text style={{ fontSize: 15, backgroundColor: "transparent", color: "#FFF"}}>
+                                    {this.props.tauxChargement * 100}%
+                                    </Text>
+                                </View>
+                            </AnimatedBar>
+                        </View>
+                        <View style={{marginTop: 5}}>
+                            <AnimatedBar
+                                progress={this.avancementDuree()}
+                                height={null}
+                                borderColor="#BDBDD7"
+                                barColor={this.couleurJaugeDuree()}
+                                borderRadius={20}
+                                borderWidth={0}
+                                animate={false}>
+                                <View style={{flexDirection: "row",justifyContent: "center", alignItems: "center"}}>
+                                    <Text style={{ fontSize: 15, backgroundColor: "transparent", color: "#FFF"}}>
+                                    {this.dureeRestante()} jour(s) restant(s) sur {this.dureeTache()} jour(s)
+                                    </Text>
+                                </View>
+                            </AnimatedBar>
+                        </View>
                     </View>
                 </View>
-            </View>
-            <View style={styles.backflipcard}>
+                <View style={styles.backflipcard}>
                     <Text style={{color: '#8787A3'}}>Tâche affectée à : {this.props.ressource}</Text>
                     <Text style={{color: '#46466E'}}>{this.debut()}</Text> 
                     <Text style={{color: this.couleurTexte()}}>{this.echeance()}</Text>
-            </View>
+                </View>
             </FlipCard>
         </View>
 

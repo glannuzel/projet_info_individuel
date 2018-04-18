@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
-import { Text, View } from 'react-native';
-import { Alert, AppRegistry, Button, Image, TextInput, Picker, CheckBox } from 'react-native';
-import { ActivityIndicator, ListView, ScrollView, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
-import { StackNavigator} from 'react-navigation';
+import { TextInput } from 'react-native';
 
 const styles = require('../style/Style');
 
+//Champ de saisie s'agranddissant lorsque le nombre de ligne du texte augmente
 export class AutoExpandingTextInput extends React.Component {
 
     constructor(props) {

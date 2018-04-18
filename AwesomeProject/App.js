@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View,StyleSheet,TextInput,Button} from 'react-native';
 import { StackNavigator} from 'react-navigation';
-import { Header } from './components/Header';
 import { HomeScreen } from './Screens/HomeScreen';
 import BarreNavigation from './Screens/BarreNavigation';
 import { Connexion } from './Screens/Connexion';

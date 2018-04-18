@@ -1,15 +1,9 @@
 import React, { Component } from 'react';
 import { Text, View, TouchableOpacity, ScrollView } from 'react-native';
-import { Alert, AppRegistry, Button, Image, TextInput} from 'react-native';
-import { ActivityIndicator, ListView, TouchableHighlight } from 'react-native';
-import { StackNavigator} from 'react-navigation';
+import { Alert, Button, TextInput} from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { MenuProvider, renderers } from 'react-native-popup-menu';
-import { Header } from '../components/Header';
-import { SousTitre } from '../components/SousTitre';
 import { NomProjet } from '../components/NomProjet';
-import { AjoutProjet } from '../components/AjoutProjet';
-import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 import * as firebase from 'firebase';
 
 const styles = require('../style/Style');
@@ -20,9 +14,9 @@ const myUser=[];
 export class HomeScreen extends React.Component {
 
   state={
-    dataCharged: false,
-    //isOpened: true,
-    nomProjet: ''
+    dataCharged: false, //chargement des données effectué
+    nomProjet: '', //nom du projet dans le champ d'ajout
+    firstRender: true, //premier affichage du render
   }
 
   static navigationOptions = ({ navigation }) => ({
@@ -39,7 +33,7 @@ export class HomeScreen extends React.Component {
         [
           {text: 'Se déconnecter', onPress: ()=>{firebase.auth().signOut();
             navigation.navigate('Connexion');}},
-          {text: 'Annuler', onPress: ()=>console.log('annuler déco'), style: 'cancel'}
+          {text: 'Annuler', style: 'cancel'}
         ],
         {cancelable: false}
       )
@@ -49,29 +43,34 @@ export class HomeScreen extends React.Component {
       </View>
     });
     
+    //Fonction appelée avec la première génération du render()
     componentWillMount=async()=>{
       myKey=[];
       myUser=[];
       try{
-        let user = firebase.auth().currentUser;
-        id = user.uid;
+        let user = firebase.auth().currentUser; //ref de l'utilisateur
+        id = user.uid; //id de l'utilisateur
+
+        //Récupération des id projets et écoute sur les projets ajoutés
         firebase.database().ref(id).on('child_added',
           (data)=>{
+            //Récupérer l'id des projets ajoutés
             myKey.push(data.key)
-            //console.log(myKey)
-            //console.log(myKey.length);
             });
-          
-            firebase.database().ref(id).on('child_removed',
+        
+        //Ecoute sur les éventuels éventuels enfants retirés
+        firebase.database().ref(id).on('child_removed',
             (data)=>{
+            //Retirer l'idée des projets retirés
             let index = myKey.indexOf(data.key);
             myKey.splice(index,1);
         });
-            
+        
+        //Récupération des valeurs projets et écoute sur les modifications
         firebase.database().ref(id).on('value',
           (data)=>{
+            //Modifier la valeur des projets modifiés
             myUser=data.val()
-            //console.log(data.val())
             this.setState({dataCharged:true});
             }
           ); 
@@ -79,31 +78,12 @@ export class HomeScreen extends React.Component {
         catch(error){
           console.log(error.ToString())
         }
-      }
-      
-    openMenu(){
-      console.log("ouverture");
-      this.setState({isOpened:true});
-    }
-    
-    closeMenu(){
-      console.log("fermeture");
-      this.setState({isOpened:false});
     }
       
-    displayData(){
-      console.log("Projet : "+myUser[myKey[0]].titre);
-    }
-
-    logOut(){
-      firebase.auth().signOut();
-      this.props.navigation.navigate('Connexion');
-    }
-
+    //Fonction listant les projets de l'utilisateur
     listeProjet(){
       const liste = [];
       for (let iter = 0; iter < myKey.length; iter++){
-        //console.log(myUser[myKey[iter]].ressources);
         liste.push(
         <NomProjet nom={myUser[myKey[iter]].nomProjet} ressource={myUser[myKey[iter]].ressources} numero={myKey[iter]} navigation={this.props.navigation} />
         );
@@ -111,9 +91,12 @@ export class HomeScreen extends React.Component {
       return liste;
     }
 
+    //Mise à jour du nom du projet dans le champ d'ajout
     _updateNomProjet = (text) => this.setState({nomProjet: `${text}`});
 
+    //Ajout d'un nouveau projet dans la base de données
     ajouterProjet=async()=>{
+      //Vérifier qu'un titre est écrit
       if(this.state.nomProjet){
           let user = firebase.auth().currentUser;
           id = user.uid;
@@ -123,9 +106,8 @@ export class HomeScreen extends React.Component {
           ressources: ["(moi)"]
           }
           firebase.database().ref(id).push(obj);
-          //Alert.alert(`${this.state.nomProjet}`);
-          console.log("ajout projet");
       }
+      //Sinon en informer l'utilisateur
       else {
         Alert.alert(
           "Titre manquant",
@@ -138,6 +120,7 @@ export class HomeScreen extends React.Component {
       }
     }
 
+    //Message à la première connexion
     bienvenue(){
       Alert.alert(
         "Bienvenue sur AGPA !",
@@ -147,6 +130,7 @@ export class HomeScreen extends React.Component {
         ],
         {cancelable: false}
         )
+        this.setState({firstRender: false});
     }
   
   render() {
@@ -154,12 +138,14 @@ export class HomeScreen extends React.Component {
         <ScrollView>
           <View> 
             
-            {this.props.navigation.state.params.firstConnexion&&
+            {this.props.navigation.state.params.firstConnexion&&this.state.firstRender&&
             this.bienvenue()}
 
             {this.state.dataCharged&&
             <View>
-              <SousTitre titre="Mes Projets"/>
+              <View style={styles.sousTitre}>
+                  <Text style={styles.sousTitreTexte}>Mes Projets</Text>
+              </View>
               {this.listeProjet()}
               <View style={styles.backgroundProjetAdd} >
                 <View style={{flexDirection: 'row'}}>
@@ -187,22 +173,3 @@ export class HomeScreen extends React.Component {
     );
   }
 }
-
-/*
-<MenuProvider>
-<Menu opened={this.state.isOpened}
-                  onBackdropPress={() => this.closeMenu()}
-                  onSelect={value => alert(`Selected number: ${value}`)}>
-                    <MenuTrigger children={this.headerRight} onPress={this.openMenu}/>
-                      <MenuOptions>
-                        <MenuOption value={1} text='coucou' onSelect={() => this.closeMenu()}/>
-                        <MenuOption value={2} onSelect={() => this.logOut()}>
-                        <View style={{flexDirection: 'row'}}>
-                          <View style={{flex:1}}><Icon size={20} color="grey" name="exit-to-app"/></View>
-                          <View style={{flex:3}}><Text>Se déconnecter</Text></View>
-                        </View>
-                        </MenuOption>
-                      </MenuOptions>
-                </Menu>
-</MenuProvider>
-*/

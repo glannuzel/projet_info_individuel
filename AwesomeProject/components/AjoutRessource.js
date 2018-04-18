@@ -1,14 +1,9 @@
 import React, { Component } from 'react';
 import { Text, View } from 'react-native';
-import { Alert, AppRegistry, Image, Button, TextInput, Modal} from 'react-native';
-import { ActivityIndicator, ScrollView, ListView, TouchableOpacity, TouchableHighlight } from 'react-native';
-import { StackNavigator} from 'react-navigation';
-import BottomNavigation, { Tab } from 'react-native-material-bottom-navigation';
+import { Alert, TextInput } from 'react-native';
+import { TouchableHighlight } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as firebase from 'firebase';
-import { NomRessource } from './NomRessource';
-import { MenuProvider, renderers } from 'react-native-popup-menu';
-import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 import Toast from 'react-native-simple-toast';
 
 require('../ConnexionBD.js');
@@ -31,6 +26,7 @@ export class AjoutRessource extends React.Component{
 
     //Ajouter la ressource à la base de données
     _enregistrerRessource=async() =>{
+        //Vérifier que le champ est rempli
         if(this.state.nomRessource){
             let user = firebase.auth().currentUser;
             id = this.props.id;
@@ -40,7 +36,8 @@ export class AjoutRessource extends React.Component{
             this.setState({couleurChamp: '#EEEEEE'});
             this.setState({couleurPlaceholder: '#CCCCCC'});
         }
-        else{
+        //Sinon prévenir l'utilisateur
+        else {
             this.setState({couleurChamp: '#F4CCCC'});
             this.setState({couleurPlaceholder: '#DD105E'});
             Alert.alert(

@@ -1,37 +1,39 @@
 import React, { Component } from 'react';
 import { Text, View } from 'react-native';
-import { Alert, AppRegistry, StyleSheet, Button, Image, TextInput} from 'react-native';
-import { ActivityIndicator, ListView, TouchableHighlight } from 'react-native';
-import { StackNavigator} from 'react-navigation';
+import { Alert, Button, TextInput} from 'react-native';
 import * as firebase from 'firebase';
 
 
 require('../ConnexionBD.js');
-const adresseMail="glannuzel@ensc.fr";
-const mdp="123456";
-//const adresseMail="";
-//const mdp="";
+// Pour se connecter : adresseMail="glannuzel@ensc.fr";
+// mdp="123456";
+const adresseMail="";
+const mdp="";
 const user=[];
 const myUser=[];
 
 export class Connexion extends React.Component {
+
     state={
         login:false
       }
-      static navigationOptions = {
+
+    //Header invisible
+    static navigationOptions = {
         header:null
     };
 
     signUp=async()=>{
+        //Vérifier que les infos mail et mdp sont bien renseignés
         if(adresseMail&&mdp){
             try {
                 await firebase.auth().createUserWithEmailAndPassword(adresseMail, mdp);
                 this.setState({login:true})
-                console.log("Account created");
                 await firebase.auth().signInWithEmailAndPassword(adresseMail, mdp);
                 // Navigation vers la page des projets
                 this.props.navigation.navigate('Home', {firstConnexion: true});
             }
+            //Gestion des erreurs transmises à l'utilisateur
             catch (error) {
                 if(error.toString() == "Error: The email address is badly formatted."){
                     Alert.alert(
@@ -63,10 +65,10 @@ export class Connexion extends React.Component {
                         {cancelable: false}
                         );
                 }
-                console.log(error.toString())
             }
         }
-        else{
+        //Sinon en alerter l'utilisateur
+        else {
             Alert.alert(
                 "Champs vides",
                 "Veillez entrer une adresse e-mail et un mot de passe.",
@@ -74,20 +76,21 @@ export class Connexion extends React.Component {
                 {text: 'Ok', style: 'cancel'}
                 ],
                 {cancelable: false}
-                );
+            );
         }
       }
     
 
     login=async()=> {
+        //Vérifier que les informations mail et mdp sont renseignés
         if(adresseMail&&mdp){
             try {
                 await firebase.auth().signInWithEmailAndPassword(adresseMail, mdp);
                 this.setState({login:true});
                 // Navigation vers la page des projets
                 this.props.navigation.navigate('Home', {firstConnexion: false});
-                console.log("Logged In!");
             }
+            //Gestion des erreurs transmises à l'utilisateur
             catch (error) {
                 if(error.toString() == "Error: The password is invalid or the user does not have a password."){
                     Alert.alert(
@@ -119,11 +122,10 @@ export class Connexion extends React.Component {
                         {cancelable: false}
                         );
                 }
-                //alert(error.toString());
-                console.log(error.toString())
             }
         }
-        else{
+        //Sinon en alerter l'utilisateur
+        else {
             alert("Veillez entrer une adresse e-mail et un mot de passe.");
         }
     }
