@@ -75,7 +75,7 @@ export class Tache extends Component {
             Toast.show('Tâche terminée');
          }
         this.marquerCommeFinie();
-        this.props.rechargerBD();
+        //this.props.rechargerBD();
     }
 
     demandeAnnulerTache(){

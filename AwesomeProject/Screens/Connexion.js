@@ -28,22 +28,53 @@ export class Connexion extends React.Component {
                 await firebase.auth().createUserWithEmailAndPassword(adresseMail, mdp);
                 this.setState({login:true})
                 console.log("Account created");
+                await firebase.auth().signInWithEmailAndPassword(adresseMail, mdp);
+                // Navigation vers la page des projets
+                this.props.navigation.navigate('Home', {firstConnexion: true});
             }
             catch (error) {
                 if(error.toString() == "Error: The email address is badly formatted."){
-                    alert("Le format de l'adresse e-mail est incorrect.")
+                    Alert.alert(
+                        "Adresse incorrecte",
+                        "Le format de l'adresse e-mail est incorrect.",
+                        [
+                        {text: 'Ok', style: 'cancel'}
+                        ],
+                        {cancelable: false}
+                        );
                 }
                 if(error.toString() == "Error: Password should be at least 6 characters"){
-                    alert("Le mot de passe doit contenir au moins 6 caractères.")
+                    Alert.alert(
+                        "Mot de passe incorrect",
+                        "Le mot de passe doit contenir au moins 6 caractères.",
+                        [
+                        {text: 'Ok', style: 'cancel'}
+                        ],
+                        {cancelable: false}
+                        );
                 }
                 if(error.toString() == "Error: The email address is already in use by another account."){
-                    alert("Un compte est déjà associé à cette adresse e-mail.");
+                    Alert.alert(
+                        "Compte existant",
+                        "Un compte est déjà associé à cette adresse e-mail.",
+                        [
+                        {text: 'Ok', style: 'cancel'}
+                        ],
+                        {cancelable: false}
+                        );
                 }
                 console.log(error.toString())
             }
         }
         else{
-            alert('Veillez entrer une adresse e-mail et un mot de passe.');
+            Alert.alert(
+                "Champs vides",
+                "Veillez entrer une adresse e-mail et un mot de passe.",
+                [
+                {text: 'Ok', style: 'cancel'}
+                ],
+                {cancelable: false}
+                );
         }
       }
     
@@ -54,18 +85,39 @@ export class Connexion extends React.Component {
                 await firebase.auth().signInWithEmailAndPassword(adresseMail, mdp);
                 this.setState({login:true});
                 // Navigation vers la page des projets
-                this.props.navigation.navigate('Home');
+                this.props.navigation.navigate('Home', {firstConnexion: false});
                 console.log("Logged In!");
             }
             catch (error) {
                 if(error.toString() == "Error: The password is invalid or the user does not have a password."){
-                    alert("Le mot de passe est invalide.");
+                    Alert.alert(
+                        "Mot de passe erroné",
+                        "Le mot de passe est invalide.",
+                        [
+                        {text: 'Ok', style: 'cancel'}
+                        ],
+                        {cancelable: false}
+                        );
                 }
                 if(error.toString() == "Error: The email address is badly formatted."){
-                    alert("Le format de l'adresse e-mail est incorrect.")
+                    Alert.alert(
+                        "Adresse incorrecte",
+                        "Le format de l'adresse e-mail est incorrect.",
+                        [
+                        {text: 'Ok', style: 'cancel'}
+                        ],
+                        {cancelable: false}
+                        );
                 }
                 if(error.toString() == "Error: There is no user record corresponding to this identifier. The user may have been deleted."){
-                    alert("Utilisateur inconnu. L'adresse e-mail est erronée ou l'utilisateur n'existe pas.")
+                    Alert.alert(
+                        "Utilisateur inconnu",
+                        "L'adresse e-mail est erronée ou l'utilisateur n'existe pas.",
+                        [
+                        {text: 'Ok', style: 'cancel'}
+                        ],
+                        {cancelable: false}
+                        );
                 }
                 //alert(error.toString());
                 console.log(error.toString())

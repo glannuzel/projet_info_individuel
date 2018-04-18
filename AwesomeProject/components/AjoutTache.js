@@ -53,7 +53,14 @@ export class AjoutTache extends React.Component{
       else{
         this.setState({couleurChampTitre: '#F4CCCC'});
         this.setState({contourChampTitre: '#DD105E'});
-        alert('Vous devez donner un titre à cette tâche.');
+        Alert.alert(
+          "Titre manquant",
+          "Vous devez donner un titre à cette tâche.",
+          [
+          {text: 'Ok', style: 'cancel'}
+          ],
+          {cancelable: false}
+          );
       }
     }
 

@@ -114,7 +114,7 @@ export class HomeScreen extends React.Component {
     _updateNomProjet = (text) => this.setState({nomProjet: `${text}`});
 
     ajouterProjet=async()=>{
-      //if(this.state.login){
+      if(this.state.nomProjet){
           let user = firebase.auth().currentUser;
           id = user.uid;
           let ressources = [];
@@ -125,13 +125,38 @@ export class HomeScreen extends React.Component {
           firebase.database().ref(id).push(obj);
           //Alert.alert(`${this.state.nomProjet}`);
           console.log("ajout projet");
-     // }
+      }
+      else {
+        Alert.alert(
+          "Titre manquant",
+          "Vous devez donner un nom à votre projet.",
+          [
+          {text: 'Ok', style: 'cancel'}
+          ],
+          {cancelable: false}
+          )
+      }
+    }
+
+    bienvenue(){
+      Alert.alert(
+        "Bienvenue sur AGPA !",
+        "Merci d'avoir créé un compte. \nVous pouvez désormais commencer à gérer vos projets.",
+        [
+        {text: 'Ok', style: 'cancel'}
+        ],
+        {cancelable: false}
+        )
     }
   
   render() {
     return (
         <ScrollView>
           <View> 
+            
+            {this.props.navigation.state.params.firstConnexion&&
+            this.bienvenue()}
+
             {this.state.dataCharged&&
             <View>
               <SousTitre titre="Mes Projets"/>

@@ -48,71 +48,82 @@ export class Taches extends Component {
         //console.log(this.state.dataCharged);
     }
 
+    componentWillUnmount() {
+        let user = firebase.auth().currentUser;
+        id = this.props.navigation.state.params.id;
+        firebase.database().ref(user.uid).child(id).orderByChild('fin').equalTo(false).off();
+    }
+
     componentWillMount=async()=>{
 
         this.setState({dataCharged: false});
-        myUser=[];
-        myKey=[];
-        myRessources=[];
-        myRessourcesKey=[];
 
-    try{
-        let user = firebase.auth().currentUser;
-        id = this.props.navigation.state.params.id;
-        //console.log(id);
+            try{
+                let user = firebase.auth().currentUser;
+                id = this.props.navigation.state.params.id;
+                //console.log(id);
 
-        //Récupération des tâches non achevées
-        firebase.database().ref(user.uid).child(id).orderByChild('fin').equalTo(false).on('child_added',
-        (data)=>{
-            myKey.push(data.key);
-            //console.log(myKey)
-            //console.log(myKey.length);
-            });
-            
-        firebase.database().ref(user.uid).child(id).orderByChild('fin').equalTo(false).on('value',
-        (data)=>{
-            myUser=data.val()
-            //console.log(data.val())
-            //this.setState({dataCharged:true});
+                //if(nbAppel == 0)
+                //{
+                    myUser=[];
+                    myKey=[];
+                    myRessources=[];
+                    myRessourcesKey=[];
+
+                //Récupération des tâches non achevées
+                firebase.database().ref(user.uid).child(id).orderByChild('fin').equalTo(false).on('child_added',
+                (data)=>{
+                    myKey.push(data.key);
+                    //console.log(myKey)
+                    //console.log(myKey.length);
+                    this.setState({dataCharged:true});
+                    });
+                
+                firebase.database().ref(user.uid).child(id).orderByChild('fin').equalTo(false).on('child_removed',
+                (data)=>{
+                    //this.setState({dataCharged: false});
+                    this.setState({nomRecherche: ""});
+                    let index = myKey.indexOf(data.key);
+                    myKey.splice(index,1);
+                    this.setState({dataCharged: true});
+                    //console.log(myKey)
+                    //console.log(myKey.length);
+                    });
+                //}
+                    
+                firebase.database().ref(user.uid).child(id).orderByChild('fin').equalTo(false).on('value',
+                (data)=>{
+                    myUser=data.val();
+                    //console.log(data.val());
+                    //console.log(data.val())
+                    this.setState({dataCharged:true});
+                    }
+                );
+
+                //Récupération des ressources associées à un projet
+                firebase.database().ref(user.uid).child(id).child('ressources').on('child_added',
+                (data)=>{
+                    myRessourcesKey.push(data.key);
+                    //console.log(myRessourcesKey);
+                    });
+                    
+                firebase.database().ref(user.uid).child(id).child('ressources').on('value',
+                (data)=>{
+                    myRessources=data.val();
+                    //console.log(data.val());
+                    //Indiquer que le chargement des données est achevé :
+                    }
+                ); 
+                console.log("rechargement");
+                this.setState({dataCharged:true});
+                //console.log(myRessources);
+                //console.log(myRessources[myRessourcesKey]);
+                }
+
+            catch(error){
+            console.log(error.ToString())
             }
-        );
-
-        firebase.database().ref(user.uid).child(id).orderByChild('fin').equalTo(false).on('child_removed',
-        (data)=>{
-            this.setState({dataCharged: false});
-            this.setState({nomRecherche: ""});
-            let index = myKey.indexOf(data.key);
-            myKey.splice(index,1);
-            this.setState({dataCharged: true});
-            //console.log(myKey)
-            //console.log(myKey.length);
-        });
-
-
-
-        //Récupération des ressources associées à un projet
-        firebase.database().ref(user.uid).child(id).child('ressources').on('child_added',
-        (data)=>{
-            myRessourcesKey.push(data.key);
-            //console.log(myRessourcesKey);
-            });
-            
-        firebase.database().ref(user.uid).child(id).child('ressources').on('value',
-        (data)=>{
-            myRessources=data.val();
-            //console.log(data.val());
-            //Indiquer que le chargement des données est achevé :
-            }
-        ); 
-        console.log("rechargement");
-        this.setState({dataCharged:true});
-        //console.log(myRessources);
-        //console.log(myRessources[myRessourcesKey]);
-        }
-
-        catch(error){
-        console.log(error.ToString())
-        }
+        this.setState({dataCharged: true});
     }
 
     listeTaches(){

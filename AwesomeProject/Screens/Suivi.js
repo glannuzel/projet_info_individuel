@@ -36,6 +36,13 @@ export class Suivi extends Component {
           isTachesEnCoursDisplayed: true,
           isTachesAVenirDisplayed: false
     }
+
+    componentWillUnmount() {
+      let user = firebase.auth().currentUser;
+      id = this.props.navigation.state.params.id;
+      let maRef = firebase.database().ref(user.uid).child(id);
+      maRef.orderByChild('dateFin').off();
+    }
   
 
     componentWillMount=async()=>{
@@ -163,10 +170,14 @@ export class Suivi extends Component {
         if (this.state.dataCharged){
           if(this.state.affichagePicker === "mesTaches"){
             for (let iter = 2; iter < myKey.length; iter++){
+              dateFinTache = new Date(myUser[myKey[iter]].dateFin);
+              dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
+              let ajd = Math.ceil(Date.now() / (1000*3600*24));
+              let fin = Math.ceil(dateFinTache / (1000*3600*24));
+              let debut = Math.ceil(dateDebutTache / (1000*3600*24));
+
               if(myUser[myKey[iter]].ressource == "(moi)"){
-                dateFinTache = new Date(myUser[myKey[iter]].dateFin);
-                let ajd = Math.ceil(Date.now() / (1000*3600*24));
-                if (Math.ceil(dateFinTache / (1000*3600*24)) > ajd+3 && !myUser[myKey[iter]].fin){
+                if (!myUser[myKey[iter]].fin && fin > ajd+3 && debut <= ajd){
                   dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
                   liste.push(
                     <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} ressource={myUser[myKey[iter]].ressource} nomTache={myUser[myKey[iter]].titre}/>
@@ -178,8 +189,12 @@ export class Suivi extends Component {
           else{
             for (let iter = 2; iter < myKey.length; iter++){
                 dateFinTache = new Date(myUser[myKey[iter]].dateFin);
+                dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
                 let ajd = Math.ceil(Date.now() / (1000*3600*24));
-                if (Math.ceil(dateFinTache / (1000*3600*24)) > ajd+3 && !myUser[myKey[iter]].fin){
+                let fin = Math.ceil(dateFinTache / (1000*3600*24));
+                let debut = Math.ceil(dateDebutTache / (1000*3600*24));
+
+                if (!myUser[myKey[iter]].fin && fin > ajd+3 && debut <= ajd){
                   dateDebutTache = new Date(myUser[myKey[iter]].dateDebut);
                   liste.push(
                     <Jauge tauxChargement={myUser[myKey[iter]].avancement} dateDebut={dateDebutTache} dateFin={dateFinTache} description={myUser[myKey[iter]].description} ressource={myUser[myKey[iter]].ressource} nomTache={myUser[myKey[iter]].titre}/>

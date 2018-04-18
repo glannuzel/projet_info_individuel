@@ -46,12 +46,19 @@ export class ModifTache extends React.Component{
         firebase.database().ref(user.uid).child(id).child(tache).child("dateDebut").set(this.state.dateDebut);
         console.log("tâche modifiée");
         this.props.ouvert();
-        this.props.rechargerBD();
+        //this.props.rechargerBD();
       }
       else{
         this.setState({couleurChampTitre: '#F4CCCC'});
         this.setState({contourChampTitre: '#DD105E'});
-        alert('Vous devez donner un titre à cette tâche.');
+        Alert.alert(
+          "Titre manquant",
+          "Vous devez donner un titre à cette tâche.",
+          [
+          {text: 'Ok', style: 'cancel'}
+          ],
+          {cancelable: false}
+          );
       }
     }
 

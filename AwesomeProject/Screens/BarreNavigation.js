@@ -7,7 +7,6 @@ import BottomNavigation, { Tab } from 'react-native-material-bottom-navigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import NavigationComponent from 'react-native-material-bottom-navigation/lib/NavigationComponent';
 
-import { DescTacheScreen } from './DescTacheScreen';
 import { Taches } from './Taches';
 import { Suivi } from './Suivi';
 import { Kpi } from './Kpi';

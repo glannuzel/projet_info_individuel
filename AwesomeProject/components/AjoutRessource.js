@@ -22,6 +22,8 @@ export class AjoutRessource extends React.Component{
 
     state = {
         nomRessource: "", //nom de la ressource
+        couleurChamp: "#EEEEEE", //couleur du champ de saisie
+        couleurPlaceholder: "#CCCCCC" //couleur du placeholder du champ
     }; 
 
     //Mettre à jour le statenomRessource
@@ -29,18 +31,34 @@ export class AjoutRessource extends React.Component{
 
     //Ajouter la ressource à la base de données
     _enregistrerRessource=async() =>{
-        let user = firebase.auth().currentUser;
-        id = this.props.id;
-        let nouvellesRessources = this.props.ressources;
-        nouvellesRessources.push(this.state.nomRessource);
-        firebase.database().ref(user.uid).child(id).child("ressources").set(nouvellesRessources);
+        if(this.state.nomRessource){
+            let user = firebase.auth().currentUser;
+            id = this.props.id;
+            let nouvellesRessources = this.props.ressources;
+            nouvellesRessources.push(this.state.nomRessource);
+            firebase.database().ref(user.uid).child(id).child("ressources").set(nouvellesRessources);
+            this.setState({couleurChamp: '#EEEEEE'});
+            this.setState({couleurPlaceholder: '#CCCCCC'});
+        }
+        else{
+            this.setState({couleurChamp: '#F4CCCC'});
+            this.setState({couleurPlaceholder: '#DD105E'});
+            Alert.alert(
+                "Nom manquant",
+                "Vous devez donner un nom à la ressource pour l'ajouter.",
+                [
+                {text: 'Ok', style: 'cancel'}
+                ],
+                {cancelable: false}
+            );
+        }
     }
 
     render(){
         return (
-            <View style={{flexDirection: 'row', backgroundColor: '#EEEEEE', borderRadius: 3, marginTop: 5}}>
+            <View style={{flexDirection: 'row', backgroundColor: this.state.couleurChamp, borderRadius: 3, marginTop: 5}}>
                 <View style={{flex: 5, justifyContent: 'center', color: '#46466E', paddingLeft: 5}}>
-                        <TextInput style={styles.nomProjet} placeholder="Nom de la ressource..." selectionColor='#46466E'
+                        <TextInput style={styles.nomProjet} placeholder="Nom de la ressource..." placeholderTextColor={this.state.couleurPlaceholder} selectionColor='#46466E'
                                         onChangeText={(text) => this._updateRessource(text)}
                                         maxLength={15}
                                         ref={input => { this.textInput = input}}/>
